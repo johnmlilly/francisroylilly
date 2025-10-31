@@ -16,9 +16,9 @@ export default function Timeline({ posts }) {
             month: "short",
             day: "numeric",
           })}
-          contentStyle={{ background: "#f7f3fc", color: "#333", borderRadius: "1rem" }}
-  contentArrowStyle={{ borderRight: "7px solid  #6B46C1" }}
-  iconStyle={{ background: "#6B46C1", color: "#fff" }}
+            contentStyle={{ background: "#f7f3fc", color: "#333", borderRadius: "1rem" }}
+            contentArrowStyle={{ borderRight: "7px solid  #6B46C1" }}
+            iconStyle={{ background: "#6B46C1", color: "#fff" }}
         >
           <h3 className="vertical-timeline-element-title">{post.data.title}</h3>
           {post.data.image && (
@@ -30,7 +30,7 @@ export default function Timeline({ posts }) {
           )}
           <p>{post.data.description}</p>
           <a
-            href={`/blog/${post.slug}`}
+            href={`/blog/${post.id}`}
             style={{ color: "#6B46C1", fontWeight: "bold", textDecoration: "none" }}
           >
             Read full update →
