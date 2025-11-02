@@ -1,5 +1,8 @@
 ---
+export const prerender = false;
+
 import { getEntry, render } from "astro:content";
+
 import BlogPost from "../../layouts/BlogPost.astro";
 import Comments from "../../components/Comments.astro";
 
@@ -9,9 +12,7 @@ if (!slug) {
   return Astro.redirect("/404");
 }
 
-const normalizedSlug = slug.toLowerCase().replace(/\/$/, "");
-
-const post = await getEntry("blog", normalizedSlug);
+const post = await getEntry("blog", slug);
 
 if (!post) {
   return Astro.redirect("/404");
@@ -23,6 +24,5 @@ const { Content } = await render(post);
 <BlogPost {...post.data}>
   <Content />
 
-  <!-- Pass normalized slug to comments -->
-  <Comments postSlug={normalizedSlug} />
+  <Comments postSlug={slug} />
 </BlogPost>
