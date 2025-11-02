@@ -9,11 +9,42 @@ const { postSlug } = Astro.props;
 
 const result = Astro.getActionResult(actions.addComment);
 const inputErrors = isInputError(result?.error) ? result.error.fields : {};
+const generalError =
+  result?.error && !isInputError(result.error) ? result.error.message : null;
 ---
 
 <form method="POST" action={actions.addComment} class="mb-8">
   <input type="hidden" name="postSlug" value={postSlug} />
 
+  <!-- Timestamp for speed check -->
+  <input type="hidden" name="timestamp" value={Date.now().toString()} />
+
+  <!-- Honeypot field - hidden from humans, visible to bots -->
+  <div style="position: absolute; left: -5000px;" aria-hidden="true">
+    <label for="website">Website (leave blank):</label>
+    <input
+      type="text"
+      id="website"
+      name="website"
+      tabindex="-1"
+      autocomplete="off"
+    />
+  </div>
+
+  {
+    generalError && (
+      <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">{generalError}</div>
+    )
+  }
+
+  {
+    result?.data && (
+      <div class="mb-4 p-3 bg-green-100 text-green-700 rounded">
+        Comment submitted successfully!
+      </div>
+    )
+  }
+  
   <div class="mb-4">
     <label for="name">Name:</label>
     <input
