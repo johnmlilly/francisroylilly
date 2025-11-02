@@ -12,6 +12,9 @@ const comments = await db
   .from(Comment)
   .where(eq(Comment.postSlug, postSlug))
   .orderBy(desc(Comment.createdAt));
+
+console.log("CommentsList: Found comments:", comments.length);
+console.log("CommentsList: Comments data:", comments);
 ---
 
 <div class="space-y-4">
