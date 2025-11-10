@@ -1,7 +1,9 @@
 // src/actions/index.ts
 import { defineAction } from 'astro:actions';
 import { z } from 'astro:schema';
-import { db, Comment, eq, desc } from 'astro:db';
+import { db, Comment, eq, desc, } from 'astro:db';
+import { Reaction } from "astro:db";
+
 
 export const server = {
   addComment: defineAction({
@@ -82,6 +84,37 @@ export const server = {
         .returning();
 
       return comment[0];
+    },
+  }),
+   // ❤️ Add Love Reaction
+  addLove: defineAction({
+    accept: "form",
+    input: z.object({
+      postSlug: z.string(),
+    }),
+    handler: async ({ postSlug }) => {
+      // Find existing record
+      const existing = await db
+        .select()
+        .from(Reaction)
+        .where(eq(Reaction.postSlug, postSlug))
+        .get();
+
+      if (existing) {
+        // Increment love count
+        await db
+          .update(Reaction)
+          .set({ loves: existing.loves + 1 })
+          .where(eq(Reaction.postSlug, postSlug));
+      } else {
+        // Create new record
+        await db.insert(Reaction).values({
+          postSlug,
+          loves: 1,
+        });
+      }
+
+      return { success: true };
     },
   }),
 };
