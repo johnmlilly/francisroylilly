@@ -1,6 +1,7 @@
 ---
 import CommentsForm from "./CommentsForm.astro";
 import CommentsList from "./CommentsList.astro";
+import ReactionsButton from "./ReactionsButton.astro";
 
 interface Props {
   postSlug: string;
@@ -14,5 +15,6 @@ const { postSlug } = Astro.props;
   <div>
     <CommentsForm postSlug={postSlug} />
     <CommentsList postSlug={postSlug} server:defer />
+    <ReactionsButton postSlug={postSlug} server:defer />
   </div>
 </div>
