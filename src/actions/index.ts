@@ -1,9 +1,7 @@
 // src/actions/index.ts
 import { defineAction } from 'astro:actions';
 import { z } from 'astro:schema';
-import { db, Comment, eq, desc, } from 'astro:db';
-import { Reaction } from "astro:db";
-
+import { db, Comment, eq, desc, Reaction} from 'astro:db';
 
 export const server = {
   addComment: defineAction({
