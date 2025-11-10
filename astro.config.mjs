@@ -9,10 +9,16 @@ import db from '@astrojs/db';
 
 import netlify from '@astrojs/netlify';
 
+import tailwindcss from '@tailwindcss/vite';
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://example.com',
   integrations: [mdx(), sitemap(), react(), db()],
   output: 'server',
   adapter: netlify(),
+
+  vite: {
+    plugins: [tailwindcss()],
+  },
 });
