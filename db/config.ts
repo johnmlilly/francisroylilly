@@ -11,6 +11,14 @@ export const Comment = defineTable({
   },
 });
 
+export const Reaction = defineTable({
+  columns: {
+    id: column.number({ primaryKey: true }),
+    postSlug: column.text(),
+    loves: column.number({ default: 0 }),
+  },
+});
+
 export default defineDb({
-  tables: { Comment },
+  tables: { Comment, Reaction },
 });
