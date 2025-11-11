@@ -4,7 +4,6 @@ import { db, Reaction, eq } from "astro:db";
 
 const { postSlug } = Astro.props;
 
-// Fetch the current love count
 const reaction = await db
   .select()
   .from(Reaction)
@@ -14,15 +13,19 @@ const reaction = await db
 const loves = reaction?.loves || 0;
 ---
 
-<form
-  method="POST"
-  action={actions.addLove}
-  class="inline-flex items-center gap-2">
-  <input type="hidden" name="postSlug" value={postSlug} />
-  <button
-    type="submit"
-    class="flex items-center gap-1 px-3 py-1 rounded bg-pink-600 hover:bg-pink-700 text-white text-sm">
-    ❤️ Love
-  </button>
-  <span class="text-sm text-gray-600">{loves}</span>
-</form>
+<div
+  class="flex items-center gap-1 bg-white rounded-lg px-4 py-3 shadow-sm border border-gray-100 w-fit mb-4">
+  <form method="POST" action={actions.addLove} class="inline-flex">
+    <input type="hidden" name="postSlug" value={postSlug} />
+    <button
+      type="submit"
+      class="appearance-none border-none bg-transparent cursor-pointer p-0 flex items-center gap-2 text-gray-600 hover:text-pink-600 transition-colors duration-200 group">
+      <span
+        class="text-lg group-hover:scale-110 transition-transform duration-200"
+        >❤️</span
+      >
+      <span class="text-sm font-medium">{loves}</span>
+    </button>
+  </form>
+  <span class="text-sm font-medium">people loved this</span>
+</div>
