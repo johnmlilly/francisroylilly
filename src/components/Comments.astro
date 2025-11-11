@@ -2,6 +2,7 @@
 import CommentsForm from "./CommentsForm.astro";
 import CommentsList from "./CommentsList.astro";
 import ReactionsButton from "./ReactionsButton.astro";
+import ShareButton from "./ShareButton";
 
 interface Props {
   postSlug: string;
@@ -11,7 +12,10 @@ const { postSlug } = Astro.props;
 ---
 
 <div class="comments-section">
-  <ReactionsButton postSlug={postSlug} server:defer />
+  <div class="flex flex-wrap gap-2 items-center text-sm">
+    <ReactionsButton postSlug={postSlug} server:defer />
+    <ShareButton client:load />
+  </div>
   <h3>Leave a Comment</h3>
   <div>
     <CommentsForm postSlug={postSlug} />
