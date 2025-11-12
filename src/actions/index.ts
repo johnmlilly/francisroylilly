@@ -37,6 +37,7 @@ export const server = {
         /https?:\/\/.*https?:\/\//i, // Multiple URLs
         /<script>/i, // Script tags
         /\[url=/i, // BBCode links
+        /\b(fuck|shit|bitch|asshole|bastard|damn|dick|piss|crap|slut|whore|cunt)\b/i, // Common curse words
       ];
 
       const hasSpam = spamPatterns.some(pattern => 
