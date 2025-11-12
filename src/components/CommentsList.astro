@@ -14,16 +14,56 @@ const comments = await db
   .orderBy(desc(Comment.createdAt));
 ---
 
-<div class="space-y-4">
+<div class="space-y-4" id="comments-list" data-post-slug={postSlug}>
   {
     comments.map((comment) => (
       <div class="p-4 bg-gray-50 rounded">
         <div class="flex flex-wrap gap-2 text-sm text-gray-400">
           <span class="font-semibold text-gray-500">{comment.name}</span>
-          <span> • {comment.createdAt.toLocaleDateString()}</span>
+          <span> • {new Date(comment.createdAt).toLocaleDateString()}</span>
         </div>
         <div class="mt-2 text-gray-800">{comment.message}</div>
       </div>
     ))
   }
 </div>
+
+<script>
+  function renderComment(comment: any) {
+    const date = new Date(comment.createdAt).toLocaleDateString();
+    return `
+      <div class="p-4 bg-gray-50 rounded">
+        <div class="flex flex-wrap gap-2 text-sm text-gray-400">
+          <span class="font-semibold text-gray-500">${comment.name}</span>
+          <span> • ${date}</span>
+        </div>
+        <div class="mt-2 text-gray-800">${comment.message}</div>
+      </div>
+    `;
+  }
+
+  function refreshComments() {
+    const commentsList = document.getElementById("comments-list");
+    if (!commentsList) return;
+
+    const postSlug = commentsList.dataset.postSlug;
+    if (!postSlug) return;
+
+    // Fetch updated comments
+    fetch(`/api/comments?postSlug=${encodeURIComponent(postSlug)}`)
+      .then((res) => res.json())
+      .then((comments) => {
+        if (comments && comments.length > 0) {
+          commentsList.innerHTML = comments.map(renderComment).join("");
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to refresh comments:", err);
+      });
+  }
+
+  // Listen for custom event from the form
+  window.addEventListener("commentAdded", () => {
+    refreshComments();
+  });
+</script>

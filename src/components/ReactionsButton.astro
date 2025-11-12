@@ -15,17 +15,77 @@ const loves = reaction?.loves || 0;
 
 <div
   class="flex items-center gap-1 bg-white rounded-lg px-4 py-3 shadow-sm border border-gray-100 w-fit mb-4">
-  <form method="POST" action={actions.addLove} class="inline-flex">
+  <form
+    method="POST"
+    action={actions.addLove}
+    class="inline-flex"
+    id="love-form">
     <input type="hidden" name="postSlug" value={postSlug} />
     <button
       type="submit"
-      class="appearance-none border-none bg-transparent cursor-pointer p-0 flex items-center gap-2 text-gray-600 hover:text-pink-600 transition-colors duration-200 group">
+      id="love-button"
+      class="appearance-none border-none bg-transparent cursor-pointer p-0 flex items-center gap-2 text-gray-600 hover:text-pink-600 transition-colors duration-200 group disabled:opacity-50 disabled:cursor-not-allowed">
       <span
         class="text-lg group-hover:scale-110 transition-transform duration-200"
         ><Heart size={21} /></span
       >
-      <span class="text-sm font-medium">{loves}</span>
+      <span class="text-sm font-medium" id="love-count">{loves}</span>
     </button>
   </form>
   <span class="text-sm font-medium">people loved this</span>
 </div>
+
+<script>
+  import { actions } from "astro:actions";
+
+  const form = document.getElementById("love-form") as HTMLFormElement;
+  const button = document.getElementById("love-button") as HTMLButtonElement;
+  const countElement = document.getElementById("love-count") as HTMLSpanElement;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    // Disable button to prevent double-clicks
+    button.disabled = true;
+
+    // Get form data
+    const formData = new FormData(form);
+
+    try {
+      // Call the action directly
+      const { data, error } = await actions.addLove(formData);
+
+      if (error) {
+        console.error("Failed to add love:", error);
+        // Optionally show an error message to the user
+      } else if (data) {
+        // Fetch the updated count
+        const postSlug = formData.get("postSlug");
+        const response = await fetch(
+          `/api/reactions?postSlug=${encodeURIComponent(postSlug as string)}`
+        );
+        const reactionData = await response.json();
+
+        // Update the count with the new value
+        countElement.textContent = reactionData.loves.toString();
+
+        // Add a little animation
+        countElement.classList.add("scale-125");
+        setTimeout(() => {
+          countElement.classList.remove("scale-125");
+        }, 200);
+      }
+    } catch (error) {
+      console.error("Failed to add love:", error);
+    } finally {
+      // Re-enable button
+      button.disabled = false;
+    }
+  });
+</script>
+
+<style>
+  #love-count {
+    transition: transform 0.2s ease;
+  }
+</style>

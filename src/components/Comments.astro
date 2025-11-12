@@ -11,10 +11,10 @@ interface Props {
 const { postSlug } = Astro.props;
 ---
 
-<div class="comments-section">
+<div class="comments-section mt-4">
   <div class="flex flex-wrap gap-2 items-center text-sm">
     <ReactionsButton postSlug={postSlug} server:defer />
-    <ShareButton client:load />
+    <ShareButton client:idle />
   </div>
   <h3>Leave a Comment</h3>
   <div>

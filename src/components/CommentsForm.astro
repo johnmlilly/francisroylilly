@@ -9,7 +9,7 @@ const generalError =
   result?.error && !isInputError(result.error) ? result.error.message : null;
 ---
 
-<form method="POST" action={actions.addComment} class="mb-8">
+<form method="POST" action={actions.addComment} class="mb-8" id="comment-form">
   <input type="hidden" name="postSlug" value={postSlug} />
   <input type="hidden" name="timestamp" value={Date.now().toString()} />
 
@@ -24,19 +24,23 @@ const generalError =
     />
   </div>
 
-  {
-    generalError && (
-      <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">{generalError}</div>
-    )
-  }
+  <div id="message-container">
+    {
+      generalError && (
+        <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">
+          {generalError}
+        </div>
+      )
+    }
 
-  {
-    result?.data && (
-      <div class="mb-4 p-3 bg-green-100 text-green-700 rounded">
-        Comment submitted successfully!
-      </div>
-    )
-  }
+    {
+      result?.data && (
+        <div class="mb-4 p-3 bg-green-100 text-green-700 rounded">
+          Comment submitted successfully!
+        </div>
+      )
+    }
+  </div>
 
   <div class="mb-4 flex flex-wrap gap-4">
     <div class="sm:flex-1 w-100">
@@ -50,11 +54,7 @@ const generalError =
         required
         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition"
       />
-      {
-        inputErrors.name && (
-          <p class="text-red-500 text-sm mt-1">{inputErrors.name}</p>
-        )
-      }
+      <p class="text-red-500 text-sm mt-1 hidden" id="name-error"></p>
     </div>
 
     <div class="sm:flex-1 w-100">
@@ -68,11 +68,7 @@ const generalError =
         required
         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition"
       />
-      {
-        inputErrors.email && (
-          <p class="text-red-500 text-sm mt-1">{inputErrors.email}</p>
-        )
-      }
+      <p class="text-red-500 text-sm mt-1 hidden" id="email-error"></p>
     </div>
   </div>
 
@@ -87,16 +83,101 @@ const generalError =
       rows="5"
       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition resize-none"
     ></textarea>
-    {
-      inputErrors.message && (
-        <p class="text-red-500 text-sm mt-1">{inputErrors.message}</p>
-      )
-    }
+    <p class="text-red-500 text-sm mt-1 hidden" id="message-error"></p>
   </div>
 
   <button
     type="submit"
-    class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-base rounded-lg transition-colors duration-200">
-    <span class="flex items-center gap-2">Add Comment <Send size={18} /></span>
+    id="submit-btn"
+    class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-base rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+    <span class="flex items-center gap-2">
+      <span id="btn-text">Add Comment</span>
+      <Send size={18} />
+    </span>
   </button>
 </form>
+
+<script>
+  import { actions, isInputError } from "astro:actions";
+
+  const form = document.getElementById("comment-form") as HTMLFormElement;
+  const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement;
+  const btnText = document.getElementById("btn-text") as HTMLSpanElement;
+  const messageContainer = document.getElementById(
+    "message-container"
+  ) as HTMLDivElement;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    // Clear previous errors
+    document.querySelectorAll(".text-red-500").forEach((el) => {
+      el.classList.add("hidden");
+      el.textContent = "";
+    });
+    messageContainer.innerHTML = "";
+
+    // Disable button and show loading state
+    submitBtn.disabled = true;
+    btnText.textContent = "Submitting...";
+
+    // Get form data
+    const formData = new FormData(form);
+
+    // Update timestamp
+    formData.set("timestamp", Date.now().toString());
+
+    try {
+      // Call the action directly
+      const { data, error } = await actions.addComment(formData);
+
+      if (error) {
+        // Handle input errors
+        if (isInputError(error)) {
+          Object.entries(error.fields).forEach(([field, message]) => {
+            const errorEl = document.getElementById(`${field}-error`);
+            if (errorEl && Array.isArray(message)) {
+              errorEl.textContent = message[0];
+              errorEl.classList.remove("hidden");
+            }
+          });
+        } else {
+          // General error
+          messageContainer.innerHTML = `
+            <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">
+              ${error.message || "An error occurred"}
+            </div>
+          `;
+        }
+      } else {
+        // Success
+        messageContainer.innerHTML = `
+          <div class="mb-4 p-3 bg-green-100 text-green-700 rounded">
+            Comment submitted successfully!
+          </div>
+        `;
+
+        // Reset form
+        form.reset();
+
+        // Dispatch event to refresh comments list
+        window.dispatchEvent(new CustomEvent("commentAdded"));
+        
+        // Hide success message after 3 seconds
+        setTimeout(() => {
+          messageContainer.innerHTML = "";
+        }, 3000);
+      }
+    } catch (error) {
+      messageContainer.innerHTML = `
+        <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">
+          Failed to submit comment. Please try again.
+        </div>
+      `;
+    } finally {
+      // Re-enable button
+      submitBtn.disabled = false;
+      btnText.textContent = "Add Comment";
+    }
+  });
+</script>
