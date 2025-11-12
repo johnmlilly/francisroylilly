@@ -109,22 +109,12 @@ const generalError =
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    // Clear previous errors
-    document.querySelectorAll(".text-red-500").forEach((el) => {
-      el.classList.add("hidden");
-      el.textContent = "";
-    });
-    messageContainer.innerHTML = "";
-
     // Disable button and show loading state
     submitBtn.disabled = true;
     btnText.textContent = "Submitting...";
 
     // Get form data
     const formData = new FormData(form);
-
-    // Update timestamp
-    formData.set("timestamp", Date.now().toString());
 
     try {
       // Call the action directly
@@ -143,7 +133,7 @@ const generalError =
         } else {
           // General error
           messageContainer.innerHTML = `
-            <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">
+            <div class="mb-4 p-3 text-sm bg-red-100 text-red-700 rounded">
               ${error.message || "An error occurred"}
             </div>
           `;
@@ -151,7 +141,7 @@ const generalError =
       } else {
         // Success
         messageContainer.innerHTML = `
-          <div class="mb-4 p-3 bg-green-100 text-green-700 rounded">
+          <div class="mb-4 p-3 text-sm bg-green-100 text-green-700 rounded">
             Comment submitted successfully!
           </div>
         `;

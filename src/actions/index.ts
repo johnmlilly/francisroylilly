@@ -19,7 +19,7 @@ export const server = {
     handler: async ({ postSlug, name, email, message, website, timestamp }) => {
       // 1. HONEYPOT CHECK - if website field is filled, it's a bot
       if (website && website.length > 0) {
-        throw new Error('Spam detected');
+        throw new Error('Spam detected.');
       }
 
       // // 2. TIME-BASED CHECK - submission must take at least 3 seconds
@@ -45,7 +45,7 @@ export const server = {
       );
 
       if (hasSpam) {
-        throw new Error('Comment contains prohibited content');
+        throw new Error('Comment contains prohibited content.');
       }
 
       // 4. RATE LIMITING - check recent comments from same email
@@ -62,7 +62,7 @@ export const server = {
         
         // Must wait 30 seconds between comments
         if (timeSinceLastComment < 30) {
-          throw new Error('Please wait before posting another comment');
+          throw new Error('Please wait before posting another comment.');
         }
       }
 
