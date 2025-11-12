@@ -116,6 +116,11 @@ const generalError =
     // Get form data
     const formData = new FormData(form);
 
+    window.addEventListener("load", () => {
+      // Update timestamp
+      formData.set("timestamp", Date.now().toString());
+    });
+
     try {
       // Call the action directly
       const { data, error } = await actions.addComment(formData);
@@ -151,7 +156,7 @@ const generalError =
 
         // Dispatch event to refresh comments list
         window.dispatchEvent(new CustomEvent("commentAdded"));
-        
+
         // Hide success message after 3 seconds
         setTimeout(() => {
           messageContainer.innerHTML = "";

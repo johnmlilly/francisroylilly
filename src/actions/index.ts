@@ -22,14 +22,14 @@ export const server = {
         throw new Error('Spam detected.');
       }
 
-      // // 2. TIME-BASED CHECK - submission must take at least 3 seconds
-      // const formLoadTime = parseInt(timestamp);
-      // const currentTime = Date.now();
-      // const timeDiff = (currentTime - formLoadTime) / 1000; // in seconds
+      // 2. TIME-BASED CHECK - submission must take at least 3 seconds
+      const formLoadTime = parseInt(timestamp);
+      const currentTime = Date.now();
+      const timeDiff = (currentTime - formLoadTime) / 1000; // in seconds
 
-      // if (timeDiff < 5) {
-      //   throw new Error('Submission too fast. Please try again.');
-      // }
+      if (timeDiff < 3) {
+        throw new Error('Submission too fast. Please try again.');
+      }
 
       // 3. CONTENT VALIDATION - check for spam patterns
       const spamPatterns = [
