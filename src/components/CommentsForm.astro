@@ -4,7 +4,6 @@ import { Send } from "lucide-react";
 const { postSlug } = Astro.props;
 
 const result = Astro.getActionResult(actions.addComment);
-const inputErrors = isInputError(result?.error) ? result.error.fields : {};
 const generalError =
   result?.error && !isInputError(result.error) ? result.error.message : null;
 ---
