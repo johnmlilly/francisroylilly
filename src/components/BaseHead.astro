@@ -5,11 +5,6 @@ import "../styles/global.css";
 import type { ImageMetadata } from "astro";
 import FallbackImage from "../assets/blog-placeholder-1.jpg";
 import { SITE_TITLE } from "../consts";
-import { init } from "@plausible-analytics/tracker";
-
-init({
-  domain: "https://francisroylilly.com/",
-});
 
 interface Props {
   title: string;
@@ -72,3 +67,20 @@ const { title, description, image = FallbackImage } = Astro.props;
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={new URL(image.src, Astro.url)} />
+
+<!-- Privacy-friendly analytics by Plausible -->
+<script is:inline async src="https://plausible.io/js/pa-jeMOGESSeUejnxyhXr6gD.js"
+></script>
+<script is:inline type="text/javascript">
+  (window.plausible =
+    window.plausible ||
+    function () {
+      (plausible.q = plausible.q || []).push(arguments);
+    }),
+    (plausible.init =
+      plausible.init ||
+      function (i) {
+        plausible.o = i || {};
+      });
+  plausible.init();
+</script>
