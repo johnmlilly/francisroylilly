@@ -16,24 +16,10 @@
 	--gray-dark: 34, 41, 57;
 	--gray-gradient: rgba(var(--gray-light), 50%), #fff;
 }
-@font-face {
-	font-family: "Atkinson";
-	src: url("/fonts/atkinson-regular.woff") format("woff");
-	font-weight: 400;
-	font-style: normal;
-	font-display: swap;
-}
-@font-face {
-	font-family: "Atkinson";
-	src: url("/fonts/atkinson-bold.woff") format("woff");
-	font-weight: 700;
-	font-style: normal;
-	font-display: swap;
-}
 
 @font-face {
 	font-family: "Figtree";
-	src: url("/fonts/Figtree-VariableFont_wght.ttf") format("ttf");
+	src: url("/fonts/Figtree-Light.woff2") format("woff2");
 	font-weight: 400;
 	font-style: normal;
 	font-display: swap;
@@ -41,9 +27,17 @@
 
 @font-face {
 	font-family: "Figtree";
-	src: url("/fonts/Figtree-Italic-VariableFont_wght.ttf") format("ttf");
+	src: url("/fonts/Figtree-LightItalic.woff2") format("woff2");
 	font-weight: 400;
 	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Gloria Hallelujah";
+	src: url("/fonts/GloriaHallelujah.woff2") format("woff2");
+	font-weight: 400;
+	font-style: normal;
 	font-display: swap;
 }
 
