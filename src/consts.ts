@@ -3,3 +3,4 @@
 
 export const SITE_TITLE = 'Francis Roy';
 export const SITE_DESCRIPTION = 'Documenting Francis Roy\'s journey.';
+export const SITE_LOGO = 'src/assets/images/francis-roy-logo.svg'
