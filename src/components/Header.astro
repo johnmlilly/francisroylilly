@@ -1,12 +1,13 @@
 ---
 import { SITE_LOGO, SITE_TITLE } from "../consts";
+import { Image } from "astro:assets";
 import HeaderLink from "./HeaderLink.astro";
 ---
 
 <header>
   <nav>
     <div class="logo-container">
-      <img class="site-logo" src={SITE_LOGO} alt={SITE_TITLE} />
+      <Image width={50} height={50} src={SITE_LOGO} alt={SITE_TITLE} />
     </div>
 
     <div class="site-title">
