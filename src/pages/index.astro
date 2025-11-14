@@ -5,6 +5,7 @@ import Header from "../components/Header.astro";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
 import Timeline from "../components/Timeline.jsx";
 import { getCollection } from "astro:content";
+import heroImage from "../assets/images/francisroy-hero.jpeg";
 
 // Fetch all blog posts
 const posts = (await getCollection("blog")).sort(
@@ -35,7 +36,7 @@ const posts = (await getCollection("blog")).sort(
           <a class="cta" href="/blog">Read the Journey</a>
         </div>
         <div class="hero-image">
-          <img src="/src/assets/images/francisroy-hero.jpeg" alt="Francis Roy" />
+          <img src={heroImage.src} alt={SITE_TITLE} />
         </div>
       </section>
 
