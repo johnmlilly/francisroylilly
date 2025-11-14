@@ -2,12 +2,13 @@
 import { SITE_LOGO, SITE_TITLE } from "../consts";
 import { Image } from "astro:assets";
 import HeaderLink from "./HeaderLink.astro";
+import siteLogo from "../assets/images/francis-roy-logo.svg"
 ---
 
 <header>
   <nav>
     <div class="logo-container">
-      <Image width={50} height={50} src={SITE_LOGO} alt={SITE_TITLE} />
+      <Image width={50} height={50} src={siteLogo} alt={SITE_TITLE} />
     </div>
 
     <div class="site-title">
