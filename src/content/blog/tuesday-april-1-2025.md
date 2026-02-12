@@ -1,5 +1,5 @@
 ---
-title: "Tuesday, April 1, 2025"
+title: "Prayers for Francis"
 pubDate: 'Apr 1 2025'
 description: "The birth of Francis Roy Lilly and the critical complications surrounding his delivery."
 heroImage: '../../assets/april-1-2025-1.jpg'
