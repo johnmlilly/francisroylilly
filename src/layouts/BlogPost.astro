@@ -5,10 +5,12 @@ import BaseHead from "../components/BaseHead.astro";
 import Footer from "../components/Footer.astro";
 import FormattedDate from "../components/FormattedDate.astro";
 import Header from "../components/Header.astro";
+import Carousel from "../components/Carousel";
 
 type Props = CollectionEntry<"blog">["data"];
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, carouselPhotos } =
+  Astro.props;
 ---
 
 <html lang="en">
@@ -27,6 +29,8 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
         margin: 0 auto;
         border-radius: 12px;
         box-shadow: var(--box-shadow);
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
       }
 
       @media (min-width: 768px) {
@@ -35,7 +39,7 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
           max-width: calc(100% - 2em);
         }
       }
-	  
+
       .prose {
         margin: auto;
         padding: 1em;
@@ -68,6 +72,12 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
           {
             heroImage && (
               <Image width={1020} height={510} src={heroImage} alt="" />
+            )
+          }
+
+          {
+            Array.isArray(carouselPhotos) && carouselPhotos.length > 0 && (
+              <Carousel photos={carouselPhotos} client:load />
             )
           }
         </div>
