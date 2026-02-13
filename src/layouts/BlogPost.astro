@@ -5,11 +5,11 @@ import BaseHead from "../components/BaseHead.astro";
 import Footer from "../components/Footer.astro";
 import FormattedDate from "../components/FormattedDate.astro";
 import Header from "../components/Header.astro";
-import Carousel from "../components/Carousel";
+import PhotoGallery from "../components/PhotoGallery.astro";
 
 type Props = CollectionEntry<"blog">["data"];
 
-const { title, description, pubDate, updatedDate, heroImage, carouselPhotos } =
+const { title, description, pubDate, updatedDate, heroImage, galleryPhotos } =
   Astro.props;
 ---
 
@@ -47,15 +47,13 @@ const { title, description, pubDate, updatedDate, heroImage, carouselPhotos } =
       }
       .title {
         margin-bottom: 1em;
-        padding: 1em 0;
+        padding: 1em;
         text-align: center;
         line-height: 1;
       }
-      .title h1 {
-        margin: 0 0 0.5em 0;
-      }
+
       .date {
-        margin-bottom: 0.5em;
+        margin-bottom: 1em;
         color: rgb(var(--gray));
       }
       .last-updated-on {
@@ -76,13 +74,14 @@ const { title, description, pubDate, updatedDate, heroImage, carouselPhotos } =
           }
 
           {
-            Array.isArray(carouselPhotos) && carouselPhotos.length > 0 && (
-              <Carousel photos={carouselPhotos} client:load />
+            galleryPhotos && galleryPhotos.length > 0 && (
+              <PhotoGallery photos={galleryPhotos} />
             )
           }
         </div>
         <div class="prose">
           <div class="title">
+            <h1>{title}</h1>
             <div class="date">
               <FormattedDate date={pubDate} />
               {
@@ -93,7 +92,6 @@ const { title, description, pubDate, updatedDate, heroImage, carouselPhotos } =
                 )
               }
             </div>
-            <h1>{title}</h1>
             <hr />
           </div>
           <slot />
