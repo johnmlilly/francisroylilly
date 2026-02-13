@@ -22,7 +22,7 @@ const comments = await db
           <span class="font-semibold text-gray-500">{comment.name}</span>
           <span> • {new Date(comment.createdAt).toLocaleDateString()}</span>
         </div>
-        <div class="mt-2 text-gray-800">{comment.message}</div>
+        <div class="mt-2 text-base text-gray-800">{comment.message}</div>
       </div>
     ))
   }
