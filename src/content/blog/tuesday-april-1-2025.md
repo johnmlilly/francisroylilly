@@ -3,10 +3,6 @@ title: "Prayers for Francis"
 pubDate: 'Apr 1 2025'
 description: "The birth of Francis Roy Lilly and the critical complications surrounding his delivery."
 heroImage: '../../assets/blog/april-1-2025.jpeg'
-carouselPhotos:
-  - '/assets//blog/blog-placeholder-3.jpg'
-  - '/blog/april-1-2025.jpeg'
-  - 'assets/blog/april-1-2025.jpeg'
 ---
 
 Francis Roy Lilly was born on April 1, 2025 at 2:19 a.m., weighing 6 lbs 10 oz.
