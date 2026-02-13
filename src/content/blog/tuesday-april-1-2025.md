@@ -1,10 +1,13 @@
 ---
 title: "Prayers for Francis"
-pubDate: 'Apr 1 2025'
-description: "The birth of Francis Roy Lilly and the critical complications surrounding his delivery."
+pubDate: 'April 1 2025'
+description: "The birth of Francis Roy Lilly."
 heroImage: '../../assets/blog/april-1-2025.jpeg'
+carouselPhotos: 
+    - '/src/assets/blog/april-1-2025-2.jpg'
+    - '/src/assets/blog/april-1-2025.jpeg'
 ---
-
+![Alt text](/src/assets/blog/april-1-2025-2.jpg "Francis Roy Lilly")
 Francis Roy Lilly was born on April 1, 2025 at 2:19 a.m., weighing 6 lbs 10 oz.
 
 There were major complications during his delivery. Francis did not have a heartbeat for the first 18 minutes of his life, but the doctors were able to resuscitate him and get his heart beating. He swallowed a significant amount of meconium during birth and had to be flown to the NICU at Inova Fairfax.
