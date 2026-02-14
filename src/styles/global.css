@@ -41,6 +41,22 @@
 	font-display: swap;
 }
 
+@font-face {
+	font-family: "Figtree";
+	src: url("/fonts/Figtree-VariableFont_wght.ttf") format("truetype");
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Figtree";
+	src: url("/fonts/Figtree-VariableFont_wght.ttf") format("truetype");
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
+
 body {
 	font-family: "Figtree", sans-serif;
 	margin: 0;
