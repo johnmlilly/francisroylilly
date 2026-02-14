@@ -1,9 +1,12 @@
 ---
 // PhotoGallery.astro - Lightbox gallery component for blog posts
+import type { ImageMetadata } from "astro";
+
 interface Props {
-  photos: string[];
+  photos: ImageMetadata[];
 }
 
+import { Image } from "astro:assets";
 const { photos } = Astro.props;
 ---
 
@@ -16,11 +19,14 @@ const { photos } = Astro.props;
             class="gallery-item"
             data-index={index}
             aria-label={`Open photo ${index + 1} in lightbox`}>
-            <img
+            <Image
               src={photo}
               alt={`Gallery photo ${index + 1}`}
+              widths={[400, 800, 1200]}
+              sizes="(max-width: 768px) 100vw, 250px"
               loading="lazy"
             />
+
             <div class="gallery-overlay">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -300,9 +306,9 @@ const { photos } = Astro.props;
       grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
       gap: 0.5rem;
     }
-    
-    .gallery-item  {
-        width: 100%;
+
+    .gallery-item {
+      width: 100%;
     }
 
     .lightbox-content {
