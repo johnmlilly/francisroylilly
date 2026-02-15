@@ -13,8 +13,8 @@ const generalError =
   <input type="hidden" name="timestamp" value={Date.now().toString()} />
 
   <!-- Honeypot -->
-  <div style="position: absolute; left: -5000px;" aria-hidden="true">
-    <label for="website">Website (leave blank):</label>
+  <div class="sr-only" aria-hidden="true">
+    <label for="website">Website</label>
     <input
       type="text"
       id="website"
