@@ -37,7 +37,11 @@ export default function Timeline({ posts }) {
           {post.data.heroImage && (
             <img
               src={post.data.heroImage.src}
+              width={post.data.heroImage.width}
+              height={post.data.heroImage.height}
               alt={post.data.title}
+              loading="lazy"
+              decoding="async"
               style={{
                 width: "100%",
                 aspectRatio: "1 / 1",
