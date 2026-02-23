@@ -2,7 +2,7 @@
 import BaseHead from "../components/BaseHead.astro";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
-import { Image } from "astro:assets";
+import { Image, getImage } from "astro:assets";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
 import Timeline from "../components/Timeline.jsx";
 import { getCollection } from "astro:content";
@@ -13,6 +13,32 @@ const posts = (await getCollection("blog")).sort(
   (a, b) =>
     new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
 ); // oldest → newest
+
+// Optimize timeline images at build time
+const posts = await Promise.all(
+  rawPosts.map(async (post) => {
+    if (!post.data.heroImage) return post;
+
+    const optimized = await getImage({
+      src: post.data.heroImage,
+      width: 600,
+      height: 600,
+      format: "webp",
+    });
+
+    return {
+      ...post,
+      data: {
+        ...post.data,
+        heroImage: {
+          src: optimized.src,
+          width: optimized.width,
+          height: optimized.height,
+        },
+      },
+    };
+  })
+);
 ---
 
 <!doctype html>
