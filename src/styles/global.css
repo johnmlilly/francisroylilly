@@ -59,7 +59,7 @@ body {
 	word-wrap: break-word;
 	overflow-wrap: break-word;
 	color: rgb(var(--gray-dark));
-	font-size: 20px;
+	font-size: 1rem;
 	line-height: 1.7;
 }
 main {
@@ -112,9 +112,7 @@ p {
 	margin-bottom: 1em;
 	text-wrap: pretty;
 }
-.prose p {
-	margin-bottom: 2em;
-}
+
 textarea {
 	width: 100%;
 	font-size: 16px;
