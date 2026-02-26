@@ -274,7 +274,7 @@ const galleryCount = hasGallery ? galleryPhotos.length : 0;
                 ]}>
                 {galleryPhotos.map((photo: any, i: number) => (
                   <div class="gallery-item">
-                    <Image
+                    <Image priority
                       width={480}
                       height={640}
                       src={photo.src || photo}
