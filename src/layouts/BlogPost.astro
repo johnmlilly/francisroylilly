@@ -5,12 +5,14 @@ import BaseHead from "../components/BaseHead.astro";
 import Footer from "../components/Footer.astro";
 import FormattedDate from "../components/FormattedDate.astro";
 import Header from "../components/Header.astro";
-import PhotoGallery from "../components/PhotoGallery.astro";
 
 type Props = CollectionEntry<"blog">["data"];
 
 const { title, description, pubDate, updatedDate, heroImage, galleryPhotos } =
   Astro.props;
+
+const hasGallery = galleryPhotos && galleryPhotos.length > 0;
+const galleryCount = hasGallery ? galleryPhotos.length : 0;
 ---
 
 <html lang="en">
@@ -18,50 +20,220 @@ const { title, description, pubDate, updatedDate, heroImage, galleryPhotos } =
     <BaseHead title={title} description={description} />
     <style>
       main {
-        width: calc(100% - 1em);
-        max-width: 100%;
-      }
-      .hero-image {
         width: 100%;
-      }
-      .hero-image img {
-        display: block;
-        margin: 0 auto;
-        border-radius: 12px;
-        box-shadow: var(--box-shadow);
-        aspect-ratio: 16 / 9;
-        object-fit: cover;
+        max-width: 100%;
+        padding: 0;
       }
 
-      @media (min-width: 768px) {
-        .prose {
-          width: 720px;
-          max-width: calc(100% - 2em);
+      article {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+
+      .post-header {
+        text-align: center;
+        padding: 2.5rem 1rem 1rem;
+      }
+
+      .post-header h1 {
+        margin: 0 0 0.75rem;
+        letter-spacing: -0.02em;
+      }
+
+      .post-header .date {
+        font-size: 1rem;
+        color: rgb(var(--gray, 128, 128, 128));
+      }
+
+      .post-header .last-updated-on {
+        font-style: italic;
+        font-size: 1rem;
+        margin-top: 0.25rem;
+      }
+
+      .header-divider {
+        width: 48px;
+        height: 3px;
+        background: var(--secondary-color, #4a5568);
+        border: none;
+        border-radius: 2px;
+        margin: 1.25rem auto 2rem;
+        opacity: 0.35;
+      }
+
+      .photo-section {
+        margin-bottom: 2.5rem;
+      }
+
+      /*
+       * Hero image — respects the natural aspect ratio.
+       * Portrait photos stay tall and sharp; landscape
+       * photos fill the width naturally.
+       */
+      .hero-frame {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1.25rem;
+      }
+
+      .hero-frame img {
+        display: block;
+        max-width: 100%;
+        max-height: 560px;
+        width: auto;
+        height: auto;
+        border-radius: 10px;
+        box-shadow:
+          0 4px 24px rgba(0, 0, 0, 0.07),
+          0 0 0 1px rgba(0, 0, 0, 0.03);
+        object-fit: contain;
+      }
+
+      /*
+       * Gallery grid — portrait-friendly cells
+       * that adapt by photo count.
+       */
+      .gallery-grid {
+        display: grid;
+        gap: 10px;
+      }
+
+      /* 1 photo: centered, narrow */
+      .gallery-grid.count-1 {
+        grid-template-columns: 1fr;
+        max-width: 360px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* 2 photos: side by side */
+      .gallery-grid.count-2 {
+        grid-template-columns: 1fr 1fr;
+        max-width: 640px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* 3 photos: three columns */
+      .gallery-grid.count-3 {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      /* 4 photos: 2x2 */
+      .gallery-grid.count-4 {
+        grid-template-columns: 1fr 1fr;
+        max-width: 640px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* 5+ photos: 3 columns */
+      .gallery-grid.count-many {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .gallery-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: 8px;
+        background: #f5f3f0;
+        aspect-ratio: 3 / 4;
+      }
+
+      .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.35s ease;
+      }
+
+      .gallery-item:hover img {
+        transform: scale(1.04);
+      }
+      
+      .prose {
+        max-width: 620px;
+        margin: 0 auto;
+        color: rgb(var(--gray-dark, 50, 50, 50));
+        font-size: 1.05rem;
+        line-height: 1.8;
+      }
+
+      .prose :global(p) {
+        margin-bottom: 1.25em;
+      }
+
+      .prose :global(p:first-child) {
+        font-size: 1.1rem;
+      }
+
+      .prose :global(img) {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 1.5rem auto;
+        display: block;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+      }
+
+      .prose :global(a) {
+        color: var(--secondary-color, #4a5568);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+
+      .prose :global(blockquote) {
+        border-left: 3px solid var(--secondary-color, #4a5568);
+        padding-left: 1rem;
+        margin: 1.5rem 0;
+        font-style: italic;
+        color: rgb(var(--gray, 128, 128, 128));
+      }
+
+      /* --- Responsive --- */
+
+      @media (min-width: 640px) {
+        article {
+          padding: 3rem 2rem 5rem;
+        }
+
+        .hero-frame img {
+          max-height: 620px;
         }
       }
 
-      .prose {
-        margin: auto;
-        color: rgb(var(--gray-dark));
-      }
-      .title {
-        margin-bottom: 1em;
-        padding: 1em;
-        text-align: center;
-        line-height: 1;
+      @media (min-width: 960px) {
+
+        .hero-frame img {
+          max-height: 680px;
+          border-radius: 12px;
+        }
+
+        .gallery-item {
+          border-radius: 10px;
+        }
       }
 
-      .title h1 {
-        color: var(--secondary-color);
-        font-weight: 600;
-      }
+      @media (max-width: 480px) {
+        .gallery-grid.count-3,
+        .gallery-grid.count-many {
+          grid-template-columns: 1fr 1fr;
+        }
 
-      .date {
-        margin-bottom: 1em;
-        color: rgb(var(--gray));
-      }
-      .last-updated-on {
-        font-style: italic;
+        .post-header {
+          padding: 1.5rem 0.5rem 0.5rem;
+        }
+
+        .hero-frame img {
+          max-height: 440px;
+          border-radius: 8px;
+        }
+
+        .gallery-item {
+          aspect-ratio: 3 / 4;
+        }
       }
     </style>
   </head>
@@ -70,34 +242,53 @@ const { title, description, pubDate, updatedDate, heroImage, galleryPhotos } =
     <Header />
     <main>
       <article>
-        <div class="hero-image">
-          {
-            heroImage && (
-              <Image width={1020} height={510} src={heroImage} alt="" />
-            )
-          }
+        <div class="post-header">
+          <h1>{title}</h1>
+          <div class="date">
+            <FormattedDate date={pubDate} />
+            {
+              updatedDate && (
+                <div class="last-updated-on">
+                  Last updated on <FormattedDate date={updatedDate} />
+                </div>
+              )
+            }
+          </div>
+        </div>
+
+        <hr class="header-divider" />
+
+        <div class="photo-section">
+          
 
           {
-            galleryPhotos && galleryPhotos.length > 0 && (
-              <PhotoGallery photos={galleryPhotos} />
+            hasGallery && (
+              <div
+                class:list={[
+                  "gallery-grid",
+                  galleryCount === 1 && "count-1",
+                  galleryCount === 2 && "count-2",
+                  galleryCount === 3 && "count-3",
+                  galleryCount === 4 && "count-4",
+                  galleryCount >= 5 && "count-many",
+                ]}>
+                {galleryPhotos.map((photo: any, i: number) => (
+                  <div class="gallery-item">
+                    <Image
+                      width={480}
+                      height={640}
+                      src={photo.src || photo}
+                      alt={photo.alt || `${title} photo ${i + 1}`}
+                    />
+                  </div>
+                ))}
+              </div>
             )
           }
         </div>
+
+        <!-- Blog content -->
         <div class="prose">
-          <div class="title">
-            <h1>{title}</h1>
-            <div class="date">
-              <FormattedDate date={pubDate} />
-              {
-                updatedDate && (
-                  <div class="last-updated-on">
-                    Last updated on <FormattedDate date={updatedDate} />
-                  </div>
-                )
-              }
-            </div>
-            <hr />
-          </div>
           <slot />
         </div>
       </article>

@@ -44,15 +44,7 @@
 @font-face {
 	font-family: "Figtree";
 	src: url("/fonts/Figtree-VariableFont_wght.ttf") format("truetype");
-	font-weight: 600;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: "Figtree";
-	src: url("/fonts/Figtree-VariableFont_wght.ttf") format("truetype");
-	font-weight: 700;
+	font-weight: 600 700;
 	font-style: normal;
 	font-display: swap;
 }
@@ -83,21 +75,25 @@ h4,
 h5,
 h6 {
 	margin: 0 0 0.5rem 0;
-	color: rgb(var(--black));
 	line-height: 1.2;
 	text-wrap: balance;
+	color: var(--secondary-color);
 }
 h1 {
 	font-size: calc(1.8em + 1vmin);
+	font-weight: 700;
 }
 h2 {
 	font-size: calc(1.6em + 1vmin);
+	font-weight: 600;
 }
 h3 {
 	font-size: calc(1.3em + 1vmin);
+	font-weight: 500;
 }
 h4 {
 	font-size: calc(1.2em + 1vmin);
+	font-weight: 400;
 }
 h5 {
 	font-size: calc(1em + 1vmin);
