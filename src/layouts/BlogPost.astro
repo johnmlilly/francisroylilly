@@ -8,7 +8,7 @@ import Header from "../components/Header.astro";
 
 type Props = CollectionEntry<"blog">["data"];
 
-const { title, description, pubDate, updatedDate, heroImage, galleryPhotos } =
+const { title, description, pubDate, galleryPhotos } =
   Astro.props;
 
 const hasGallery = galleryPhotos && galleryPhotos.length > 0;
@@ -46,48 +46,18 @@ const galleryCount = hasGallery ? galleryPhotos.length : 0;
         color: rgb(var(--gray, 128, 128, 128));
       }
 
-      .post-header .last-updated-on {
-        font-style: italic;
-        font-size: 1rem;
-        margin-top: 0.25rem;
-      }
-
       .header-divider {
-        width: 48px;
-        height: 3px;
+        width: 50px;
+        height: 4px;
         background: var(--secondary-color, #4a5568);
         border: none;
         border-radius: 2px;
-        margin: 1.25rem auto 2rem;
-        opacity: 0.35;
+        margin: 0.5rem auto 1.5rem
+        opacity: 0.5;
       }
 
       .photo-section {
         margin-bottom: 2.5rem;
-      }
-
-      /*
-       * Hero image — respects the natural aspect ratio.
-       * Portrait photos stay tall and sharp; landscape
-       * photos fill the width naturally.
-       */
-      .hero-frame {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 1.25rem;
-      }
-
-      .hero-frame img {
-        display: block;
-        max-width: 100%;
-        max-height: 560px;
-        width: auto;
-        height: auto;
-        border-radius: 10px;
-        box-shadow:
-          0 4px 24px rgba(0, 0, 0, 0.07),
-          0 0 0 1px rgba(0, 0, 0, 0.03);
-        object-fit: contain;
       }
 
       /*
@@ -97,6 +67,7 @@ const galleryCount = hasGallery ? galleryPhotos.length : 0;
       .gallery-grid {
         display: grid;
         gap: 10px;
+        grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
       }
 
       /* 1 photo: centered, narrow */
@@ -199,18 +170,9 @@ const galleryCount = hasGallery ? galleryPhotos.length : 0;
           padding: 3rem 2rem 5rem;
         }
 
-        .hero-frame img {
-          max-height: 620px;
-        }
       }
 
       @media (min-width: 960px) {
-
-        .hero-frame img {
-          max-height: 680px;
-          border-radius: 12px;
-        }
-
         .gallery-item {
           border-radius: 10px;
         }
@@ -224,11 +186,6 @@ const galleryCount = hasGallery ? galleryPhotos.length : 0;
 
         .post-header {
           padding: 1.5rem 0.5rem 0.5rem;
-        }
-
-        .hero-frame img {
-          max-height: 440px;
-          border-radius: 8px;
         }
 
         .gallery-item {
@@ -246,13 +203,7 @@ const galleryCount = hasGallery ? galleryPhotos.length : 0;
           <h1>{title}</h1>
           <div class="date">
             <FormattedDate date={pubDate} />
-            {
-              updatedDate && (
-                <div class="last-updated-on">
-                  Last updated on <FormattedDate date={updatedDate} />
-                </div>
-              )
-            }
+           
           </div>
         </div>
 
