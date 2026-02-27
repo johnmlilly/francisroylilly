@@ -1,0 +1,64 @@
+---
+import { Image } from "astro:assets";
+import johnAvatar from "../assets/images/johnlilly.jpg";
+import karaAvatar from "../assets/images/karalilly.jpg";
+
+interface Props {
+  name: string;
+}
+
+const { name } = Astro.props;
+
+const authors: { [key: string]: { name: string; avatar: ImageMetadata } } = {
+  "John Lilly": {
+    name: "John Lilly",
+    avatar: johnAvatar,
+  },
+  "Kara Lilly": {
+    name: "Kara Lilly",
+    avatar: karaAvatar,
+  },
+};
+
+const author = authors[name];
+
+if (!author) {
+  throw new Error(`Author "${name}" not found in Author component.`);
+}
+---
+
+<div class="author">
+  <Image
+    src={author.avatar}
+    alt={author.name}
+    width={72}
+    height={72}
+    class="author-avatar"
+    priority
+  />
+  <span class="author-name">
+    {author.name}
+  </span>
+</div>
+
+<style>
+  .author {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--secondary-color);
+    gap: 0.5rem;
+  }
+
+  .author-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .author-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+</style>
