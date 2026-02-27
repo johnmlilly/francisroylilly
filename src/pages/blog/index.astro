@@ -150,7 +150,7 @@ const posts = (await getCollection("blog")).sort(
                   )}
                   <h2 class="title">{post.data.title}</h2>
                   <span class="date">
-                    <FormattedDate date={post.data.pubDate} />
+                    <FormattedDate date={post.data.pubDate} format="numeric" />
                   </span>
                   <p class="description">{post.data.description}</p>
                 </a>
