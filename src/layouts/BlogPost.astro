@@ -32,20 +32,17 @@ const galleryCount = hasGallery ? galleryPhotos.length : 0;
         padding: 2rem 1rem 4rem;
       }
 
-      .post-header {
+      article h1 {
         text-align: center;
-        padding: 2.5rem 1rem 1rem;
-      }
-
-      .post-header h1 {
         margin: 0 0 0.75rem;
         letter-spacing: -0.02em;
       }
 
-      .post-header .date {
+      .date {
         font-size: 1rem;
         color: rgb(var(--gray, 128, 128, 128));
         margin-block: 0 1rem;
+        text-align: center;
       }
 
       .header-divider {
@@ -182,10 +179,6 @@ const galleryCount = hasGallery ? galleryPhotos.length : 0;
           grid-template-columns: 1fr 1fr;
         }
 
-        .post-header {
-          padding: 1.5rem 0.5rem 0.5rem;
-        }
-
         .gallery-item {
           aspect-ratio: 3 / 4;
         }
@@ -197,13 +190,12 @@ const galleryCount = hasGallery ? galleryPhotos.length : 0;
     <Header />
     <main>
       <article>
-        <div class="post-header">
-          <h1>{title}</h1>
-          <div class="date">
-            <FormattedDate date={pubDate} format="long" />
-          </div>
-          <Author name={author}/>
+        <h1>{title}</h1>
+        <div class="date">
+          <FormattedDate date={pubDate} format="long" />
         </div>
+        <Author name={author}/>
+
 
         <hr class="header-divider" />
 
