@@ -9,8 +9,7 @@ import Author from "../components/Author.astro";
 
 type Props = CollectionEntry<"blog">["data"];
 
-const { title, description, pubDate, author, galleryPhotos } =
-  Astro.props;
+const { title, description, pubDate, author, galleryPhotos } = Astro.props;
 
 const hasGallery = galleryPhotos && galleryPhotos.length > 0;
 const galleryCount = hasGallery ? galleryPhotos.length : 0;
@@ -46,7 +45,7 @@ const galleryCount = hasGallery ? galleryPhotos.length : 0;
       }
 
       .header-divider {
-        width: 50px;
+        width: 60px;
         height: 4px;
         background: var(--secondary-color, #4a5568);
         border: none;
@@ -65,64 +64,44 @@ const galleryCount = hasGallery ? galleryPhotos.length : 0;
        */
       .gallery-grid {
         display: grid;
-        gap: 10px;
-        grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+        gap: 1rem;
+        margin-inline: auto;
       }
 
       /* 1 photo: centered, narrow */
       .gallery-grid.count-1 {
         grid-template-columns: 1fr;
         max-width: 360px;
-        margin-left: auto;
-        margin-right: auto;
       }
 
       /* 2 photos: side by side */
       .gallery-grid.count-2 {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, 1fr);
         max-width: 640px;
-        margin-left: auto;
-        margin-right: auto;
       }
 
-      /* 3 photos: three columns */
-      .gallery-grid.count-3 {
-        grid-template-columns: 1fr 1fr 1fr;
-      }
-
-      /* 4 photos: 2x2 */
-      .gallery-grid.count-4 {
-        grid-template-columns: 1fr 1fr;
-        max-width: 640px;
-        margin-left: auto;
-        margin-right: auto;
-      }
-
-      /* 5+ photos: 3 columns */
+      /* 3+ photos: 3 photos on each row */
       .gallery-grid.count-many {
         grid-template-columns: repeat(3, 1fr);
       }
 
       .gallery-item {
-        position: relative;
-        overflow: hidden;
-        border-radius: 8px;
-        background: #f5f3f0;
-        aspect-ratio: 3 / 4;
+        aspect-ratio: 1 / 1;
       }
 
       .gallery-item img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        object-position: top;
         display: block;
         transition: transform 0.35s ease;
       }
 
       .gallery-item:hover img {
-        transform: scale(1.04);
+        transform: scale(1.02);
       }
-      
+
       .prose {
         max-width: 620px;
         margin: 0 auto;
@@ -132,7 +111,7 @@ const galleryCount = hasGallery ? galleryPhotos.length : 0;
       }
 
       .prose p {
-      	margin-bottom: 1.25em;
+        margin-bottom: 1.25em;
       }
 
       .prose :global(img) {
@@ -151,11 +130,10 @@ const galleryCount = hasGallery ? galleryPhotos.length : 0;
       }
 
       .prose :global(blockquote) {
-        border-left: 3px solid var(--secondary-color, #4a5568);
+        border-left: 2px solid var(--secondary-color, #4a5568);
         padding-left: 1rem;
         margin: 1.5rem 0;
         font-style: italic;
-        color: rgb(var(--gray, 128, 128, 128));
       }
 
       /* --- Responsive --- */
@@ -164,23 +142,11 @@ const galleryCount = hasGallery ? galleryPhotos.length : 0;
         article {
           padding: 3rem 2rem 5rem;
         }
-
       }
 
-      @media (min-width: 960px) {
-        .gallery-item {
-          border-radius: 10px;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .gallery-grid.count-3,
+      @media (max-width: 500px) {
         .gallery-grid.count-many {
-          grid-template-columns: 1fr 1fr;
-        }
-
-        .gallery-item {
-          aspect-ratio: 3 / 4;
+          grid-template-columns: repeat(2, 1fr);
         }
       }
     </style>
@@ -194,14 +160,11 @@ const galleryCount = hasGallery ? galleryPhotos.length : 0;
         <div class="date">
           <FormattedDate date={pubDate} format="long" />
         </div>
-        <Author name={author}/>
-
+        <Author name={author} />
 
         <hr class="header-divider" />
 
         <div class="photo-section">
-          
-
           {
             hasGallery && (
               <div
@@ -209,13 +172,12 @@ const galleryCount = hasGallery ? galleryPhotos.length : 0;
                   "gallery-grid",
                   galleryCount === 1 && "count-1",
                   galleryCount === 2 && "count-2",
-                  galleryCount === 3 && "count-3",
-                  galleryCount === 4 && "count-4",
-                  galleryCount >= 5 && "count-many",
+                  galleryCount >= 3 && "count-many",
                 ]}>
                 {galleryPhotos.map((photo: any, i: number) => (
                   <div class="gallery-item">
-                    <Image priority
+                    <Image
+                      priority
                       width={480}
                       height={640}
                       src={photo.src || photo}
