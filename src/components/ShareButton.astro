@@ -1,0 +1,41 @@
+<button
+  id="share-btn"
+  class="flex items-center gap-1 bg-white rounded-lg px-4 py-3 shadow-sm border border-gray-100 w-fit mb-4 hover:bg-gray-50 transition"
+>
+  <!-- Lucide forward icon (inline SVG) -->
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="21"
+    height="21"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="15 17 20 12 15 7"></polyline>
+    <path d="M4 18v-2a4 4 0 0 1 4-4h12"></path>
+  </svg>
+
+  <span id="share-text">Share</span>
+</button>
+
+<script>
+  const button = document.getElementById("share-btn");
+  const text = document.getElementById("share-text");
+
+  button?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      if (text == null) return;
+      text.textContent = "Copied!";
+
+      setTimeout(() => {
+        text.textContent = "Share";
+      }, 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  });
+</script>
