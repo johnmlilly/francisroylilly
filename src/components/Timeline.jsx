@@ -23,6 +23,7 @@ export default function Timeline({ posts }) {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
+                timeZone: "UTC"
               })}
             </span>
           }
