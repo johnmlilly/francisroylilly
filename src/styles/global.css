@@ -49,6 +49,9 @@
 	font-display: swap;
 }
 
+html {
+	scroll-behavior: smooth;
+}
 body {
 	font-family: "Figtree", sans-serif;
 	margin: 0;
@@ -63,7 +66,6 @@ body {
 	line-height: 1.7;
 }
 main {
-	width: 720px;
 	max-width: calc(100% - 2em);
 	margin: auto;
 	padding: 3em 1em;
