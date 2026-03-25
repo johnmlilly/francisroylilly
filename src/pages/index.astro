@@ -7,6 +7,7 @@ import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
 import Timeline from "../components/Timeline.jsx";
 import { getCollection } from "astro:content";
 import heroImage from "../assets/images/francisroy-hero.jpeg";
+import Cards from "../components/Cards.astro";
 
 // Fetch all blog posts
 const rawPosts = (await getCollection("blog")).sort(
@@ -53,47 +54,49 @@ const posts = await Promise.all(
       <!-- Hero Section -->
       <section class="hero">
         <div class="hero-content">
-          <h1>Francis Roy’s Journey</h1>
+          <h1>Francis Roy Lilly</h1>
           <p>
-            Welcome to our family’s space where we share updates, milestones,
-            and reflections on Francis’s health journey. From the early
-            challenges to the everyday joys, this journal is our way of
-            documenting God’s grace and the love surrounding him.
+            Our Little Lion Fighter was born on April 1, 2025. Since then, he's
+            transformed our family in ways we never could have imagined. He's
+            shown us how to trust God completely in all things.
           </p>
-          <a class="cta" href="/blog">Read the Journey</a>
+          <p>
+            This site is a space for us to share his journey and how God has
+            worked in our lives.
+          </p>
+          <a href="#updates" class="cta">Updates</a>
         </div>
         <div class="hero-image">
-          <Image width={583} height={389} src={heroImage} alt={SITE_TITLE} priority />
+          <Image
+            width={583}
+            height={389}
+            src={heroImage}
+            alt={SITE_TITLE}
+            priority
+          />
         </div>
       </section>
-
-      <section class="timeline-section">
+      <Cards />
+      <section id="updates" class="timeline-section">
         <h2>Journey Updates</h2>
         <div class="timeline-wrapper">
           <Timeline client:only="react" posts={posts} />
         </div>
       </section>
-    </main>
 
-    <Footer />
+      <Footer />
+    </main>
   </body>
 </html>
 
 <style>
-  main {
-    display: flex;
-    flex-direction: column;
-    gap: 4rem;
-    width: 1100px;
-  }
-
   .hero {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 0.75fr 1fr;
     align-items: center;
-    padding: 4rem 2rem;
-    gap: 2rem;
-    background-color: #f2eede;
+    padding: 2rem 2rem 4rem 2rem;
+    gap: 1.5rem;
+    margin-inline: auto;
   }
 
   .hero-content h1 {
@@ -118,6 +121,7 @@ const posts = await Promise.all(
     text-decoration: none;
     border-radius: 0.5rem;
     font-weight: 600;
+    width: fit-content;
   }
 
   .cta:hover {
@@ -130,14 +134,13 @@ const posts = await Promise.all(
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   }
 
+  .timeline-section {
+    padding-block: 2rem;
+  }
   .timeline-wrapper {
     width: 100%;
     max-width: 900px;
     margin: 0 auto;
-  }
-
-  .timeline-section {
-   
   }
 
   .timeline-section h2 {
@@ -154,6 +157,9 @@ const posts = await Promise.all(
     }
     .hero-image {
       order: -1;
+    }
+    .hero {
+      padding-block: 1.5rem;
     }
   }
 </style>
