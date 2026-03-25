@@ -1,0 +1,170 @@
+---
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import BaseHead from "../components/BaseHead.astro";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead
+      title={`Prayers | ${SITE_TITLE}`}
+      description={SITE_DESCRIPTION}
+    />
+  </head>
+  <body>
+    <Header />
+
+    <main>
+      <!-- Intro Section -->
+      <section class="intro">
+        <div class="container">
+          <h1>Pray With Us</h1>
+          <p>
+            Throughout Francis’s journey, prayer has been at the center of
+            everything. We have witnessed the power of God working through the
+            prayers of so many.
+          </p>
+          <p>
+            This page is a place to join in that prayer — to lift up Francis,
+            our family, and anyone else in need.
+          </p>
+        </div>
+      </section>
+
+      <!-- Saints Section -->
+      <section class="saints">
+        <div class="container">
+          <h2>Saints We Turned To</h2>
+          <p>
+            During some of the hardest moments, we prayed through a litany of
+            saints, asking for their intercession.
+          </p>
+
+          <ul class="saints-list">
+            <li>St. Joseph</li>
+            <li>St. Gianna Molla</li>
+            <li>St. John Paul II</li>
+            <li>St. Padre Pio</li>
+            <li>Blessed Solanus Casey</li>
+            <li>Servant of God Tom Vander Woude</li>
+          </ul>
+
+          <p class="highlight">
+            We especially felt a deep connection to Tom Vander Woude — a father
+            who gave everything in love. His witness meant a lot to us during
+            this time.
+          </p>
+        </div>
+      </section>
+
+      <!-- Prayer Request Form -->
+      <section class="prayer-form">
+        <div class="container">
+          <h2>Submit a Prayer Request</h2>
+          <p>
+            We would be honored to pray for you. Share your intention below.
+          </p>
+
+          <form
+            name="prayer-requests"
+            method="POST"
+            data-netlify="true"
+            netlify-honeypot="bot-field">
+            <!-- Required hidden input for Netlify -->
+            <input type="hidden" name="form-name" value="prayer-requests" />
+
+            <!-- Honeypot -->
+            <p class="hidden">
+              <label>
+                Don’t fill this out if you're human:
+                <input name="bot-field" />
+              </label>
+            </p>
+
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input type="text" name="name" id="name" required />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" name="email" id="email" required />
+            </div>
+
+            <div class="form-group">
+              <label for="request">Prayer Request</label>
+              <textarea name="request" id="request" rows="5" required
+              ></textarea>
+            </div>
+
+            <button type="submit">Submit Prayer</button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  main {
+    padding: 2rem 1rem;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  section {
+    margin-bottom: 4rem;
+  }
+
+  h1,
+  h2 {
+    margin-bottom: 1rem;
+  }
+
+  p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  .saints-list {
+    margin: 1.5rem 0;
+  }
+
+  .saints-list li {
+    margin-bottom: 0.5rem;
+  }
+
+  .highlight {
+    font-style: italic;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  input,
+  textarea {
+    padding: 0.75rem;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>
