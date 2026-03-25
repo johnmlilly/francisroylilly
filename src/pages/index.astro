@@ -54,15 +54,17 @@ const posts = await Promise.all(
       <!-- Hero Section -->
       <section class="hero">
         <div class="hero-content">
-          <h1>Francis Roy Lilly</h1>
+          <h1>Hi there! I'm Francis Roy Lilly</h1>
           <p>
-            Our Little Lion Fighter was born on April 1, 2025. Since then, he's
-            transformed our family in ways we never could have imagined. He's
-            shown us how to trust God completely in all things.
+            I was born April 1, 2025 and suffered a severe brain injury from
+            HIE. I had an extremely bad prognosis to the point where my family thought they would have to say goodbye to me.
           </p>
           <p>
-            This site is a space for us to share his journey and how God has
-            worked in our lives.
+            <strong>But what happened next was a miracle.</strong> During Holy Week, I began to wake up and become more alert to the surprise of many. On Easter Sunday, I started breathing completely on my own. I went home not long after that.
+          </p>
+          <p>
+            This site is a place to share my journey and how God continues to
+            work in my life and in the life of my family.
           </p>
           <a href="#updates" class="cta">Updates</a>
         </div>
@@ -76,9 +78,9 @@ const posts = await Promise.all(
           />
         </div>
       </section>
-      <!-- <Cards /> -->
+      <Cards />
       <section id="updates" class="timeline-section">
-        <h2>Journey Updates</h2>
+        <h2>Latest Updates</h2>
         <div class="timeline-wrapper">
           <Timeline client:only="react" posts={posts} />
         </div>

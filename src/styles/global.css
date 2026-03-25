@@ -142,6 +142,10 @@ pre {
 pre > code {
 	all: unset;
 }
+ul, ol {
+	list-style-type: disc;
+	padding-left: 1.5rem;
+}
 
 hr {
 	border: none;
