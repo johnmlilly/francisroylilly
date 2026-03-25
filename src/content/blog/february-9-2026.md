@@ -3,7 +3,7 @@ title: "New Home & New Routines"
 pubDate: "2026-02-09"
 author: "John Lilly"
 description: "We've been settling into our new home the last few weeks, and Francis continues to show improvements in his development."
-heroImage: '../../assets/blog/feb-9-26-1.avif'
+heroImage: '../../assets/blog/feb-9-26-hero.jpg'
 galleryPhotos: 
     - '../../assets/blog/feb-9-26-1.avif'
     - '../../assets/blog/feb-9-26-2.avif'
