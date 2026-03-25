@@ -3,17 +3,17 @@ import { db, Comment, Reaction } from 'astro:db';
 export default async function () {
   await db.insert(Comment).values([
     {
-      postSlug: 'first-post',
-      name: 'Jamie',
+      postSlug: 'april-1-2025',
+      name: 'John Lilly',
       email: 'jamie@turso.tech',
-      message: 'Great post!',
+      message: 'Test',
       createdAt: new Date(),
     },
     {
-      postSlug: 'second-post',
-      name: 'Jamie',
+      postSlug: 'april-1-2025',
+      name: 'Kara',
       email: 'jamie@turso.tech',
-      message: 'Another great post!',
+      message: 'Another test',
       createdAt: new Date(),
     },
   ]);
