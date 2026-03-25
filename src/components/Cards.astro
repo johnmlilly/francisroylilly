@@ -1,0 +1,119 @@
+---
+import { Image } from "astro:assets";
+
+// Import your images
+import updatesImg from "../assets/images/francisroy-hero.jpeg";
+import supportImg from "../assets/images/francisroy-hero.jpeg";
+import prayersImg from "../assets/images/francisroy-hero.jpeg";
+
+const cards = [
+  {
+    image: updatesImg,
+    title: "Updates",
+    description:
+      "Follow along with the latest news, milestones, and moments from our journey.",
+    cta: "Read Updates",
+    link: "/updates",
+  },
+  {
+    image: supportImg,
+    title: "Support",
+    description: "Learn how you can support our family during this time.",
+    cta: "Offer Support",
+    link: "/support",
+  },
+  {
+    image: prayersImg,
+    title: "Prayers",
+    description: "Join us in prayer and see specific intentions to lift up.",
+    cta: "View Prayers",
+    link: "/prayers",
+  },
+];
+---
+
+<section class="card-section">
+  <div class="card-grid">
+    {
+      cards.map((card) => (
+        <div class="card">
+          <Image src={card.image} alt={card.title} class="card-image" />
+
+          <h3>{card.title}</h3>
+
+          <p>{card.description}</p>
+
+          <a href={card.link} class="card-cta">
+            {card.cta}
+          </a>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .card-section {
+    background-color: #f2eede;
+    padding: 3rem 1.5rem;
+    /* Break out of parent padding */
+    margin-left: -2.5rem;
+    margin-right: -2.5rem;
+
+    /* Re-add internal spacing */
+    padding: 3rem 1.5rem;
+  }
+
+  .card-grid {
+    display: grid;
+    gap: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* Desktop: 3 columns */
+  @media (min-width: 768px) {
+    .card-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  .card-image {
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .card h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+  }
+
+  .card p {
+    font-size: 0.95rem;
+    margin-bottom: 1.25rem;
+    color: #555;
+  }
+
+  .card-cta {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    background: #333;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: background 0.2s ease;
+  }
+
+  .card-cta:hover {
+    background: #000;
+  }
+</style>
