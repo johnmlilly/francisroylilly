@@ -2,7 +2,7 @@
   "name": "francisroylilly",
   "type": "module",
   "scripts": {
-    "start": "astro dev",
+    "start": "astro dev --remote",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
