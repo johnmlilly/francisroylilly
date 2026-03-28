@@ -4,20 +4,20 @@ import { Image } from "astro:assets";
 // Import your images
 import updatesImg from "../assets/images/francisroy-hero.jpeg";
 import supportImg from "../assets/images/francisroy-hero.jpeg";
-import prayersImg from "../assets/images/francisroy-hero.jpeg";
+import prayersImg from "../assets/images/Jesus-Divine-Mercy.webp";
 
 const cards = [
   {
     image: updatesImg,
-    title: "Updates",
+    title: "See the Latest Updates",
     description:
       "Follow along with the latest news, milestones, and moments from our journey.",
     cta: "Read Updates",
-    link: "/updates",
+    link: "/blog",
   },
   {
     image: supportImg,
-    title: "Support",
+    title: "Support our Family",
     description: "Learn how you can support our family during this time.",
     cta: "Offer Support",
     link: "/support",
@@ -26,7 +26,7 @@ const cards = [
     image: prayersImg,
     title: "Prayers",
     description: "Join us in prayer and see specific intentions to lift up.",
-    cta: "View Prayers",
+    cta: "Pray with Us",
     link: "/prayers",
   },
 ];
@@ -87,6 +87,8 @@ const cards = [
   .card-image {
     border-radius: 8px;
     margin-bottom: 1rem;
+    height: 250px;
+    object-fit: cover;
   }
 
   .card h3 {
