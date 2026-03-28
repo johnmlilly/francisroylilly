@@ -1,13 +1,11 @@
 ---
-import BaseHead from "../components/BaseHead.astro";
-import Footer from "../components/Footer.astro";
-import Header from "../components/Header.astro";
 import { Image, getImage } from "astro:assets";
-import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../consts.ts";
 import Timeline from "../components/Timeline.jsx";
 import { getCollection } from "astro:content";
 import heroImage from "../assets/images/francisroy-hero.jpeg";
 import Cards from "../components/Cards.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
 
 // Fetch all blog posts
 const rawPosts = (await getCollection("blog")).sort(
@@ -42,98 +40,115 @@ const posts = await Promise.all(
 );
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-  </head>
-  <body>
-    <Header />
+<BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-image">
+        <Image
+          src={heroImage}
+          alt={SITE_TITLE}
+          fill
+          priority
+          class="hero-img"
+        />
+      </div>
 
-    <main>
-      <!-- Hero Section -->
-      <section class="hero">
-        <div class="hero-content">
-          <h1>Hi there! I'm Francis Roy Lilly</h1>
-          <p>
-            I was born April 1, 2025 and suffered a severe brain injury from
-            HIE. I had an extremely bad prognosis to the point where my family thought they would have to say goodbye to me.
-          </p>
-          <p>
-            <strong>But what happened next was a miracle.</strong> During Holy Week, I began to wake up and become more alert to the surprise of many. On Easter Sunday, I started breathing completely on my own. I went home not long after that.
-          </p>
-          <p>
-            This site is a place to share my journey and how God continues to
-            work in my life and in the life of my family.
-          </p>
-          <a href="#updates" class="cta">Updates</a>
-        </div>
-        <div class="hero-image">
-          <Image
-            width={583}
-            height={389}
-            src={heroImage}
-            alt={SITE_TITLE}
-            priority
-          />
-        </div>
-      </section>
-      <Cards />
-      <section id="updates" class="timeline-section">
-        <h2>Latest Updates</h2>
-        <div class="timeline-wrapper">
-          <Timeline client:only="react" posts={posts} />
-        </div>
-      </section>
+      <div class="hero-overlay">
+        <h1>Francis Roy Lilly</h1>
+      </div>
+    </section>
+    <!-- About Section -->
+    <section class="about">
+      <div>
+        <h2>Hi there! I'm Francis</h2>
 
-      <Footer />
-    </main>
-  </body>
-</html>
+        <p>
+          I was born April 1, 2025 and suffered a severe brain injury from HIE.
+          I had an extremely poor prognosis to the point where my family thought
+          they would have to say goodbye to me.
+        </p>
+
+        <p>
+          <strong>But what happened next was a miracle.</strong> During Holy Week,
+          I began to wake up and become more alert to everyone's surprise. On Easter
+          Sunday, I started breathing completely on my own. I went home not long after
+          that.
+        </p>
+
+        <p>
+          This site is a place to share my journey and how God continues to work
+          in my life and in the life of my family.
+        </p>
+
+        <a href="#updates" class="cta">Updates</a>
+      </div>
+    </section>
+    <Cards />
+    <section id="updates" class="timeline-section">
+      <h2>Latest Updates</h2>
+      <div class="timeline-wrapper">
+        <Timeline client:only="react" posts={posts} />
+      </div>
+    </section>
+</BaseLayout>
 
 <style>
   .hero {
-    display: grid;
-    grid-template-columns: 0.75fr 1fr;
+    position: relative;
+    width: 100%;
+    height: 75vh;
+    min-height: 400px;
+    overflow: hidden;
+  }
+
+  /* Makes image act like a background */
+  .hero-image {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero-img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    border-radius: initial;
+  }
+
+  /* Centered overlay content */
+  .hero-overlay {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
     align-items: center;
-    padding: 2rem 2rem 4rem 2rem;
-    gap: 1.5rem;
+    justify-content: center;
+  }
+
+  /* Readable title background */
+  .hero-overlay h1 {
+    font-size: clamp(2rem, 5vw, 4rem);
+    padding: 1rem 2rem;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(6px);
+    border-radius: 12px;
+  }
+
+  /* ABOUT */
+  .about {
+    padding: 4rem 1.5rem;
     margin-inline: auto;
-  }
-
-  .hero-content h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    font-weight: 600;
-    color: var(--secondary-color);
-  }
-
-  .hero-content p {
-    font-size: 1.2rem;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-    color: #333;
+    max-width: 1100px;
+    line-height: 1.7;
   }
 
   .cta {
     display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background-color: var(--primary-color);
+    margin-top: 1rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--primary-color);
     color: white;
+    border-radius: 8px;
     text-decoration: none;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    width: fit-content;
-  }
-
-  .cta:hover {
-    background-color: var(--primary-color-hover);
-  }
-
-  .hero-image img {
-    width: 100%;
-    border-radius: 1rem;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   }
 
   .timeline-section {

@@ -1,114 +1,115 @@
 ---
-import Footer from "../components/Footer.astro";
-import Header from "../components/Header.astro";
-import BaseHead from "../components/BaseHead.astro";
-import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../consts.ts";
+
+const title = `Prayers | ${SITE_TITLE}`;
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <BaseHead
-      title={`Prayers | ${SITE_TITLE}`}
-      description={SITE_DESCRIPTION}
-    />
-  </head>
-  <body>
-    <Header />
+<BaseLayout title={title} description={SITE_DESCRIPTION}>
+  <!-- Intro Section -->
+  <section class="intro">
+    <div class="container">
+      <h1>Pray With Us</h1>
+      <p>
+        Throughout Francis’s journey, prayer has been at the center of
+        everything. It's been instrumental in helping us rely on God, and we
+        have witnessed the power of God working through the prayers of so many.
+      </p>
+      <p>
+        We prayed to many different saints, some of whom we have a particular
+        devotion to as a family, others who mean a lot to us, and some family
+        members.
+      </p>
+    </div>
+  </section>
 
-    <main>
-      <!-- Intro Section -->
-      <section class="intro">
-        <div class="container">
-          <h1>Pray With Us</h1>
-          <p>
-            Throughout Francis’s journey, prayer has been at the center of
-            everything. We have witnessed the power of God working through the
-            prayers of so many.
-          </p>
-          <p>
-            This page is a place to join in that prayer — to lift up Francis,
-            our family, and anyone else in need.
-          </p>
+  <!-- Saints Section -->
+  <section class="saints">
+    <div class="container">
+      <h2>Our Litany of Saints</h2>
+      <p>
+        During some of our hardest moments, we prayed for the intercession of these incredible men and women who lead holy lives. 
+      </p>
+      <ul>
+        <li>Roy Hollis</li>
+        <li>Thomas Vanderwoude</li>
+        <li>Pope Francis</li>
+        <li>St. Therese</li>
+        <li>Sts. Zelie and Louis</li>
+        <li>St. Francis of Assisi</li>
+        <li>St. Clare of Assisi</li>
+        <li>St. Francis Xavier</li>
+        <li>St. Francis De Sales</li>
+        <li>St. John Baptist de Rossi</li>
+        <li>St. Vitus</li>
+        <li>St. Valentine</li>
+        <li>Venerable Fulton Sheen</li>
+        <li>St. Padre Pio of Pietrelcina</li>
+        <li>Blessed John Licci</li>
+        <li>Blessed Carlo Acutis</li>
+        <li>St. Dymphna</li>
+        <li>Baby Francis Kuisell</li>
+        <li>Baby Samuel Kuisell</li>
+        <li>Quenum Babies</li>
+        <li>Baby Hyacinth Armstrong</li>
+        <li>Baby Christopher Rea</li>
+        <li>Baby Maximillian Pietrandrea</li>
+        <li>Baby Sebastian Pietrandrea</li>
+        <li>Baby Emmanuel Trebing</li>
+        <li>John Francis Cannon</li>
+        <li>Donald Lilly</li>
+        <li>Mama Noone</li>
+        <li>John Clem</li>
+        <li>Nicolas Adinaro</li>
+      </ul>
+
+      <p class="highlight">
+        We especially felt a deep connection to Tom Vander Woude — a father who
+        gave everything in love. His witness meant a lot to us during this time.
+      </p>
+    </div>
+  </section>
+
+  <!-- Prayer Request Form -->
+  <section class="prayer-form">
+    <div class="container">
+      <h2>Submit a Prayer Request</h2>
+      <p>We would be honored to pray for you. Share your intention below.</p>
+
+      <form
+        name="prayer-requests"
+        method="POST"
+        data-netlify="true"
+        netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="prayer-requests" />
+
+        <p class="hidden">
+          <label>
+            Don’t fill this out if you're human:
+            <input name="bot-field" />
+          </label>
+        </p>
+
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" name="name" id="name" required />
         </div>
-      </section>
 
-      <!-- Saints Section -->
-      <section class="saints">
-        <div class="container">
-          <h2>Saints We Turned To</h2>
-          <p>
-            During some of the hardest moments, we prayed through a litany of
-            saints, asking for their intercession.
-          </p>
-
-          <ul class="saints-list">
-            <li>St. Joseph</li>
-            <li>St. Gianna Molla</li>
-            <li>St. John Paul II</li>
-            <li>St. Padre Pio</li>
-            <li>Blessed Solanus Casey</li>
-            <li>Servant of God Tom Vander Woude</li>
-          </ul>
-
-          <p class="highlight">
-            We especially felt a deep connection to Tom Vander Woude — a father
-            who gave everything in love. His witness meant a lot to us during
-            this time.
-          </p>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" name="email" id="email" required />
         </div>
-      </section>
 
-      <!-- Prayer Request Form -->
-      <section class="prayer-form">
-        <div class="container">
-          <h2>Submit a Prayer Request</h2>
-          <p>
-            We would be honored to pray for you. Share your intention below.
-          </p>
-
-          <form
-            name="prayer-requests"
-            method="POST"
-            data-netlify="true"
-            netlify-honeypot="bot-field">
-            <!-- Required hidden input for Netlify -->
-            <input type="hidden" name="form-name" value="prayer-requests" />
-
-            <!-- Honeypot -->
-            <p class="hidden">
-              <label>
-                Don’t fill this out if you're human:
-                <input name="bot-field" />
-              </label>
-            </p>
-
-            <div class="form-group">
-              <label for="name">Name</label>
-              <input type="text" name="name" id="name" required />
-            </div>
-
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input type="email" name="email" id="email" required />
-            </div>
-
-            <div class="form-group">
-              <label for="request">Prayer Request</label>
-              <textarea name="request" id="request" rows="5" required
-              ></textarea>
-            </div>
-
-            <button type="submit">Submit Prayer</button>
-          </form>
+        <div class="form-group">
+          <label for="request">Prayer Request</label>
+          <textarea name="request" id="request" rows="5" required></textarea>
         </div>
-      </section>
-    </main>
 
-    <Footer />
-  </body>
-</html>
-
+        <button type="submit">Submit Prayer</button>
+      </form>
+    </div>
+  </section>
+</BaseLayout>
 <style>
   main {
     padding: 2rem 1rem;
@@ -131,14 +132,6 @@ import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
   p {
     margin-bottom: 1rem;
     line-height: 1.6;
-  }
-
-  .saints-list {
-    margin: 1.5rem 0;
-  }
-
-  .saints-list li {
-    margin-bottom: 0.5rem;
   }
 
   .highlight {

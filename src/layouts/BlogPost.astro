@@ -1,11 +1,9 @@
 ---
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
-import BaseHead from "../components/BaseHead.astro";
-import Footer from "../components/Footer.astro";
 import FormattedDate from "../components/FormattedDate.astro";
-import Header from "../components/Header.astro";
 import Author from "../components/Author.astro";
+import BaseLayout from "./BaseLayout.astro";
 
 type Props = CollectionEntry<"blog">["data"];
 
@@ -15,187 +13,178 @@ const hasGallery = galleryPhotos && galleryPhotos.length > 0;
 const galleryCount = hasGallery ? galleryPhotos.length : 0;
 ---
 
-<html lang="en">
-  <head>
-    <BaseHead title={title} description={description} />
-    <style>
-      main {
-        width: 100%;
-        max-width: 100%;
-        padding: 0;
-      }
+<BaseLayout title={title} description={description}>
+  <article>
+    <h1>{title}</h1>
+    <div class="date">
+      <FormattedDate date={pubDate} format="long" />
+    </div>
+    <Author name={author} />
 
-      article {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 2rem 1rem 4rem;
-      }
+    <hr class="header-divider" />
 
-      article h1 {
-        text-align: center;
-        margin: 0 0 0.75rem;
-        letter-spacing: -0.02em;
+    <div class="photo-section">
+      {
+        hasGallery && (
+          <div
+            class:list={[
+              "gallery-grid",
+              galleryCount === 1 && "count-1",
+              galleryCount === 2 && "count-2",
+              galleryCount >= 3 && "count-many",
+            ]}>
+            {galleryPhotos.map((photo: any, i: number) => (
+              <div class="gallery-item">
+                <Image
+                  priority
+                  width={480}
+                  height={640}
+                  src={photo.src || photo}
+                  alt={photo.alt || `${title} photo ${i + 1}`}
+                />
+              </div>
+            ))}
+          </div>
+        )
       }
+    </div>
 
-      .date {
-        font-size: 1rem;
-        color: rgb(var(--gray, 128, 128, 128));
-        margin-block: 0 1rem;
-        text-align: center;
-      }
+      <!-- Blog content -->
+      <div class="prose">
+        <slot />
+      </div>
+    </article>
+  </BaseLayout>
 
-      .header-divider {
-        width: 60px;
-        height: 4px;
-        background: var(--secondary-color, #4a5568);
-        border: none;
-        border-radius: 2px;
-        margin: 0.5rem auto 1.5rem;
-        opacity: 0.5;
-      }
+<style>
+  main {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+  }
 
-      .photo-section {
-        margin-bottom: 2.5rem;
-      }
+  article {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem 4rem;
+  }
 
-      /*
+  article h1 {
+    text-align: center;
+    margin: 0 0 0.75rem;
+    letter-spacing: -0.02em;
+  }
+
+  .date {
+    font-size: 1rem;
+    color: rgb(var(--gray, 128, 128, 128));
+    margin-block: 0 1rem;
+    text-align: center;
+  }
+
+  .header-divider {
+    width: 60px;
+    height: 4px;
+    background: var(--secondary-color, #4a5568);
+    border: none;
+    border-radius: 2px;
+    margin: 0.5rem auto 1.5rem;
+    opacity: 0.5;
+  }
+
+  .photo-section {
+    margin-bottom: 2.5rem;
+  }
+
+  /*
        * Gallery grid — portrait-friendly cells
        * that adapt by photo count.
        */
-      .gallery-grid {
-        display: grid;
-        gap: 1rem;
-        margin-inline: auto;
-      }
+  .gallery-grid {
+    display: grid;
+    gap: 1rem;
+    margin-inline: auto;
+  }
 
-      /* 1 photo: centered, narrow */
-      .gallery-grid.count-1 {
-        grid-template-columns: 1fr;
-        max-width: 360px;
-      }
+  /* 1 photo: centered, narrow */
+  .gallery-grid.count-1 {
+    grid-template-columns: 1fr;
+    max-width: 360px;
+  }
 
-      /* 2 photos: side by side */
-      .gallery-grid.count-2 {
-        grid-template-columns: repeat(2, 1fr);
-        max-width: 640px;
-      }
+  /* 2 photos: side by side */
+  .gallery-grid.count-2 {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 640px;
+  }
 
-      /* 3+ photos: 3 photos on each row */
-      .gallery-grid.count-many {
-        grid-template-columns: repeat(3, 1fr);
-      }
+  /* 3+ photos: 3 photos on each row */
+  .gallery-grid.count-many {
+    grid-template-columns: repeat(3, 1fr);
+  }
 
-      .gallery-item {
-        aspect-ratio: 1 / 1;
-      }
+  .gallery-item {
+    aspect-ratio: 1 / 1;
+  }
 
-      .gallery-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: top;
-        display: block;
-        transition: transform 0.35s ease;
-      }
+  .gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+    transition: transform 0.35s ease;
+  }
 
-      .gallery-item:hover img {
-        transform: scale(1.02);
-      }
+  .gallery-item:hover img {
+    transform: scale(1.02);
+  }
 
-      .prose {
-        max-width: 620px;
-        margin: 0 auto;
-        color: rgb(var(--gray-dark, 50, 50, 50));
-        font-size: 1.05rem;
-        line-height: 1.8;
-      }
+  .prose {
+    max-width: 620px;
+    margin: 0 auto;
+    color: rgb(var(--gray-dark, 50, 50, 50));
+    font-size: 1.05rem;
+    line-height: 1.8;
+  }
 
-      .prose p {
-        margin-bottom: 1.25em;
-      }
+  .prose p {
+    margin-bottom: 1.25em;
+  }
 
-      .prose :global(img) {
-        max-width: 100%;
-        height: auto;
-        border-radius: 8px;
-        margin: 1.5rem auto;
-        display: block;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-      }
+  .prose :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 1.5rem auto;
+    display: block;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  }
 
-      .prose :global(a) {
-        color: var(--secondary-color, #4a5568);
-        text-decoration: underline;
-        text-underline-offset: 3px;
-      }
+  .prose :global(a) {
+    color: var(--secondary-color, #4a5568);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 
-      .prose :global(blockquote) {
-        border-left: 2px solid var(--secondary-color, #4a5568);
-        padding-left: 1rem;
-        margin: 1.5rem 0;
-        font-style: italic;
-      }
+  .prose :global(blockquote) {
+    border-left: 2px solid var(--secondary-color, #4a5568);
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+  }
 
-      /* --- Responsive --- */
+  /* --- Responsive --- */
 
-      @media (min-width: 640px) {
-        article {
-          padding: 3rem 2rem 5rem;
-        }
-      }
+  @media (min-width: 640px) {
+    article {
+      padding: 3rem 2rem 5rem;
+    }
+  }
 
-      @media (max-width: 500px) {
-        .gallery-grid.count-many {
-          grid-template-columns: repeat(2, 1fr);
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <Header />
-    <main>
-      <article>
-        <h1>{title}</h1>
-        <div class="date">
-          <FormattedDate date={pubDate} format="long" />
-        </div>
-        <Author name={author} />
-
-        <hr class="header-divider" />
-
-        <div class="photo-section">
-          {
-            hasGallery && (
-              <div
-                class:list={[
-                  "gallery-grid",
-                  galleryCount === 1 && "count-1",
-                  galleryCount === 2 && "count-2",
-                  galleryCount >= 3 && "count-many",
-                ]}>
-                {galleryPhotos.map((photo: any, i: number) => (
-                  <div class="gallery-item">
-                    <Image
-                      priority
-                      width={480}
-                      height={640}
-                      src={photo.src || photo}
-                      alt={photo.alt || `${title} photo ${i + 1}`}
-                    />
-                  </div>
-                ))}
-              </div>
-            )
-          }
-        </div>
-
-        <!-- Blog content -->
-        <div class="prose">
-          <slot />
-        </div>
-      </article>
-    </main>
-    <Footer />
-  </body>
-</html>
+  @media (max-width: 500px) {
+    .gallery-grid.count-many {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
