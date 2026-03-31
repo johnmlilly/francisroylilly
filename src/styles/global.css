@@ -109,7 +109,7 @@ a {
 a:hover {
 	color: var(--accent);
 }
-p {
+p, ul, ol {
 	margin-bottom: 1em;
 	text-wrap: pretty;
 }
