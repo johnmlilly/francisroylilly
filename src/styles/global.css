@@ -78,7 +78,6 @@ h5,
 h6 {
 	margin: 0 0 0.5rem 0;
 	line-height: 1.2;
-	text-wrap: balance;
 	color: var(--secondary-color);
 }
 h1 {
