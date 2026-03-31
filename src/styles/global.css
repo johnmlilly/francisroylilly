@@ -151,6 +151,13 @@ hr {
 	border-top: 1px solid rgb(var(--gray-light));
 }
 
+iframe {
+	aspect-ratio: 16 / 9;
+    width: 100%;
+    margin-block: 1.5rem;
+    border-radius: 0.5rem;
+}
+
 .sr-only {
 	border: 0;
 	padding: 0;
