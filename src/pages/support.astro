@@ -1,0 +1,66 @@
+---
+import Hero from "../components/Hero.astro";
+import heroImg from "../assets/images/Support.webp"; // swap with your image
+import { SITE_DESCRIPTION, SITE_TITLE } from "../consts.ts";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+  <Hero
+    title="Support Our Journey"
+    subtitle="There are many ways to walk with us—first and foremost, through prayer."
+    imageSrc={heroImg.src}
+  />
+
+  <section>
+    <div class="container">
+      <h2>Support Through Prayer</h2>
+
+      <p>
+        The most meaningful way you can support us is by praying for our family.
+        Prayer has carried us through this season. Thank you to everyone who has prayed for us and continues to do so! 
+      </p>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <h2>Financial Support</h2>
+
+      <p>
+        If you’d like to support us financially, you can do so through our
+        GoFundMe page. Our main expenses are for Francis' ongoing therapy to help him develop and continue to have access to everything he needs. Every contribution, no matter the size, helps us our family.
+      </p>
+
+      <a
+        class="button"
+        href="https://www.gofundme.com/f/help-our-family-recover-from-fraud-loss"
+        target="_blank">
+        Visit Our GoFundMe
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .button {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--primary-color);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: opacity 0.2s ease;
+  }
+
+  .button:hover {
+    opacity: 0.8;
+  }
+</style>
