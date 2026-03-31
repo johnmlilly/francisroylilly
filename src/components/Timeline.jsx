@@ -55,7 +55,7 @@ export default function Timeline({ posts }) {
             style={{
               fontSize: "1.5rem",
               marginBottom: "0.5rem",
-              fontWeight: "700",
+              fontWeight: "600",
               color: "var(--secondary-color)",
             }}>
             {post.data.title}
