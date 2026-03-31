@@ -26,9 +26,10 @@ It is surreal to be about 4 months removed from his time in the NICU. The adrena
 
 Prayer requests:
 
-For gross motor development
-Begin rolling over
-Sitting up on his own
-For his g-tube to be removed due to his feeding progress
-For all the little progressions to witness to the full miracle of God’s healing
+- For gross motor development
+- Begin rolling over
+- Sitting up on his own
+- For his g-tube to be removed due to his feeding progress
+- For all the little progressions to witness to the full miracle of God’s healing
+
 Lastly, we wanted to briefly share some devastating news that we have fallen victim to a phishing scam and lost a substantial amount of money from our bank account. We share both as a precaution to others and to ask for prayers that God protects us from any further damage to our family. We are also humbly asking for assistance to help us recover from our losses especially as we prepare for more medical bills in the new year. You can head to our new GoFund me page to learn more: https://gofund.me/ba6fe3298
