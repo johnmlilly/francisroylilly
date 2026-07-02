@@ -61,7 +61,6 @@ Example v4 configuration:
 ## Styling
 
 - Tailwind CSS for all styling
-- Use shadcn/ui components where applicable
 
 ## Database
 
