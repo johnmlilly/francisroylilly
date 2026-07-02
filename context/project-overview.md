@@ -85,6 +85,13 @@ Images go in `src/assets/blog/`. The `BlogPost` layout auto-renders a 1/2/3-colu
 
 ---
 
+## Dev Workflow Notes
+
+- User runs the dev server (`npm run dev`) — do not run it automatically
+- User handles all commits and merges — do not commit or merge, even when asked to close out a feature
+
+---
+
 ## Status
 
 Active — live at https://francisroylilly.com
