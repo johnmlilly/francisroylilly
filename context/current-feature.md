@@ -5,7 +5,7 @@
 
 ## Status
 
-In Progress
+Completed
 
 ## Goals
 
@@ -28,3 +28,4 @@ Currently the header is hamburger-only on all screen sizes. Nav links are only a
 ## History
 
 <!-- Keep this updated. Earliest to latest -->
+- **Desktop Navigation** — Added inline nav links on desktop (≥768px); hamburger retained for mobile. `src/components/Header.astro`
