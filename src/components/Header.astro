@@ -1,5 +1,5 @@
 ---
-import { SITE_LOGO, SITE_TITLE } from "../consts";
+import { SITE_TITLE } from "../consts";
 import { Image } from "astro:assets";
 import HeaderLink from "./HeaderLink.astro";
 import siteLogo from "../assets/images/francis-roy-logo.svg";
@@ -8,7 +8,7 @@ import siteLogo from "../assets/images/francis-roy-logo.svg";
 <header>
   <nav>
     <div class="logo-container">
-      <Image width={50} height={50} src={siteLogo} alt={SITE_TITLE} />
+      <a href="/"><Image width={50} height={50} src={siteLogo} alt={SITE_TITLE} /></a>
     </div>
 
     <div class="site-title">
@@ -16,6 +16,15 @@ import siteLogo from "../assets/images/francis-roy-logo.svg";
     </div>
 
     <div class="menu-container">
+      <!-- Desktop nav — hidden on mobile -->
+      <div class="desktop-nav">
+        <HeaderLink href="/">Home</HeaderLink>
+        <HeaderLink href="/blog">Updates</HeaderLink>
+        <HeaderLink href="/prayers">Prayers</HeaderLink>
+        <HeaderLink href="/support">Support</HeaderLink>
+      </div>
+
+      <!-- Mobile hamburger — hidden on desktop -->
       <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
         <span></span>
         <span></span>
@@ -46,7 +55,7 @@ import siteLogo from "../assets/images/francis-roy-logo.svg";
     padding: 0.5rem 2rem;
   }
 
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 767px) {
     nav {
       padding: 0.5rem 1rem;
     }
@@ -54,12 +63,6 @@ import siteLogo from "../assets/images/francis-roy-logo.svg";
 
   .logo-container {
     justify-self: start;
-  }
-
-  .site-logo {
-    width: 50px;
-    height: auto;
-    display: block;
   }
 
   .site-title {
@@ -85,6 +88,30 @@ import siteLogo from "../assets/images/francis-roy-logo.svg";
     justify-self: end;
   }
 
+  /* Desktop nav */
+  .desktop-nav {
+    display: none;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .desktop-nav :global(a) {
+    padding: 0.4rem 0.75rem;
+    color: rgb(var(--gray-dark));
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: color 0.2s ease, background 0.2s ease;
+  }
+
+  .desktop-nav :global(a:hover),
+  .desktop-nav :global(a.active) {
+    color: var(--secondary-color);
+    background: rgba(76, 96, 133, 0.08);
+  }
+
+  /* Hamburger */
   .hamburger {
     display: flex;
     flex-direction: column;
@@ -95,6 +122,16 @@ import siteLogo from "../assets/images/francis-roy-logo.svg";
     padding: 8px;
     z-index: 101;
     position: relative;
+  }
+
+  @media screen and (min-width: 768px) {
+    .desktop-nav {
+      display: flex;
+    }
+
+    .hamburger {
+      display: none;
+    }
   }
 
   .hamburger span {
@@ -118,6 +155,7 @@ import siteLogo from "../assets/images/francis-roy-logo.svg";
     transform: translateY(-8px) rotate(-45deg);
   }
 
+  /* Mobile menu */
   .mobile-menu {
     position: absolute;
     top: 100%;
@@ -139,7 +177,7 @@ import siteLogo from "../assets/images/francis-roy-logo.svg";
 
   .mobile-menu :global(a) {
     padding: 1rem 1.5rem;
-    color: var(--black);
+    color: rgb(var(--gray-dark));
     text-decoration: none;
     border-left: 3px solid transparent;
     transition: all 0.2s ease;
@@ -148,6 +186,12 @@ import siteLogo from "../assets/images/francis-roy-logo.svg";
   .mobile-menu :global(a:hover),
   .mobile-menu :global(a.active) {
     border-left-color: var(--secondary-color);
+  }
+
+  @media screen and (min-width: 768px) {
+    .mobile-menu {
+      display: none !important;
+    }
   }
 </style>
 
