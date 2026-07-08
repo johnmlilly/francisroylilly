@@ -1,26 +1,23 @@
 # Current Feature
 
 <!-- Feature Name -->
-## About Section
+## Footer Redesign
 
 ## Status
 
-In Progress
+Up Next
 
 ## Goals
 
-- Add dedicated About section between hero and timeline
-- Narrow prose to max-width 720px, centered
-- Style "But God had other plans." as pull quote
-- Move story prose out of hero; hero keeps greeting + CTA only
-- File: `src/pages/index.astro`
+- Purpose tagline
+- Nav links
+- Copyright
 
 ## Upcoming Features (Queue)
 
-3. ~~About section~~ — in progress
-4. Cards redesign + re-enable — uncomment `<Cards />`, gold buttons, better image treatment, "Walk With Us" heading
 5. Footer redesign — purpose tagline, nav links, copyright
 6. Pull quote utility — add `.pull-quote` to `global.css`
+7. About section — PR #3 open
 
 ---
 
@@ -55,3 +52,4 @@ Current hero overlay uses `backdrop-filter: blur(6px)` + `rgba(255,255,255,0.5)`
 <!-- Keep this updated. Earliest to latest -->
 - **Desktop Navigation** — Added inline nav links on desktop (≥768px); hamburger retained for mobile. `src/components/Header.astro`
 - **Hero Restyle** — Replaced full-bleed background image with side-by-side layout (text left, photo right); warm gradient background; stacks on mobile. `src/pages/index.astro`
+- **Cards Redesign** — Replaced images with Lucide icons, added "Walk With Us" heading, gold CTA buttons, re-enabled on homepage. `src/components/Cards.astro`
