@@ -4,7 +4,6 @@ import { SITE_DESCRIPTION, SITE_TITLE } from "../consts.ts";
 import Timeline from "../components/Timeline.jsx";
 import { getCollection } from "astro:content";
 import heroImage from "../assets/images/francisroy-hero.jpeg";
-import Cards from "../components/Cards.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 
 // Fetch all blog posts
@@ -43,37 +42,22 @@ const posts = await Promise.all(
 <BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
   <!-- Hero Section -->
   <section class="hero">
-    <div class="hero-image">
-      <Image src={heroImage} alt={SITE_TITLE} fill priority class="hero-img" />
-    </div>
-
-    <div class="hero-overlay">
+    <div class="hero-text">
       <h1>Hi there! I'm Francis</h1>
+      <p>
+        I was born on April 1, 2025 and suffered a severe brain injury from HIE
+        (Hypoxic Ischemic Encephalopathy). My family thought they would have to
+        say goodbye to me.
+      </p>
+      <p>
+        <strong>But God had other plans.</strong> During Holy Week I began to
+        wake up. On Easter Sunday I started breathing on my own. I went home
+        not long after that.
+      </p>
+      <a href="#updates" class="cta">See My Updates</a>
     </div>
-  </section>
-  <!-- About Section -->
-  <section class="about">
-    <div>
-      <h2>My Story</h2>
-
-      <p>
-        I was born on April 1, 2025 and suffered a severe brain injury from HIE (Hypoxic Ischemic Encephalopathy). I
-        had an extremely poor outlook to the point where my family thought
-        they would have to say goodbye to me.
-      </p>
-
-      <p>
-        <strong>But God had other plans.</strong> During Holy Week, I
-        began to wake up and become more alert to everyone's surprise. On Easter Sunday,
-        I started breathing completely on my own. I went home not long after that.
-      </p>
-
-      <p>
-        This site is a place to share my journey and how God continues to work
-        in my life and in the life of my family.
-      </p>
-
-      <a href="#updates" class="cta">Updates</a>
+    <div class="hero-image">
+      <Image src={heroImage} alt="Francis Roy Lilly" class="hero-img" />
     </div>
   </section>
 <!--  <Cards /> -->
@@ -91,49 +75,44 @@ const posts = await Promise.all(
   }
 
   .hero {
-    position: relative;
-    width: 100%;
-    height: 75vh;
-    min-height: 400px;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+    background: linear-gradient(135deg, #f9f6ef 0%, #f2eede 100%);
+    padding: 3rem 1.5rem;
   }
 
-  /* Makes image act like a background */
+  .hero-text {
+    flex: 1;
+    max-width: 560px;
+  }
+
+  .hero-text h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-bottom: 1rem;
+  }
+
+  .hero-text p {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: rgb(var(--gray-dark));
+    margin-bottom: 1em;
+  }
+
   .hero-image {
-    position: absolute;
-    inset: 0;
+    flex: 1;
+    width: 100%;
+    max-width: 460px;
   }
 
   .hero-img {
-    object-fit: cover;
     width: 100%;
-    height: 100%;
-    border-radius: initial;
-  }
-
-  /* Centered overlay content */
-  .hero-overlay {
-    position: relative;
-    z-index: 2;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* Readable title background */
-  .hero-overlay h1 {
-    font-size: clamp(2rem, 5vw, 4rem);
-    padding: 1rem 2rem;
-    background: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(6px);
-    border-radius: 12px;
-  }
-
-  /* ABOUT */
-  .about {
-    margin-inline: auto;
-    max-width: 1100px;
+    height: auto;
+    border-radius: 16px;
+    object-fit: cover;
+    display: block;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   }
 
   .cta {
@@ -144,8 +123,23 @@ const posts = await Promise.all(
     color: white;
     border-radius: 8px;
     text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s ease;
   }
 
+  .cta:hover {
+    background: var(--primary-color-hover);
+    color: white;
+  }
+
+  @media (min-width: 768px) {
+    .hero {
+      flex-direction: row;
+      align-items: center;
+      gap: 4rem;
+      padding: 4rem 3rem;
+    }
+  }
 
   .timeline-wrapper {
     width: 100%;
@@ -158,12 +152,5 @@ const posts = await Promise.all(
     margin-bottom: 2rem;
     color: var(--primary-color);
     font-weight: 600;
-  }
-
-  @media (max-width: 600px) {
-    .hero {
-     height: 25vh;
-    }
-   
   }
 </style>

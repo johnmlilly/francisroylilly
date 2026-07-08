@@ -1,7 +1,7 @@
 # Current Feature
 
 <!-- Feature Name -->
-## Desktop Navigation in Header
+## Hero Restyle
 
 ## Status
 
@@ -9,13 +9,15 @@ Completed
 
 ## Goals
 
-- Show nav links inline on desktop (≥768px): Home · Updates · Prayers · Support
-- Hide inline links on mobile, show hamburger instead (existing hamburger behavior stays)
-- File: `src/components/Header.astro`
+- Keep "Hi there! I'm Francis" text
+- Remove frosted glass / backdrop-blur box
+- Replace with cleaner treatment: semi-transparent white pill OR text-shadow only
+- Add subtle gradient overlay at bottom of hero image for depth (`transparent → rgba(0,0,0,0.3)`)
+- File: `src/pages/index.astro`
 
 ## Notes
 
-Currently the header is hamburger-only on all screen sizes. Nav links are only accessible via the dropdown. On desktop, users should see the nav links immediately without any interaction.
+Current hero overlay uses `backdrop-filter: blur(6px)` + `rgba(255,255,255,0.5)` background. Feels generic. Goal is something warmer and cleaner that lets the photo breathe.
 
 ## Upcoming Features (Queue)
 
@@ -29,3 +31,4 @@ Currently the header is hamburger-only on all screen sizes. Nav links are only a
 
 <!-- Keep this updated. Earliest to latest -->
 - **Desktop Navigation** — Added inline nav links on desktop (≥768px); hamburger retained for mobile. `src/components/Header.astro`
+- **Hero Restyle** — Replaced full-bleed background image with side-by-side layout (text left, photo right); warm gradient background; stacks on mobile. `src/pages/index.astro`
