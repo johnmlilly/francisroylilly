@@ -1,14 +1,9 @@
 ---
-import { Image } from "astro:assets";
-
-// Import your images
-import updatesImg from "../assets/images/Updates.webp";
-import supportImg from "../assets/images/Support.webp";
-import prayersImg from "../assets/images/Jesus-Divine-Mercy.webp";
+import { Newspaper, Heart, BookOpen } from "lucide-react";
 
 const cards = [
   {
-    image: updatesImg,
+    icon: Newspaper,
     title: "See the Latest Updates",
     description:
       "Follow along with the latest news, milestones, and moments from our journey.",
@@ -16,14 +11,14 @@ const cards = [
     link: "/blog",
   },
   {
-    image: supportImg,
+    icon: Heart,
     title: "Support our Family",
     description: "Learn how you can support our family during this time.",
     cta: "Offer Support",
     link: "/support",
   },
   {
-    image: prayersImg,
+    icon: BookOpen,
     title: "Prayers",
     description: "Join us in prayer and see specific intentions to lift up.",
     cta: "Pray with Us",
@@ -33,21 +28,24 @@ const cards = [
 ---
 
 <section class="card-section">
+  <h2 class="section-heading">Walk With Us</h2>
   <div class="card-grid">
     {
-      cards.map((card) => (
-        <div class="card">
-          <Image src={card.image} alt={card.title} class="card-image" />
-
-          <h3>{card.title}</h3>
-
-          <p>{card.description}</p>
-
-          <a href={card.link} class="card-cta">
-            {card.cta}
-          </a>
-        </div>
-      ))
+      cards.map((card) => {
+        const Icon = card.icon;
+        return (
+          <div class="card">
+            <div class="card-icon">
+              <Icon size={40} strokeWidth={1.5} />
+            </div>
+            <h3>{card.title}</h3>
+            <p>{card.description}</p>
+            <a href={card.link} class="card-cta">
+              {card.cta}
+            </a>
+          </div>
+        );
+      })
     }
   </div>
 </section>
@@ -55,11 +53,18 @@ const cards = [
 <style>
   .card-section {
     background-color: #f2eede;
-    padding: 3rem 1.5rem;
-    /* Break out of parent padding */
+    padding: 4rem 1.5rem;
     width: 100vw;
     margin-left: 50%;
     transform: translateX(-50%);
+  }
+
+  .section-heading {
+    text-align: center;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 2.5rem;
   }
 
   .card-grid {
@@ -69,7 +74,6 @@ const cards = [
     margin: 0 auto;
   }
 
-  /* Desktop: 3 columns */
   @media (min-width: 768px) {
     .card-grid {
       grid-template-columns: repeat(3, 1fr);
@@ -79,42 +83,48 @@ const cards = [
   .card {
     background: white;
     border-radius: 12px;
-    padding: 1.5rem;
+    padding: 2rem 1.5rem;
     text-align: center;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
   }
 
-  .card-image {
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    height: 250px;
-    object-fit: cover;
+  .card-icon {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
   }
 
   .card h3 {
-    margin-bottom: 0.5rem;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 600;
+    margin: 0;
   }
 
   .card p {
     font-size: 0.95rem;
-    margin-bottom: 1.25rem;
     color: #555;
+    line-height: 1.6;
+    margin: 0;
+    flex: 1;
   }
 
   .card-cta {
     display: inline-block;
-    padding: 0.6rem 1.2rem;
-    background: #333;
+    margin-top: 0.5rem;
+    padding: 0.6rem 1.4rem;
+    background: var(--primary-color);
     color: white;
     text-decoration: none;
     border-radius: 6px;
     font-size: 0.9rem;
+    font-weight: 600;
     transition: background 0.2s ease;
   }
 
   .card-cta:hover {
-    background: #000;
+    background: var(--primary-color-hover);
   }
 </style>
