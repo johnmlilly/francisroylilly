@@ -1,6 +1,29 @@
 # Current Feature
 
 <!-- Feature Name -->
+## About Section
+
+## Status
+
+In Progress
+
+## Goals
+
+- Add dedicated About section between hero and timeline
+- Narrow prose to max-width 720px, centered
+- Style "But God had other plans." as pull quote
+- Move story prose out of hero; hero keeps greeting + CTA only
+- File: `src/pages/index.astro`
+
+## Upcoming Features (Queue)
+
+3. ~~About section~~ — in progress
+4. Cards redesign + re-enable — uncomment `<Cards />`, gold buttons, better image treatment, "Walk With Us" heading
+5. Footer redesign — purpose tagline, nav links, copyright
+6. Pull quote utility — add `.pull-quote` to `global.css`
+
+---
+
 ## Hero Restyle
 
 ## Status
@@ -19,7 +42,7 @@ Completed
 
 Current hero overlay uses `backdrop-filter: blur(6px)` + `rgba(255,255,255,0.5)` background. Feels generic. Goal is something warmer and cleaner that lets the photo breathe.
 
-## Upcoming Features (Queue)
+## Upcoming Features (Queue — Archived)
 
 2. Hero restyle — remove frosted glass blur, keep "Hi there! I'm Francis", cleaner overlay treatment
 3. About section — narrow prose to 720px, style "But God had other plans." as pull quote
