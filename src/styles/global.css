@@ -158,6 +158,30 @@ iframe {
     border-radius: 0.5rem;
 }
 
+.pull-quote {
+	position: relative;
+	margin: 2rem 0;
+	padding: 0.5rem 0 0.5rem 3rem;
+	font-size: 1.35rem;
+	font-weight: 700;
+	font-style: normal;
+	color: var(--primary-color);
+	border: none;
+	background: none;
+}
+
+.pull-quote::before {
+	content: "\201C";
+	position: absolute;
+	left: 0;
+	top: -0.25rem;
+	font-size: 4rem;
+	line-height: 1;
+	color: var(--primary-color);
+	opacity: 0.25;
+	font-family: Georgia, serif;
+}
+
 .sr-only {
 	border: 0;
 	padding: 0;
