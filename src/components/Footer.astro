@@ -2,14 +2,79 @@
 const today = new Date();
 ---
 
-<footer>
-	&copy; {today.getFullYear()} All rights reserved.
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <span class="footer-title">Francis Roy Lilly</span>
+      <p class="footer-tagline">Sharing the miracle of Francis's life</p>
+    </div>
+
+    <nav class="footer-nav" aria-label="Footer navigation">
+      <a href="/">Home</a>
+      <a href="/blog">Updates</a>
+      <a href="/prayers">Prayers</a>
+      <a href="/support">Support</a>
+    </nav>
+
+    <p class="footer-copy">&copy; {today.getFullYear()}</p>
+  </div>
 </footer>
+
 <style>
-	footer {
-		padding: 2em 1em;
-		background: linear-gradient(var(--gray-gradient)) no-repeat;
-		color: rgb(var(--gray));
-		text-align: center;
-	}
+  .site-footer {
+    background: #4a5a6b;
+    color: #c9bb8b;
+    padding: 3rem 1.5rem 2rem;
+  }
+
+  .footer-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    text-align: center;
+  }
+
+  .footer-title {
+    display: block;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #f2eede;
+    margin-bottom: 0.35rem;
+  }
+
+  .footer-tagline {
+    font-size: 0.85rem;
+    color: white;
+    margin: 0;
+    font-style: italic;
+  }
+
+  .footer-nav {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .footer-nav a {
+    color: #c9bb8b;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: color 0.2s ease;
+  }
+
+  .footer-nav a:hover {
+    color: #f2eede;
+    text-decoration: underline;
+  }
+
+  .footer-copy {
+    font-size: 0.75rem;
+    color: white;
+    margin: 0;
+  }
 </style>
