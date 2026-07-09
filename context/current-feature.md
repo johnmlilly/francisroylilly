@@ -1,7 +1,7 @@
 # Current Feature
 
 <!-- Feature Name -->
-## Footer Redesign
+## Pull Quote Utility
 
 ## Status
 
@@ -9,13 +9,10 @@ Up Next
 
 ## Goals
 
-- Purpose tagline
-- Nav links
-- Copyright
+- Add `.pull-quote` to `global.css` for reuse across pages
 
 ## Upcoming Features (Queue)
 
-5. Footer redesign — purpose tagline, nav links, copyright
 6. Pull quote utility — add `.pull-quote` to `global.css`
 7. About section — PR #3 open
 
@@ -53,3 +50,4 @@ Current hero overlay uses `backdrop-filter: blur(6px)` + `rgba(255,255,255,0.5)`
 - **Desktop Navigation** — Added inline nav links on desktop (≥768px); hamburger retained for mobile. `src/components/Header.astro`
 - **Hero Restyle** — Replaced full-bleed background image with side-by-side layout (text left, photo right); warm gradient background; stacks on mobile. `src/pages/index.astro`
 - **Cards Redesign** — Replaced images with Lucide icons, added "Walk With Us" heading, gold CTA buttons, re-enabled on homepage. `src/components/Cards.astro`
+- **Footer Redesign** — Added site name, tagline, nav links, copyright. Slate blue background. `src/components/Footer.astro`
