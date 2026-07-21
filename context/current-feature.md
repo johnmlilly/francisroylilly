@@ -1,20 +1,19 @@
 # Current Feature
 
 <!-- Feature Name -->
-## Pull Quote Utility
+(none — queue empty)
 
 ## Status
 
-Up Next
+—
 
 ## Goals
 
-- Add `.pull-quote` to `global.css` for reuse across pages
+-
 
 ## Upcoming Features (Queue)
 
-6. Pull quote utility — add `.pull-quote` to `global.css`
-7. About section — PR #3 open
+(empty)
 
 ---
 
@@ -51,3 +50,5 @@ Current hero overlay uses `backdrop-filter: blur(6px)` + `rgba(255,255,255,0.5)`
 - **Hero Restyle** — Replaced full-bleed background image with side-by-side layout (text left, photo right); warm gradient background; stacks on mobile. `src/pages/index.astro`
 - **Cards Redesign** — Replaced images with Lucide icons, added "Walk With Us" heading, gold CTA buttons, re-enabled on homepage. `src/components/Cards.astro`
 - **Footer Redesign** — Added site name, tagline, nav links, copyright. Slate blue background. `src/components/Footer.astro`
+- **About Section** — Added dedicated About section between hero and timeline, prose narrowed to 720px, "But God had other plans." styled as bold pull quote, hero slimmed to greeting + CTA. PR #3. `src/pages/index.astro`
+- **Pull Quote Utility** — Added `.pull-quote` utility class to `global.css` for reuse across pages. PR #6. `src/styles/global.css`
