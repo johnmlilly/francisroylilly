@@ -10,7 +10,7 @@ import Cards from "../components/Cards.astro";
 // Fetch all blog posts
 const rawPosts = (await getCollection("blog")).sort(
   (a, b) =>
-    new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+    new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime(),
 ); // oldest → newest
 
 // Optimize timeline images at build time
@@ -36,7 +36,7 @@ const posts = await Promise.all(
         },
       },
     };
-  })
+  }),
 );
 ---
 
@@ -62,9 +62,7 @@ const posts = await Promise.all(
         (Hypoxic Ischemic Encephalopathy). My family thought they would have to
         say goodbye to me.
       </p>
-      <blockquote class="pull-quote">
-        But God had other plans.
-      </blockquote>
+      <blockquote class="pull-quote">But God had other plans.</blockquote>
       <p>
         During Holy Week I began to wake up. On Easter Sunday I started
         breathing on my own. I went home not long after that. My family shares
@@ -95,11 +93,24 @@ const posts = await Promise.all(
     justify-content: center;
     background: linear-gradient(135deg, #f9f6ef 0%, #f2eede 100%);
     padding: 3rem 1.5rem;
+    min-height: 100svh;
+  }
+
+  @keyframes hero-slide-in {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .hero-text {
     flex: 1;
     max-width: 560px;
+    animation: hero-slide-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
   }
 
   .hero-text h1 {
@@ -118,6 +129,7 @@ const posts = await Promise.all(
     flex: 1;
     width: 100%;
     max-width: 460px;
+    animation: hero-slide-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
   }
 
   .hero-img {
@@ -164,6 +176,9 @@ const posts = await Promise.all(
     font-size: 1.1rem;
     line-height: 1.8;
     color: rgb(var(--gray-dark));
+    animation: hero-slide-in 0.8s linear both;
+    animation-timeline: view(block 25%);
+    animation-range: entry 0% cover 60%;
   }
 
   .about-prose p {
@@ -205,5 +220,13 @@ const posts = await Promise.all(
     margin-bottom: 2rem;
     color: var(--primary-color);
     font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-text,
+    .hero-image,
+    .about-prose {
+      animation: none;
+    }
   }
 </style>
