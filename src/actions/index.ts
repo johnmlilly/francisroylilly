@@ -1,7 +1,7 @@
 // src/actions/index.ts
 import { defineAction } from 'astro:actions';
 import { z } from 'astro:schema';
-import { db, Comment, eq, desc, Reaction} from 'astro:db';
+import { db, Comment, Reaction, eq, desc } from '../../db/client.js';
 
 export const server = {
   addComment: defineAction({
@@ -78,7 +78,7 @@ export const server = {
           name: sanitizedName,
           email: email.toLowerCase(),
           message: sanitizedMessage,
-          createdAt: new Date(),
+          createdAt: new Date().toISOString(),
         })
         .returning();
 

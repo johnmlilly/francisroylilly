@@ -5,8 +5,6 @@ import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 
-import db from '@astrojs/db';
-
 import netlify from '@astrojs/netlify';
 
 import tailwindcss from '@tailwindcss/vite';
@@ -14,7 +12,7 @@ import tailwindcss from '@tailwindcss/vite';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://francisroylilly.com/',
-  integrations: [mdx(), sitemap(), react(), db()],
+  integrations: [mdx(), sitemap(), react()],
   output: 'server',
   adapter: netlify(),
 
