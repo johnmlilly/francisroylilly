@@ -1,33 +1,22 @@
 # Current Feature
 
 <!-- Feature Name -->
-## Astro 7 Upgrade
+## Search & filter on the updates page
 
 ## Status
 
 Up Next
 
-## Context
+## Goals
 
-Branch 2 of 2 (after Drizzle ORM migration — merged, see History). App now runs on Drizzle + `@libsql/client` instead of `astro:db`, so the DB layer is no longer a blocker for this bump.
-
-## Goals / Steps
-
-1. Bump `astro` to `^7`, plus `@astrojs/netlify`, `@astrojs/react`, `@astrojs/mdx`, `@astrojs/sitemap`, `@tailwindcss/vite` to Astro-7-compatible majors
-2. Rust compiler now mandatory + strict HTML validation — build will fail on unclosed/invalid tags, fix any newly-surfaced markup errors
-3. `compressHTML` default changed `true` → `'jsx'` — check spacing around inline elements (nav links, footer, pull-quote), may need `{" "}` fixes
-4. Vite 8 — confirm `@tailwindcss/vite` plugin version supports it before bumping
-5. Sätteri replaces remark/rehype as default markdown processor — no remark/rehype plugins currently configured, low risk, but re-check blog `.md`/`.mdx` posts render identically
-6. Confirm no file named `src/fetch.ts` (none currently — filename now reserved)
-7. Verify & ship: `npm run build`, `npm run lint`, manual browser pass — homepage, blog post w/ gallery, comments, reactions, RSS
+- Add search/filter for blog post markdown files on `/blog`
 
 ## Upcoming Features (Queue)
 
-1. **Search & filter on the updates page** — add search/filter for blog post markdown files on `/blog`
-2. **Loading animation for comments** — visual cue while comments fetch from Turso in `src/components/Comments.astro`
-3. **Fix social preview / OG meta for blog posts** — each update post uses the site-wide default OG image instead of a per-post one; add proper per-post social preview + metadata
-4. **Hero entrance animation** — keyframe fade-in or swipe-up on the hero section for better first-load UX
-5. **Migrate hosting from Netlify to Cloudflare** — domain now hosted on Cloudflare; swap `@astrojs/netlify` adapter for Cloudflare's, update integrations/config in `astro.config.mjs` accordingly
+1. **Loading animation for comments** — visual cue while comments fetch from Turso in `src/components/Comments.astro`
+2. **Fix social preview / OG meta for blog posts** — each update post uses the site-wide default OG image instead of a per-post one; add proper per-post social preview + metadata
+3. **Hero entrance animation** — keyframe fade-in or swipe-up on the hero section for better first-load UX
+4. **Migrate hosting from Netlify to Cloudflare** — domain now hosted on Cloudflare; swap `@astrojs/netlify` adapter for Cloudflare's, update integrations/config in `astro.config.mjs` accordingly
 
 ---
 
@@ -66,3 +55,5 @@ Current hero overlay uses `backdrop-filter: blur(6px)` + `rgba(255,255,255,0.5)`
 - **Footer Redesign** — Added site name, tagline, nav links, copyright. Slate blue background. `src/components/Footer.astro`
 - **About Section** — Added dedicated About section between hero and timeline, prose narrowed to 720px, "But God had other plans." styled as bold pull quote, hero slimmed to greeting + CTA. PR #3. `src/pages/index.astro`
 - **Pull Quote Utility** — Added `.pull-quote` utility class to `global.css` for reuse across pages. PR #6. `src/styles/global.css`
+- **Drizzle ORM Migration** — Replaced `@astrojs/db` with Drizzle ORM + `@libsql/client` against the same Turso database (astro:db is removed in Astro v7). PR #7. `db/`, `src/actions/index.ts`, `src/pages/api/{comments,reactions}.ts`
+- **Astro 7 Upgrade** — Bumped `astro` to 7.1.3 plus `@astrojs/netlify`/`react`/`mdx`/`sitemap`/`@tailwindcss/vite` to Astro-7-compatible majors. Fixed a gallery image bug surfaced by stricter `<Image>` validation: `BlogPost.astro` was passing `photo.src` (raw string) instead of the resolved `ImageMetadata` object. `astro.config.mjs`, `package.json`, `src/layouts/BlogPost.astro`

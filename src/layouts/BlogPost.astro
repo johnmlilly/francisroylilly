@@ -33,14 +33,14 @@ const galleryCount = hasGallery ? galleryPhotos.length : 0;
               galleryCount === 2 && "count-2",
               galleryCount >= 3 && "count-many",
             ]}>
-            {galleryPhotos.map((photo: any, i: number) => (
+            {galleryPhotos.map((photo, i: number) => (
               <div class="gallery-item">
                 <Image
                   priority
                   width={480}
                   height={640}
-                  src={photo.src || photo}
-                  alt={photo.alt || `${title} photo ${i + 1}`}
+                  src={photo}
+                  alt={`${title} photo ${i + 1}`}
                 />
               </div>
             ))}
