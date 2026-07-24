@@ -23,7 +23,7 @@ Branch 2 of 2 (after Drizzle ORM migration — merged, see History). App now run
 
 ## Upcoming Features (Queue)
 
-(empty)
+1. **Search & filter on the updates page** — add search/filter for blog post markdown files on `/blog`
 
 ---
 
@@ -45,7 +45,7 @@ Completed
 
 Current hero overlay uses `backdrop-filter: blur(6px)` + `rgba(255,255,255,0.5)` background. Feels generic. Goal is something warmer and cleaner that lets the photo breathe.
 
-## Upcoming Features (Queue — Archived)
+### Archived — Features Already Implemented
 
 2. Hero restyle — remove frosted glass blur, keep "Hi there! I'm Francis", cleaner overlay treatment
 3. About section — narrow prose to 720px, style "But God had other plans." as pull quote
