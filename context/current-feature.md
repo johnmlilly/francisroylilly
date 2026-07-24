@@ -16,8 +16,7 @@ Up Next
 1. **Finish CaringBridge post migration** (priority — content) — port remaining CaringBridge posts to `src/content/blog/`: write titles, assign authors, import images into `src/assets/blog/`; migrate existing CaringBridge comments and reactions into the Turso `Comment`/`Reaction` tables
 2. **Loading animation for comments** — visual cue while comments fetch from Turso in `src/components/Comments.astro`
 3. **Fix social preview / OG meta for blog posts** — each update post uses the site-wide default OG image instead of a per-post one; add proper per-post social preview + metadata
-4. **Hero entrance animation** — keyframe fade-in or swipe-up on the hero section for better first-load UX
-5. **Migrate hosting from Netlify to Cloudflare** — domain now hosted on Cloudflare; swap `@astrojs/netlify` adapter for Cloudflare's, update integrations/config in `astro.config.mjs` accordingly
+4. **Migrate hosting from Netlify to Cloudflare** — domain now hosted on Cloudflare; swap `@astrojs/netlify` adapter for Cloudflare's, update integrations/config in `astro.config.mjs` accordingly
 
 ---
 
@@ -46,6 +45,8 @@ Current hero overlay uses `backdrop-filter: blur(6px)` + `rgba(255,255,255,0.5)`
 4. Cards redesign + re-enable — uncomment `<Cards />`, gold buttons, better image treatment, "Walk With Us" heading
 5. Footer redesign — purpose tagline, nav links, copyright
 6. Pull quote utility — add `.pull-quote` to `global.css`
+7. Hero entrance animation — keyframe fade-in on the hero section, prose, and card sections for better first-load UX
+
 
 ## History
 

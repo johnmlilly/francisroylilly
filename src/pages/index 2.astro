@@ -1,0 +1,209 @@
+---
+import { Image, getImage } from "astro:assets";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../consts.ts";
+import Timeline from "../components/Timeline.jsx";
+import { getCollection } from "astro:content";
+import heroImage from "../assets/images/francisroy-hero.jpeg";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Cards from "../components/Cards.astro";
+
+// Fetch all blog posts
+const rawPosts = (await getCollection("blog")).sort(
+  (a, b) =>
+    new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+); // oldest → newest
+
+// Optimize timeline images at build time
+const posts = await Promise.all(
+  rawPosts.map(async (post) => {
+    if (!post.data.heroImage) return post;
+
+    const optimized = await getImage({
+      src: post.data.heroImage,
+      width: 600,
+      height: 600,
+      format: "webp",
+    });
+
+    return {
+      ...post,
+      data: {
+        ...post.data,
+        heroImage: {
+          src: optimized.src,
+          width: optimized.width,
+          height: optimized.height,
+        },
+      },
+    };
+  })
+);
+---
+
+<BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Hi there! I'm Francis</h1>
+      <p>
+        I was born on April 1, 2025 and survived a severe brain injury. This is
+        my story.
+      </p>
+      <a href="#updates" class="cta">See My Updates</a>
+    </div>
+    <div class="hero-image">
+      <Image src={heroImage} alt="Francis Roy Lilly" class="hero-img" />
+    </div>
+  </section>
+  <section class="about">
+    <div class="about-prose">
+      <p>
+        I was born on April 1, 2025 and suffered a severe brain injury from HIE
+        (Hypoxic Ischemic Encephalopathy). My family thought they would have to
+        say goodbye to me.
+      </p>
+      <blockquote class="pull-quote">
+        But God had other plans.
+      </blockquote>
+      <p>
+        During Holy Week I began to wake up. On Easter Sunday I started
+        breathing on my own. I went home not long after that. My family shares
+        updates here as I continue to grow and heal.
+      </p>
+    </div>
+  </section>
+
+  <Cards />
+  <section id="updates" class="timeline-section">
+    <h2>Latest Updates</h2>
+    <div class="timeline-wrapper">
+      <Timeline client:only="react" posts={posts} />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  section {
+    padding: 3rem 1.5rem;
+  }
+
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f9f6ef 0%, #f2eede 100%);
+    padding: 3rem 1.5rem;
+  }
+
+  .hero-text {
+    flex: 1;
+    max-width: 560px;
+  }
+
+  .hero-text h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-bottom: 1rem;
+  }
+
+  .hero-text p {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: rgb(var(--gray-dark));
+    margin-bottom: 1em;
+  }
+
+  .hero-image {
+    flex: 1;
+    width: 100%;
+    max-width: 460px;
+  }
+
+  .hero-img {
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    object-fit: cover;
+    display: block;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  }
+
+  .cta {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s ease;
+  }
+
+  .cta:hover {
+    background: var(--primary-color-hover);
+    color: white;
+  }
+
+  @media (min-width: 768px) {
+    .hero {
+      flex-direction: row;
+      padding: 4rem 3rem;
+    }
+  }
+
+  .about {
+    background: #fff;
+    padding: 4rem 1.5rem;
+  }
+
+  .about-prose {
+    max-width: 720px;
+    margin: 0 auto;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: rgb(var(--gray-dark));
+  }
+
+  .about-prose p {
+    margin-bottom: 1.5em;
+  }
+
+  .pull-quote {
+    position: relative;
+    margin: 2rem 0;
+    padding: 0.5rem 0 0.5rem 3rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    font-style: normal;
+    color: var(--primary-color);
+    border: none;
+    background: none;
+  }
+
+  .pull-quote::before {
+    content: "\201C";
+    position: absolute;
+    left: 0;
+    top: -0.25rem;
+    font-size: 4rem;
+    line-height: 1;
+    color: var(--primary-color);
+    opacity: 0.25;
+    font-family: Georgia, serif;
+  }
+
+  .timeline-wrapper {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .timeline-section h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--primary-color);
+    font-weight: 600;
+  }
+</style>
