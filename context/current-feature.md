@@ -24,6 +24,10 @@ Branch 2 of 2 (after Drizzle ORM migration — merged, see History). App now run
 ## Upcoming Features (Queue)
 
 1. **Search & filter on the updates page** — add search/filter for blog post markdown files on `/blog`
+2. **Loading animation for comments** — visual cue while comments fetch from Turso in `src/components/Comments.astro`
+3. **Fix social preview / OG meta for blog posts** — each update post uses the site-wide default OG image instead of a per-post one; add proper per-post social preview + metadata
+4. **Hero entrance animation** — keyframe fade-in or swipe-up on the hero section for better first-load UX
+5. **Migrate hosting from Netlify to Cloudflare** — domain now hosted on Cloudflare; swap `@astrojs/netlify` adapter for Cloudflare's, update integrations/config in `astro.config.mjs` accordingly
 
 ---
 
