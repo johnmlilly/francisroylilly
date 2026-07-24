@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { db, Reaction, eq } from 'astro:db';
+import { db, Reaction, eq } from '../../../db/client.js';
 
 export const GET: APIRoute = async ({ url }) => {
   const postSlug = url.searchParams.get('postSlug');
