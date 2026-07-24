@@ -1,15 +1,25 @@
 # Current Feature
 
 <!-- Feature Name -->
-(none — queue empty)
+## Astro 7 Upgrade
 
 ## Status
 
-—
+Up Next
 
-## Goals
+## Context
 
--
+Branch 2 of 2 (after Drizzle ORM migration — merged, see History). App now runs on Drizzle + `@libsql/client` instead of `astro:db`, so the DB layer is no longer a blocker for this bump.
+
+## Goals / Steps
+
+1. Bump `astro` to `^7`, plus `@astrojs/netlify`, `@astrojs/react`, `@astrojs/mdx`, `@astrojs/sitemap`, `@tailwindcss/vite` to Astro-7-compatible majors
+2. Rust compiler now mandatory + strict HTML validation — build will fail on unclosed/invalid tags, fix any newly-surfaced markup errors
+3. `compressHTML` default changed `true` → `'jsx'` — check spacing around inline elements (nav links, footer, pull-quote), may need `{" "}` fixes
+4. Vite 8 — confirm `@tailwindcss/vite` plugin version supports it before bumping
+5. Sätteri replaces remark/rehype as default markdown processor — no remark/rehype plugins currently configured, low risk, but re-check blog `.md`/`.mdx` posts render identically
+6. Confirm no file named `src/fetch.ts` (none currently — filename now reserved)
+7. Verify & ship: `npm run build`, `npm run lint`, manual browser pass — homepage, blog post w/ gallery, comments, reactions, RSS
 
 ## Upcoming Features (Queue)
 
