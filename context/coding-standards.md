@@ -64,10 +64,10 @@ Example v4 configuration:
 
 ## Database
 
-- Use Drizzle ORM for all database operations — schema defined in `db/schema.ts`, client in `db/client.ts`
-- `@libsql/client` connects to Turso when `TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` are set; falls back to a local SQLite file (`.data/local.db`) otherwise, so local dev works without Turso env vars
-- Add seed data in `db/seed.ts`
-- Schema changes: update `db/schema.ts`, then run `npm run db:migrate`
+- Use Drizzle ORM for all database operations — schema in `db/schema.ts`, client in `db/client.ts`
+- Client uses Turso if `TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` are set, else a local SQLite file
+- Seed data in `db/seed.ts`
+- Schema changes: edit `db/schema.ts`, run `npm run db:migrate`
 
 ## Data Fetching
 
