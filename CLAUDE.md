@@ -14,9 +14,9 @@ Read the following to get the full context of the project:
 ## Commands
 
 - **Dev server**: `npm run dev` (runs on http://localhost:4321)
-    - `build` uses `astro build --remote` — it connects to the remote Astro DB (Turso). Local dev uses a local SQLite DB automatically.
- 
-- **Build**: `npm run build` (production build (requires --remote for Astro DB)
+    - Data access is via Drizzle ORM + `@libsql/client` (see `db/client.ts`), pointed at Turso through env vars — no `--remote` build flag needed (that was an Astro DB requirement, removed with the Drizzle migration).
+
+- **Build**: `npm run build` (production build)
 - **Production server**: `npm run start`
 - **Lint**: `npm run lint`
 
