@@ -64,15 +64,14 @@ Example v4 configuration:
 
 ## Database
 
-- Use Astro DB (`astro:db`) for all database operations — schema defined in `db/config.ts`
-- Local dev uses a local SQLite DB automatically; production uses Turso (remote)
-- `npm run build` requires `--remote` flag (already set in `package.json`) to connect to Turso
-- Add seed data in `db/seed.ts` for local development
-- Schema changes: update `db/config.ts`, then restart dev server
+- Use Drizzle ORM for all database operations — schema defined in `db/schema.ts`, client in `db/client.ts`
+- `@libsql/client` connects to Turso when `TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` are set; falls back to a local SQLite file (`.data/local.db`) otherwise, so local dev works without Turso env vars
+- Add seed data in `db/seed.ts`
+- Schema changes: update `db/schema.ts`, then run `npm run db:migrate`
 
 ## Data Fetching
 
-- `.astro` frontmatter fetches directly via `db.select()` from `astro:db`
+- `.astro` frontmatter fetches directly via `db.select()` from `db/client.ts` (Drizzle)
 - Client components use Astro Actions or fetch from API routes
 - Validate all inputs with Zod (via `astro:schema` in actions)
 

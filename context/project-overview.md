@@ -12,15 +12,17 @@ Personal site documenting the journey of Francis Roy Lilly, a baby who survived 
 
 ## Tech Stack
 
-| Category    | Choice                                    |
-| ----------- | ----------------------------------------- |
-| Framework   | Astro 6 (SSR, server output)              |
-| Language    | TypeScript (strict)                       |
-| UI          | Tailwind CSS v4 + React 19 (islands)      |
-| Database    | Astro DB (Turso/libSQL) via `@astrojs/db` |
-| Auth        | None (public site)                        |
-| File Assets | `src/assets/` (Astro image optimization)  |
-| Deployment  | Netlify (via `@astrojs/netlify` adapter)  |
+| Category    | Choice                                          |
+| ----------- | ------------------------------------------------ |
+| Framework   | Astro 7 (SSR, server output)                    |
+| Language    | TypeScript (strict)                             |
+| UI          | Tailwind CSS v4 + React 19 (islands)            |
+| Database    | Drizzle ORM + `@libsql/client` against Turso    |
+| Auth        | None (public site)                              |
+| File Assets | `src/assets/` (Astro image optimization)        |
+| Deployment  | Netlify (via `@astrojs/netlify` adapter); domain DNS on Cloudflare |
+
+> Astro DB (`@astrojs/db`) was removed in Astro 7 — the app now talks to the same Turso database directly via Drizzle ORM (see `db/`). Hosting adapter migration from Netlify to Cloudflare is queued but not yet done (see `context/current-feature.md`).
 
 ---
 
