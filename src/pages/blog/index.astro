@@ -10,6 +10,10 @@ import { SITE_DESCRIPTION, SITE_TITLE } from "../../consts";
 const posts = (await getCollection("blog")).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
+
+function toDateInputValue(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
 ---
 
 <!doctype html>
@@ -20,6 +24,67 @@ const posts = (await getCollection("blog")).sort(
       main {
         width: 960px;
         margin: 0 auto;
+      }
+
+      .filter-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .search-input {
+        flex: 1 1 240px;
+        padding: 0.6rem 0.9rem;
+        border: 1px solid rgba(var(--gray), 0.3);
+        border-radius: 10px;
+        font-size: 1rem;
+      }
+
+      .date-filter-toggle {
+        flex: 0 0 auto;
+        padding: 0.6rem 0.9rem;
+        border: 1px solid rgba(var(--gray), 0.3);
+        border-radius: 10px;
+        background: white;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      .date-filter-toggle:hover,
+      .date-filter-toggle[aria-expanded="true"] {
+        background: rgba(76, 96, 133, 0.08);
+      }
+
+      .date-filter-panel {
+        flex-basis: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+      }
+
+      .date-filter-panel label {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+        color: rgb(var(--gray-dark));
+      }
+
+      .date-filter-panel input[type="date"] {
+        padding: 0.4rem 0.6rem;
+        border: 1px solid rgba(var(--gray), 0.3);
+        border-radius: 8px;
+        font-size: 0.9rem;
+      }
+
+      .no-results {
+        text-align: center;
+        padding: 2rem 0;
+        color: rgb(var(--gray-dark));
       }
 
       ul {
@@ -130,10 +195,41 @@ const posts = (await getCollection("blog")).sort(
     <Header />
     <main>
       <section>
+        <div class="filter-toolbar">
+          <input
+            type="text"
+            id="blog-search"
+            class="search-input"
+            placeholder="Search updates..."
+            aria-label="Search updates"
+          />
+          <button
+            type="button"
+            id="date-filter-toggle"
+            class="date-filter-toggle"
+            aria-expanded="false"
+            aria-controls="date-filter-panel"
+          >
+            Filter by date
+          </button>
+          <div id="date-filter-panel" class="date-filter-panel" hidden>
+            <label>
+              From
+              <input type="date" id="date-from" aria-label="Filter from date" />
+            </label>
+            <label>
+              To
+              <input type="date" id="date-to" aria-label="Filter to date" />
+            </label>
+          </div>
+        </div>
         <ul>
           {
             posts.map((post) => (
-              <li>
+              <li
+                data-search={`${post.data.title} ${post.data.description}`.toLowerCase()}
+                data-date={toDateInputValue(post.data.pubDate)}
+              >
                 <a href={`/blog/${post.id}/`}>
                   {post.data.heroImage && (
                     <Image
@@ -153,8 +249,58 @@ const posts = (await getCollection("blog")).sort(
             ))
           }
         </ul>
+        <p id="no-results" class="no-results" hidden>
+          No updates match your search.
+        </p>
       </section>
     </main>
     <Footer />
   </body>
 </html>
+
+<script>
+  const searchInput = document.getElementById("blog-search") as HTMLInputElement | null;
+  const dateToggle = document.getElementById("date-filter-toggle");
+  const datePanel = document.getElementById("date-filter-panel");
+  const dateFrom = document.getElementById("date-from") as HTMLInputElement | null;
+  const dateTo = document.getElementById("date-to") as HTMLInputElement | null;
+  const noResults = document.getElementById("no-results");
+  const posts = document.querySelectorAll<HTMLLIElement>("li[data-search]");
+
+  let debounceTimer: ReturnType<typeof setTimeout>;
+
+  function applyFilters() {
+    const query = searchInput?.value.trim().toLowerCase() ?? "";
+    const from = dateFrom?.value ?? "";
+    const to = dateTo?.value ?? "";
+    let visibleCount = 0;
+
+    posts.forEach((post) => {
+      const matchesQuery = !query || (post.dataset.search ?? "").includes(query);
+      const postDate = post.dataset.date ?? "";
+      const matchesFrom = !from || postDate >= from;
+      const matchesTo = !to || postDate <= to;
+      const isVisible = matchesQuery && matchesFrom && matchesTo;
+
+      post.style.display = isVisible ? "" : "none";
+      if (isVisible) visibleCount++;
+    });
+
+    noResults?.toggleAttribute("hidden", visibleCount > 0);
+  }
+
+  function debouncedApplyFilters() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(applyFilters, 150);
+  }
+
+  searchInput?.addEventListener("input", debouncedApplyFilters);
+  dateFrom?.addEventListener("change", debouncedApplyFilters);
+  dateTo?.addEventListener("change", debouncedApplyFilters);
+
+  dateToggle?.addEventListener("click", () => {
+    const isExpanded = dateToggle.getAttribute("aria-expanded") === "true";
+    dateToggle.setAttribute("aria-expanded", (!isExpanded).toString());
+    datePanel?.toggleAttribute("hidden", isExpanded);
+  });
+</script>
