@@ -8,7 +8,7 @@ const authToken = process.env.TURSO_AUTH_TOKEN;
 const client = createClient(
   url
     ? { url, authToken }
-    : { url: 'file:.data/local.db' }
+    : { url: process.env.VITEST ? ':memory:' : 'file:.data/local.db' }
 );
 
 export const db = drizzle(client, { schema });
