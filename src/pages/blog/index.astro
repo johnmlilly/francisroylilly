@@ -60,6 +60,21 @@ function toDateInputValue(date: Date) {
         background: rgba(76, 96, 133, 0.08);
       }
 
+      .clear-filters-btn {
+        flex: 0 0 auto;
+        padding: 0.6rem 0.9rem;
+        border: none;
+        background: none;
+        color: rgb(var(--gray-dark));
+        font-size: 0.9rem;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+
+      .clear-filters-btn:hover {
+        color: var(--secondary-color);
+      }
+
       .date-filter-panel {
         flex-basis: 100%;
         display: flex;
@@ -233,6 +248,9 @@ function toDateInputValue(date: Date) {
               <input type="date" id="date-to" aria-label="Filter to date" />
             </label>
           </div>
+          <button type="button" id="clear-filters" class="clear-filters-btn">
+            Clear
+          </button>
         </div>
         <ul>
           {
@@ -276,6 +294,7 @@ function toDateInputValue(date: Date) {
   const dateFrom = document.getElementById("date-from") as HTMLInputElement | null;
   const dateTo = document.getElementById("date-to") as HTMLInputElement | null;
   const noResults = document.getElementById("no-results");
+  const clearFilters = document.getElementById("clear-filters");
   const posts = document.querySelectorAll<HTMLLIElement>("li[data-search]");
 
   let debounceTimer: ReturnType<typeof setTimeout>;
@@ -313,5 +332,12 @@ function toDateInputValue(date: Date) {
     const isExpanded = dateToggle.getAttribute("aria-expanded") === "true";
     dateToggle.setAttribute("aria-expanded", (!isExpanded).toString());
     datePanel?.toggleAttribute("hidden", isExpanded);
+  });
+
+  clearFilters?.addEventListener("click", () => {
+    if (searchInput) searchInput.value = "";
+    if (dateFrom) dateFrom.value = "";
+    if (dateTo) dateTo.value = "";
+    applyFilters();
   });
 </script>
