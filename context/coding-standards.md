@@ -16,12 +16,13 @@
 
 ## Astro
 
-- `.astro` files are server-rendered by default — no directives needed for static content
-- Use React only for interactive islands; add `client:only="react"` when the component uses browser APIs or can't hydrate server-side
+- `.astro` files are server-rendered by default — no directives needed for static content; place styles, frontmatter scripts, and build-time data fetching (within `---` fences) natively in the file, and use explicit file extensions on `.astro` imports
+- Prioritize static HTML generation over client-side JS hydration; prefer native HTML/CSS/Tailwind over heavy framework abstractions, and don't add interactive components unless explicitly requested
+- Use React only for interactive islands: `client:only="react"` for components needing browser APIs, or `client:load`/`client:visible`/`client:idle` only when a component strictly needs UI state or event listeners
+- Fetch data (DB queries, `getCollection`) in frontmatter, not in React components
 - Use Astro Actions (`src/actions/index.ts`) for form submissions and mutations
 - Use API routes (`src/pages/api/`) when you need specific HTTP status codes, headers, or GET endpoints consumed by client components
-- Fetch data (DB queries, `getCollection`) directly in the frontmatter of `.astro` files — not in React components
-- Content collections live in `src/content/`; define schemas in `src/content.config.ts`
+- Content collections live in `src/content/`; define schemas in `src/content.config.ts` using the Content Layer API (`defineCollection` + `loader`)
 
 ## Tailwind CSS v4
 
