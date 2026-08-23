@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { db, Reaction, eq } from '../../db/client.js';
 import { addCommentHandler, addLoveHandler } from './index.js';
 
 const validComment = {
@@ -65,15 +66,32 @@ describe('addCommentHandler', () => {
 });
 
 describe('addLoveHandler', () => {
+  async function lovesFor(postSlug: string) {
+    const rows = await db.select().from(Reaction).where(eq(Reaction.postSlug, postSlug));
+    return rows;
+  }
+
   it('creates a reaction row on the first love', async () => {
-    const result = await addLoveHandler({ postSlug: 'love-test-first' });
+    const postSlug = 'love-test-first';
+    const result = await addLoveHandler({ postSlug });
+
     expect(result.success).toBe(true);
+
+    const rows = await lovesFor(postSlug);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].loves).toBe(1);
   });
 
   it('increments an existing reaction on subsequent loves', async () => {
     const postSlug = 'love-test-increment';
     await addLoveHandler({ postSlug });
     const result = await addLoveHandler({ postSlug });
+
     expect(result.success).toBe(true);
+
+    // Still one row - incremented, not duplicated.
+    const rows = await lovesFor(postSlug);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].loves).toBe(2);
   });
 });

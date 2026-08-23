@@ -1,14 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { db, Reaction } from '../../../db/client.js';
+import { apiContext } from '../../test/helpers.js';
 import { GET } from './reactions.js';
 
-function requestWith(params: Record<string, string>) {
-  const url = new URL('http://localhost/api/reactions');
-  for (const [key, value] of Object.entries(params)) {
-    url.searchParams.set(key, value);
-  }
-  return { url } as Parameters<typeof GET>[0];
-}
+const requestWith = (params: Record<string, string> = {}) =>
+  apiContext('/api/reactions', params);
 
 describe('GET /api/reactions', () => {
   it('returns 400 when postSlug is missing', async () => {
