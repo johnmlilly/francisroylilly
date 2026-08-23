@@ -10,6 +10,10 @@ import { SITE_DESCRIPTION, SITE_TITLE } from "../../consts";
 const posts = (await getCollection("blog")).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
+
+function toDateInputValue(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
 ---
 
 <!doctype html>
@@ -18,8 +22,130 @@ const posts = (await getCollection("blog")).sort(
     <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
     <style>
       main {
-        width: 960px;
+        width: 100%;
+        max-width: 960px;
         margin: 0 auto;
+        padding: 0 1.5rem;
+      }
+
+      .filter-toolbar {
+        position: relative;
+        margin-bottom: 1.5rem;
+      }
+
+      .search-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 0.5rem 0.4rem 0.75rem;
+        border: 1px solid rgba(var(--gray), 0.3);
+        border-radius: 999px;
+        background: white;
+        transition: border-color 0.2s ease;
+      }
+
+      .search-bar:focus-within {
+        border-color: rgba(76, 96, 133, 0.6);
+      }
+
+      .search-icon {
+        flex: 0 0 auto;
+        width: 18px;
+        height: 18px;
+        color: rgb(var(--gray));
+      }
+
+      .search-input {
+        flex: 1 1 auto;
+        min-width: 0;
+        border: none;
+        background: none;
+        padding: 0.25rem 0;
+        font-size: 1rem;
+        color: inherit;
+      }
+
+      .search-input:focus {
+        outline: none;
+      }
+
+      .bar-divider {
+        flex: 0 0 auto;
+        width: 1px;
+        align-self: stretch;
+        margin: 0.15rem 0;
+        background: rgba(var(--gray), 0.25);
+      }
+
+      .icon-btn {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        border: none;
+        border-radius: 999px;
+        background: none;
+        color: rgb(var(--gray-dark));
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease;
+      }
+
+      .icon-btn svg {
+        width: 17px;
+        height: 17px;
+      }
+
+      .icon-btn:hover {
+        background: rgba(76, 96, 133, 0.1);
+      }
+
+      .icon-btn[aria-expanded="true"],
+      .icon-btn.is-active {
+        background: rgba(76, 96, 133, 0.12);
+        color: var(--secondary-color);
+      }
+
+      .date-filter-panel {
+        position: absolute;
+        z-index: 10;
+        top: calc(100% + 0.5rem);
+        right: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 0.75rem;
+        border: 1px solid rgba(var(--gray), 0.3);
+        border-radius: 12px;
+        background: white;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px 0px;
+      }
+
+      .date-filter-panel[hidden] {
+        display: none;
+      }
+
+      .date-filter-panel label {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.8rem;
+        color: rgb(var(--gray-dark));
+      }
+
+      .date-filter-panel input[type="date"] {
+        padding: 0.3rem 0.45rem;
+        border: 1px solid rgba(var(--gray), 0.3);
+        border-radius: 8px;
+        font-size: 0.85rem;
+      }
+
+      .no-results {
+        text-align: center;
+        padding: 2rem 0;
+        color: rgb(var(--gray-dark));
       }
 
       ul {
@@ -107,6 +233,15 @@ const posts = (await getCollection("blog")).sort(
       }
 
       @media (max-width: 720px) {
+        main {
+          padding: 0 1rem;
+        }
+
+        .date-filter-panel {
+          left: 0;
+          right: 0;
+        }
+
         ul {
           grid-template-columns: 1fr;
           gap: 1rem;
@@ -130,10 +265,91 @@ const posts = (await getCollection("blog")).sort(
     <Header />
     <main>
       <section>
+        <div class="filter-toolbar">
+          <div class="search-bar">
+            <svg
+              class="search-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.3-4.3"></path>
+            </svg>
+            <input
+              type="text"
+              id="blog-search"
+              class="search-input"
+              placeholder="Search updates..."
+              aria-label="Search updates"
+            />
+            <span class="bar-divider" aria-hidden="true"></span>
+            <button
+              type="button"
+              id="date-filter-toggle"
+              class="icon-btn"
+              aria-expanded="false"
+              aria-controls="date-filter-panel"
+              aria-label="Filter by date"
+              title="Filter by date"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M8 2v4M16 2v4"></path>
+                <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                <path d="M3 10h18"></path>
+              </svg>
+            </button>
+            <button
+              type="button"
+              id="clear-filters"
+              class="icon-btn"
+              aria-label="Clear filters"
+              title="Clear filters"
+              hidden
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M18 6 6 18M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+          <div id="date-filter-panel" class="date-filter-panel" hidden>
+            <label>
+              From
+              <input type="date" id="date-from" aria-label="Filter from date" />
+            </label>
+            <label>
+              To
+              <input type="date" id="date-to" aria-label="Filter to date" />
+            </label>
+          </div>
+        </div>
         <ul>
           {
             posts.map((post) => (
-              <li>
+              <li
+                data-search={`${post.data.title} ${post.data.description}`.toLowerCase()}
+                data-date={toDateInputValue(post.data.pubDate)}
+              >
                 <a href={`/blog/${post.id}/`}>
                   {post.data.heroImage && (
                     <Image
@@ -153,8 +369,89 @@ const posts = (await getCollection("blog")).sort(
             ))
           }
         </ul>
+        <p id="no-results" class="no-results" hidden>
+          No updates match your search.
+        </p>
       </section>
     </main>
     <Footer />
   </body>
 </html>
+
+<script>
+  const searchInput = document.getElementById("blog-search") as HTMLInputElement | null;
+  const dateToggle = document.getElementById("date-filter-toggle");
+  const datePanel = document.getElementById("date-filter-panel");
+  const dateFrom = document.getElementById("date-from") as HTMLInputElement | null;
+  const dateTo = document.getElementById("date-to") as HTMLInputElement | null;
+  const noResults = document.getElementById("no-results");
+  const clearFilters = document.getElementById("clear-filters");
+  const posts = document.querySelectorAll<HTMLLIElement>("li[data-search]");
+
+  let debounceTimer: ReturnType<typeof setTimeout>;
+
+  function applyFilters() {
+    const query = searchInput?.value.trim().toLowerCase() ?? "";
+    const from = dateFrom?.value ?? "";
+    const to = dateTo?.value ?? "";
+    let visibleCount = 0;
+
+    posts.forEach((post) => {
+      const matchesQuery = !query || (post.dataset.search ?? "").includes(query);
+      const postDate = post.dataset.date ?? "";
+      const matchesFrom = !from || postDate >= from;
+      const matchesTo = !to || postDate <= to;
+      const isVisible = matchesQuery && matchesFrom && matchesTo;
+
+      post.style.display = isVisible ? "" : "none";
+      if (isVisible) visibleCount++;
+    });
+
+    noResults?.toggleAttribute("hidden", visibleCount > 0);
+
+    const hasDateFilter = Boolean(from || to);
+    dateToggle?.classList.toggle("is-active", hasDateFilter);
+    clearFilters?.toggleAttribute("hidden", !query && !hasDateFilter);
+  }
+
+  function closeDatePanel() {
+    dateToggle?.setAttribute("aria-expanded", "false");
+    datePanel?.setAttribute("hidden", "");
+  }
+
+  function debouncedApplyFilters() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(applyFilters, 150);
+  }
+
+  searchInput?.addEventListener("input", debouncedApplyFilters);
+  dateFrom?.addEventListener("change", debouncedApplyFilters);
+  dateTo?.addEventListener("change", debouncedApplyFilters);
+
+  dateToggle?.addEventListener("click", () => {
+    const isExpanded = dateToggle.getAttribute("aria-expanded") === "true";
+    dateToggle.setAttribute("aria-expanded", (!isExpanded).toString());
+    datePanel?.toggleAttribute("hidden", isExpanded);
+  });
+
+  document.addEventListener("click", (event) => {
+    const target = event.target as Node;
+    if (datePanel?.contains(target) || dateToggle?.contains(target)) return;
+    closeDatePanel();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeDatePanel();
+  });
+
+  clearFilters?.addEventListener("click", () => {
+    if (searchInput) searchInput.value = "";
+    if (dateFrom) dateFrom.value = "";
+    if (dateTo) dateTo.value = "";
+    closeDatePanel();
+    applyFilters();
+    searchInput?.focus();
+  });
+
+  applyFilters();
+</script>
