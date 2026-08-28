@@ -26,12 +26,10 @@ const rawPosts = (await getCollection("blog")).sort(
 ); // oldest → newest
 
 // Show a "new update" indicator when the latest post is under a week old.
-// The page is prerendered, so this is decided at build time — an inline script
-// below re-checks against the visitor's clock and drops it if it has gone stale.
-const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+// Inline script rechecks time against the browsers to ensure no stale content against (posts are only rendered at build time).
 const latestPost = rawPosts[0];
 const hasNewUpdate =
-  latestPost && Date.now() - latestPost.data.pubDate.getTime() < WEEK_MS;
+  latestPost && Date.now() - latestPost.data.pubDate.getTime() < 6048e5;
 
 // Optimize timeline images at build time
 const posts = await Promise.all(
@@ -69,10 +67,10 @@ const posts = await Promise.all(
           <a
             class="new-update"
             href={`/blog/${latestPost.id}/`}
-            data-pubdate={latestPost.data.pubDate.toISOString()}
-          >
+            data-pubdate={latestPost.data.pubDate.toISOString()}>
             <span class="new-dot" aria-hidden="true" />
-            New update &middot;{" "}<FormattedDate date={latestPost.data.pubDate} format="short" />
+            New update &middot;{" "}
+            <FormattedDate date={latestPost.data.pubDate} format="short" />
           </a>
         )
       }
