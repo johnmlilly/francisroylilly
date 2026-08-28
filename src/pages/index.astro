@@ -1,11 +1,22 @@
 ---
-import { Image, getImage } from "astro:assets";
+import { getImage } from "astro:assets";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../consts.ts";
 import Timeline from "../components/Timeline.jsx";
 import { getCollection } from "astro:content";
 import heroImage from "../assets/images/francisroy-hero.jpeg";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Cards from "../components/Cards.astro";
+import HeroFlip from "../components/HeroFlip.astro";
+
+import heroImage2 from "../assets/images/Support.webp";
+import heroImage5 from "../assets/images/easter-2026.webp";
+import heroImage6 from "../assets/blog/feb-9-26-hero.jpg";
+import heroImage3 from "../assets/images/IMG_7630.webp";
+import heroImage4 from "../assets/images/IMG_8338.webp";
+
+// Prerendered so Sharp optimizes the hero photos at build time — under
+// imageService: 'compile' an SSR route ships the full-size originals instead.
+export const prerender = true;
 
 // Fetch all blog posts
 const rawPosts = (await getCollection("blog")).sort(
@@ -57,7 +68,10 @@ const posts = await Promise.all(
       <a href="#story" class="cta">Read His Story</a>
     </div>
     <div class="hero-image">
-      <Image src={heroImage} alt="Francis Roy Lilly" class="hero-img" />
+      <HeroFlip
+        photos={[heroImage, heroImage2, heroImage3, heroImage4, heroImage5, heroImage6]}
+        alt="Francis Roy Lilly"
+      />
     </div>
   </section>
   <section id="story" class="about">
@@ -83,9 +97,10 @@ const posts = await Promise.all(
         On the morning of Palm Sunday, April 13, we met the godparents of
         another baby (named Thomas) born at the same hospital. We shared
         Francis's story and prognosis with them, and they told us about
-        <a href="https://tvwguild.org/" target="_blank"> the story of Tom Vander Woude</a>. They
-        explained how he had interceded for baby Thomas and gave us the prayer
-        they had used, asking for God's help through Tom Vander Woude's
+        <a href="https://tvwguild.org/" target="_blank">
+          the story of Tom Vander Woude</a
+        >. They explained how he had interceded for baby Thomas and gave us the
+        prayer they had used, asking for God's help through Tom Vander Woude's
         intercession.
       </p>
       <p>
@@ -115,10 +130,11 @@ const posts = await Promise.all(
         John spent the night with Francis on Holy Thursday, and by morning he
         had started to open both eyes and had a startle reflex. On the morning
         of Good Friday, Kara visited with some family and close friends, and
-        Francis started moving his eyes around the room, reacting to touch and the sound of voices, and he even managed a
-        cough! To our amazement, he continued to show signs of gradual
-        improvement. We asked his doctors for more time to see how he would
-        progress, and they enthusiastically agreed.
+        Francis started moving his eyes around the room, reacting to touch and
+        the sound of voices, and he even managed a cough! To our amazement, he
+        continued to show signs of gradual improvement. We asked his doctors for
+        more time to see how he would progress, and they enthusiastically
+        agreed.
       </p>
       <p>
         On Easter Sunday morning, one of the doctors called to say she thought
@@ -128,7 +144,8 @@ const posts = await Promise.all(
       <blockquote class="pull-quote">We call it our Easter Miracle.</blockquote>
       <p>
         Francis went home not long after and continues to amaze us and exceed
-        every expectation. We share updates here as he grows, heals, and recovers.
+        every expectation. We share updates here as he grows, heals, and
+        recovers.
       </p>
     </div>
   </section>
@@ -212,15 +229,6 @@ const posts = await Promise.all(
     width: 100%;
     max-width: 460px;
     animation: hero-slide-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
-  }
-
-  .hero-img {
-    width: 100%;
-    height: auto;
-    border-radius: 16px;
-    object-fit: cover;
-    display: block;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   }
 
   .cta {
