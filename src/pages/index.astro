@@ -54,13 +54,13 @@ const posts = await Promise.all(
         severe brain injury. During Holy Week, we were told to say our goodbyes.
         On Easter Sunday, he began breathing on his own.
       </p>
-      <a href="#updates" class="cta">See His Updates</a>
+      <a href="#story" class="cta">Read His Story</a>
     </div>
     <div class="hero-image">
       <Image src={heroImage} alt="Francis Roy Lilly" class="hero-img" />
     </div>
   </section>
-  <section class="about">
+  <section id="story" class="about">
     <div class="about-prose">
       <h2>Francis's Story</h2>
       <p>
@@ -260,7 +260,7 @@ const posts = await Promise.all(
     color: rgb(var(--gray-dark));
     animation: hero-slide-in 0.8s linear both;
     animation-timeline: view(block 25%);
-    animation-range: entry 0% cover 20%;
+    animation-range: entry 0% cover 25%;
   }
 
   .about-prose h2 {
