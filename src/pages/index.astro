@@ -65,11 +65,21 @@ const posts = await Promise.all(
         severe brain injury. During Holy Week, we were told to say our goodbyes.
         On Easter Sunday, he began breathing on his own.
       </p>
-      <a href="#story" class="cta">Read His Story</a>
+      <div class="cta-container">
+        <a href="#story" class="cta">Read His Story</a>
+        <a href="#updates" class="cta__secondary">See all updates</a>
+      </div>
     </div>
     <div class="hero-image">
       <HeroFlip
-        photos={[heroImage, heroImage2, heroImage3, heroImage4, heroImage5, heroImage6]}
+        photos={[
+          heroImage,
+          heroImage2,
+          heroImage3,
+          heroImage4,
+          heroImage5,
+          heroImage6,
+        ]}
         alt="Francis Roy Lilly"
       />
     </div>
@@ -231,6 +241,13 @@ const posts = await Promise.all(
     animation: hero-slide-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
   }
 
+  .cta-container {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
   .cta {
     display: inline-block;
     margin-top: 1rem;
@@ -243,9 +260,28 @@ const posts = await Promise.all(
     transition: background 0.2s ease;
   }
 
+  .cta__secondary {
+    padding: 0.75rem 0.25rem;
+    display: inline-block;
+    margin-top: 0;
+    background: var(--primary-color-light);
+    color: var(--primary-color);
+    text-decoration: underline;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+  }
+
   .cta:hover {
     background: var(--primary-color-hover);
     color: white;
+  }
+
+  @media (min-width: 350px) {
+    .cta__secondary {
+      margin-top: 1rem;
+      padding: 0.75rem 1.25rem;
+    }
   }
 
   @media (min-width: 768px) {
