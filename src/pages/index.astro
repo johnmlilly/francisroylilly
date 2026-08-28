@@ -44,29 +44,91 @@ const posts = await Promise.all(
   <!-- Hero Section -->
   <section class="hero">
     <div class="hero-text">
-      <h1>Hi there! I'm Francis</h1>
+      <h1>Francis Roy Lilly</h1>
+      <blockquote class="hero-quote">
+        <p>It is so that the works of God might be made visible through him.</p>
+        <cite>John 9:3</cite>
+      </blockquote>
       <p>
-        I was born on April 1, 2025 and survived a severe brain injury. This is
-        my story.
+        Our son Francis was born on April 1, 2025 without oxygen and suffered a
+        severe brain injury. During Holy Week, we were told to say our goodbyes.
+        On Easter Sunday, he began breathing on his own.
       </p>
-      <a href="#updates" class="cta">See My Updates</a>
+      <a href="#story" class="cta">Read His Story</a>
     </div>
     <div class="hero-image">
       <Image src={heroImage} alt="Francis Roy Lilly" class="hero-img" />
     </div>
   </section>
-  <section class="about">
+  <section id="story" class="about">
     <div class="about-prose">
+      <h2>Francis's Story</h2>
       <p>
-        I was born on April 1, 2025 and suffered a severe brain injury from HIE
-        (Hypoxic Ischemic Encephalopathy). My family thought they would have to
-        say goodbye to me.
+        Francis Roy Lilly was born to us, John and Kara Lilly, on April 1, 2025,
+        following severe complications during delivery that left him unable to
+        breathe. He was without oxygen for the first 25 minutes of life and
+        required extensive resuscitation. He was intubated almost immediately
+        and flown to the Inova Neonatal Intensive Care Unit in Fairfax, VA.
       </p>
-      <blockquote class="pull-quote">But God had other plans.</blockquote>
       <p>
-        During Holy Week I began to wake up. On Easter Sunday I started
-        breathing on my own. I went home not long after that. My family shares
-        updates here as I continue to grow and heal.
+        As a result of the severe brain injury he sustained during birth
+        (hypoxic-ischemic encephalopathy, or HIE), Francis was placed on cooling
+        pads and heavily medicated due to subclinical seizures. The seizures
+        could not be controlled without several different types of medication,
+        and their cause could not be determined. Because of his prognosis, we
+        felt very discouraged, but we continued to pray for his complete and
+        total healing,
+      </p>
+      <p>
+        On the morning of Palm Sunday, April 13, we met the godparents of
+        another baby (named Thomas) born at the same hospital. We shared
+        Francis's story and prognosis with them, and they told us about
+        <a href="https://tvwguild.org/" target="_blank"> the story of Tom Vander Woude</a>. They
+        explained how he had interceded for baby Thomas and gave us the prayer
+        they had used, asking for God's help through Tom Vander Woude's
+        intercession.
+      </p>
+      <p>
+        On the Tuesday of Holy Week, we had an emotional and difficult meeting
+        with our care team. The doctors told us there was nothing more they
+        could do for Francis. The subclinical seizures were still present
+        despite the heavy doses of medication, and an MRI brain scan revealed
+        that his brain cells were dying. They suggested we prepare to say our
+        goodbyes and contact our family and friends.
+      </p>
+      <p>
+        The next night, Kara sat at the dining room table in our home and said a
+        prayer:
+      </p>
+      <blockquote class="pull-quote">
+        Thomas Vander Woude, you know the love of a parent. I beg of you to go
+        before the Lord to save our son.
+      </blockquote>
+      <p>
+        That Wednesday, the doctors began weaning Francis off the medication —
+        something that every time before had sent him spiraling and worsening.
+        On Holy Saturday, we planned to say our final goodbyes with our two
+        girls, Bella and Maxine, along with our extended family and several
+        close friends.
+      </p>
+      <p>
+        John spent the night with Francis on Holy Thursday, and by morning he
+        had started to open both eyes and had a startle reflex. On the morning
+        of Good Friday, Kara visited with some family and close friends, and
+        Francis started moving his eyes around the room, reacting to touch and the sound of voices, and he even managed a
+        cough! To our amazement, he continued to show signs of gradual
+        improvement. We asked his doctors for more time to see how he would
+        progress, and they enthusiastically agreed.
+      </p>
+      <p>
+        On Easter Sunday morning, one of the doctors called to say she thought
+        Francis was ready to be extubated. She believed he could breathe on his
+        own!
+      </p>
+      <blockquote class="pull-quote">We call it our Easter Miracle.</blockquote>
+      <p>
+        Francis went home not long after and continues to amaze us and exceed
+        every expectation. We share updates here as he grows, heals, and recovers.
       </p>
     </div>
   </section>
@@ -125,6 +187,26 @@ const posts = await Promise.all(
     margin-bottom: 1em;
   }
 
+  .hero-quote {
+    margin: 0 0 1.5rem;
+    padding-left: 1rem;
+    border-left: 3px solid var(--primary-color);
+  }
+
+  .hero-quote p {
+    font-size: 1.15rem;
+    font-style: italic;
+    line-height: 1.6;
+    margin-bottom: 0.35em;
+  }
+
+  .hero-quote cite {
+    font-style: normal;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--primary-color);
+  }
+
   .hero-image {
     flex: 1;
     width: 100%;
@@ -178,7 +260,14 @@ const posts = await Promise.all(
     color: rgb(var(--gray-dark));
     animation: hero-slide-in 0.8s linear both;
     animation-timeline: view(block 25%);
-    animation-range: entry 0% cover 60%;
+    animation-range: entry 0% cover 25%;
+  }
+
+  .about-prose h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
   }
 
   .about-prose p {

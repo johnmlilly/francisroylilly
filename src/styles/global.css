@@ -9,6 +9,7 @@
 	--primary-color: #B8A86F;
 	--primary-color-hover: #c9bb8b;
 	--secondary-color: #4C6085;
+	--secondary-color-hover: #6B82A6;
 	--accent: #823038;
 	--black: 15, 18, 25;
 	--gray: 96, 115, 159;
@@ -104,10 +105,11 @@ b {
 	font-weight: 700;
 }
 a {
-	color: var(--accent);
+	color: var(--secondary-color);
+	font-weight: 600;
 }
 a:hover {
-	color: var(--accent);
+	color: var(--secondary-color-hover);
 }
 p, ul, ol {
 	margin-bottom: 1em;
