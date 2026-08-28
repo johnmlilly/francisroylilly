@@ -2,7 +2,6 @@
   "name": "francisroylilly",
   "type": "module",
   "scripts": {
-    "start": "astro dev",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
@@ -11,8 +10,7 @@
     "db:seed": "tsx db/seed.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "deploy": "astro build && wrangler deploy --config dist/server/wrangler.json",
-    "preview:worker": "astro build && wrangler dev --config dist/server/wrangler.json"
+    "deploy": "astro build && wrangler deploy --config dist/server/wrangler.json"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.2.5",
