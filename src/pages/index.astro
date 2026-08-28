@@ -125,9 +125,9 @@ const posts = await Promise.all(
       <p>
         On the morning of Palm Sunday, April 13, we met the godparents of
         another baby (named Thomas) born at the same hospital. We shared
-        Francis's story and prognosis with them, and they told us about
-        <a href="https://tvwguild.org/" target="_blank">
-          the story of Tom Vander Woude</a
+        Francis's story and prognosis with them, and they told us about 
+         <a href="https://tvwguild.org/" target="_blank"> 
+         &nbsp;the story of Tom Vander Woude</a
         >. They explained how he had interceded for baby Thomas and gave us the
         prayer they had used, asking for God's help through Tom Vander Woude's
         intercession.
@@ -244,7 +244,7 @@ const posts = await Promise.all(
   }
 
   .new-update:hover {
-    color: var(--secondary-color);
+    color: var(--accent);
   }
 
   .new-dot {
@@ -253,7 +253,7 @@ const posts = await Promise.all(
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #4a6b47;
+    background: var(--accent);
   }
 
   /* Slow halo rather than a hard ping — closer to a candle than a status light. */
@@ -262,7 +262,7 @@ const posts = await Promise.all(
     position: absolute;
     inset: 0;
     border-radius: 50%;
-    background: #4a6b47;
+    background: var(--accent);
     animation: new-dot-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
