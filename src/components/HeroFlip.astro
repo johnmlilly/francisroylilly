@@ -1,0 +1,103 @@
+---
+import { Image } from "astro:assets";
+
+interface Props {
+  photos: ImageMetadata[];
+  alt: string;
+  holdSeconds?: number;
+  flipSeconds?: number;
+}
+
+const { photos, alt, holdSeconds = 4, flipSeconds = 0.9 } = Astro.props;
+
+const cycle = photos.length * holdSeconds;
+const animated = photos.length > 1 && flipSeconds < holdSeconds;
+
+// Keyframe stops depend on how many photos there are, and CSS keyframe
+// percentages can't be custom properties — so build the rule here.
+const slot = 100 / photos.length;
+const flipPct = (flipSeconds / cycle) * 100;
+const halfPct = flipPct / 2;
+const pct = (n: number) => `${n.toFixed(4)}%`;
+
+// Each card holds face-on for its slot, rotates to edge-on (-90deg), waits out
+// the rest of the cycle hidden at +90deg, then rotates back in. Staggered
+// negative delays make the hand-off at 90deg read as one card flipping over.
+const keyframes = `@keyframes hero-card-flip {
+  0% { transform: rotateX(0deg); opacity: 1; }
+  ${pct(slot - flipPct)} { transform: rotateX(0deg); opacity: 1; }
+  ${pct(slot - halfPct)} { transform: rotateX(-90deg); opacity: 1; }
+  ${pct(slot - halfPct + 0.01)} { transform: rotateX(90deg); opacity: 0; }
+  ${pct(100 - halfPct - 0.01)} { transform: rotateX(90deg); opacity: 0; }
+  ${pct(100 - halfPct)} { transform: rotateX(90deg); opacity: 1; }
+  100% { transform: rotateX(0deg); opacity: 1; }
+}`;
+
+const first = photos[0];
+---
+
+{animated && <style is:inline set:html={keyframes} />}
+
+<div
+  class:list={["flip-stack", { animated }]}
+  style={`--cycle: ${cycle}s; aspect-ratio: ${first.width} / ${first.height};`}
+>
+  {
+    photos.map((photo, i) => (
+      <div
+        class="flip-card"
+        style={`animation-delay: ${-(cycle - i * holdSeconds)}s`}
+      >
+        <Image
+          src={photo}
+          alt={i === 0 ? alt : ""}
+          width={920}
+          widths={[460, 720, 920]}
+          sizes="(max-width: 767px) 100vw, 460px"
+          loading={i === 0 ? "eager" : "lazy"}
+          decoding={i === 0 ? "sync" : "async"}
+          class="hero-img"
+        />
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .flip-stack {
+    position: relative;
+    width: 100%;
+    perspective: 1200px;
+  }
+
+  .flip-card {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+  }
+
+  /* Only the first card shows until the animation takes over. */
+  .flip-stack.animated .flip-card:not(:first-child) {
+    opacity: 0;
+  }
+
+  .flip-stack.animated .flip-card {
+    animation: hero-card-flip var(--cycle) cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  .hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+    display: block;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flip-stack.animated .flip-card {
+      animation: none;
+    }
+  }
+</style>
