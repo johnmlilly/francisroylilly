@@ -32,6 +32,7 @@ In Progress
 5. **Add a git-based CMS** — likely [Pages CMS](https://pagescms.org/), for editing blog content without touching markdown directly
 6. **Loading animation for comments** — visual cue in `src/components/Comments.astro` while comments fetch from Turso; covers initial load and the refresh after submit, with a graceful fallback if the fetch fails
 7. **Prerender blog posts for image optimization** — `src/pages/blog/[...slug].astro` is SSR, so `<Image>` emits `/_image?...` URLs that the Workers runtime cannot serve under `imageService: 'compile'`; full-size originals ship instead. Needs `prerender = true` plus `getStaticPaths()`
+8. **Migrate Turso → Cloudflare D1** — move the `Comment`/`Reaction` tables onto D1 so DB, Worker, and DNS all sit in one account. Swap `db/client.ts` to `drizzle-orm/d1` with a `d1_databases` binding (`import { env } from 'cloudflare:workers'`), keeping the libsql `:memory:` branch for Vitest and aliasing `cloudflare:workers` to a stub in `vitest.config.ts`. Drops the `TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` secrets and turns every query from an HTTP round-trip into an in-network binding call. Data moves via `turso db dump` → `wrangler d1 execute --remote --file=`. Call sites (actions, `src/pages/api/*`, `CommentsList.astro`, `ReactionsButton.astro`) need no edits — Drizzle's query API is identical. Costs: `db/migrate.ts` and `db/seed.ts` must become `wrangler d1` commands (no Node driver for D1), and D1 has no interactive transactions (unused today)
 
 
 ## Chores
