@@ -10,11 +10,13 @@
     "db:migrate": "tsx db/migrate.ts",
     "db:seed": "tsx db/seed.ts",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "deploy": "astro build && wrangler deploy --config dist/server/wrangler.json",
+    "preview:worker": "astro build && wrangler dev --config dist/server/wrangler.json"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^14.2.5",
     "@astrojs/mdx": "^7.0.3",
-    "@astrojs/netlify": "^8.1.2",
     "@astrojs/react": "^6.0.1",
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.3",
@@ -34,6 +36,7 @@
   "devDependencies": {
     "drizzle-kit": "^0.31.10",
     "tsx": "^4.23.1",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.10",
+    "wrangler": "^4.127.0"
   }
 }
