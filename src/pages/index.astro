@@ -7,6 +7,7 @@ import heroImage from "../assets/images/francisroy-hero.jpeg";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Cards from "../components/Cards.astro";
 import HeroFlip from "../components/HeroFlip.astro";
+import FormattedDate from "../components/FormattedDate.astro";
 
 import heroImage2 from "../assets/images/Support.webp";
 import heroImage5 from "../assets/images/easter-2026.webp";
@@ -23,6 +24,14 @@ const rawPosts = (await getCollection("blog")).sort(
   (a, b) =>
     new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime(),
 ); // oldest → newest
+
+// Show a "new update" indicator when the latest post is under a week old.
+// The page is prerendered, so this is decided at build time — an inline script
+// below re-checks against the visitor's clock and drops it if it has gone stale.
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+const latestPost = rawPosts[0];
+const hasNewUpdate =
+  latestPost && Date.now() - latestPost.data.pubDate.getTime() < WEEK_MS;
 
 // Optimize timeline images at build time
 const posts = await Promise.all(
@@ -55,6 +64,18 @@ const posts = await Promise.all(
   <!-- Hero Section -->
   <section class="hero">
     <div class="hero-text">
+      {
+        hasNewUpdate && (
+          <a
+            class="new-update"
+            href={`/blog/${latestPost.id}/`}
+            data-pubdate={latestPost.data.pubDate.toISOString()}
+          >
+            <span class="new-dot" aria-hidden="true" />
+            New update &middot;{" "}<FormattedDate date={latestPost.data.pubDate} format="short" />
+          </a>
+        )
+      }
       <h1>Francis Roy Lilly</h1>
       <blockquote class="hero-quote">
         <p>It is so that the works of God might be made visible through him.</p>
@@ -169,6 +190,15 @@ const posts = await Promise.all(
   </section>
 </BaseLayout>
 
+<script is:inline>
+  // The homepage is prerendered, so the freshness check above is frozen at
+  // build time. Drop the indicator if it has aged out since the last deploy.
+  const update = document.querySelector(".new-update");
+  if (update && Date.now() - Date.parse(update.dataset.pubdate) > 6048e5) {
+    update.remove();
+  }
+</script>
+
 <style>
   section {
     padding: 3rem 1.5rem;
@@ -200,6 +230,54 @@ const posts = await Promise.all(
     flex: 1;
     max-width: 560px;
     animation: hero-slide-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
+  }
+
+  .new-update {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    font-style: italic;
+    color: rgb(var(--gray));
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .new-update:hover {
+    color: var(--secondary-color);
+  }
+
+  .new-dot {
+    position: relative;
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4a6b47;
+  }
+
+  /* Slow halo rather than a hard ping — closer to a candle than a status light. */
+  .new-dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: #4a6b47;
+    animation: new-dot-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes new-dot-pulse {
+    0% {
+      transform: scale(1);
+      opacity: 0.4;
+    }
+    70%,
+    100% {
+      transform: scale(2.8);
+      opacity: 0;
+    }
   }
 
   .hero-text h1 {
@@ -358,7 +436,8 @@ const posts = await Promise.all(
   @media (prefers-reduced-motion: reduce) {
     .hero-text,
     .hero-image,
-    .about-prose {
+    .about-prose,
+    .new-dot::after {
       animation: none;
     }
   }
