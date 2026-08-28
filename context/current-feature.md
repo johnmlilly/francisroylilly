@@ -1,27 +1,40 @@
 # Current Feature
 
-<!-- Feature Name -->
-## Loading animation for comments
+## Migrate hosting from Netlify to Cloudflare Workers
 
 ## Status
 
-Not Started
+In Progress
 
 ## Goals
 
-- Show a visual cue in `src/components/Comments.astro` while comments fetch from Turso
-- Cover the initial load and the refresh after a comment is submitted
-- Fall back gracefully if the fetch fails
+- Swap `@astrojs/netlify` for `@astrojs/cloudflare` in `astro.config.mjs`
+- Add root `wrangler.jsonc` (`nodejs_compat`, compat date 2026-08-01)
+- Keep Turso/Drizzle working on Workers (no Node built-ins at runtime)
+- Point `francisroylilly.com` + `www` at the Worker instead of Netlify
+
+## Notes
+
+- `@libsql/client` has a `workerd` export condition, so the import resolves to its
+  fetch-based web build automatically - no code change needed there.
+- `db/client.ts` now creates the client lazily: Workers only populates
+  `process.env` inside a request, not at module scope.
+- `imageService: 'compile'` - Workers has no sharp, so images are optimized at build time.
+- `session: false` - avoids the adapter provisioning a KV namespace the site doesn't use.
+- Vitest can't run with the Cloudflare Vite plugin loaded, so the adapter is skipped
+  when `process.env.VITEST` is set.
+- Deploy: `npm run deploy` (`astro build && wrangler deploy --config dist/server/wrangler.json`).
+- Worker secrets required: `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`.
 
 ## Upcoming Features (Queue)
 
 1. **Add E2E test coverage with Playwright** — follow-up to the Vitest unit tests; smoke tests for comment submission, love button, and `/blog` listing
 2. **Finish CaringBridge post migration** (priority — content) — port remaining CaringBridge posts to `src/content/blog/`: write titles, assign authors, import images into `src/assets/blog/`; migrate existing CaringBridge comments and reactions into the Turso `Comment`/`Reaction` tables
 3. **Fix social preview / OG meta for blog posts** — each update post uses the site-wide default OG image instead of a per-post one; add proper per-post social preview + metadata
-4. **Migrate hosting from Netlify to Cloudflare** — domain now hosted on Cloudflare; swap `@astrojs/netlify` adapter for Cloudflare's, update integrations/config in `astro.config.mjs` accordingly
-5. **Replace Lucide icons with Astro Icon** — swap the Lucide icon package for the native [astro-icon](https://github.com/natemoo-re/astro-icon#readme) integration (used in `src/components/Cards.astro`)
-6. **Streamline SEO with astro-seo** — adopt [astro-seo](https://github.com/jonasmerlin/astro-seo#readme), passing per-page props for title/description/OG data across main pages instead of duplicated meta tags
-7. **Add a git-based CMS** — likely [Pages CMS](https://pagescms.org/), for editing blog content without touching markdown directly
+4. **Replace Lucide icons with Astro Icon** — swap the Lucide icon package for the native [astro-icon](https://github.com/natemoo-re/astro-icon#readme) integration (used in `src/components/Cards.astro`)
+5. **Streamline SEO with astro-seo** — adopt [astro-seo](https://github.com/jonasmerlin/astro-seo#readme), passing per-page props for title/description/OG data across main pages instead of duplicated meta tags
+6. **Add a git-based CMS** — likely [Pages CMS](https://pagescms.org/), for editing blog content without touching markdown directly
+7. **Loading animation for comments** — visual cue in `src/components/Comments.astro` while comments fetch from Turso; covers initial load and the refresh after submit, with a graceful fallback if the fetch fails
 
 
 ## Archived — Features Already Implemented

@@ -20,9 +20,9 @@ Personal site documenting the journey of Francis Roy Lilly, a baby who survived 
 | Database    | Drizzle ORM + `@libsql/client` against Turso    |
 | Auth        | None (public site)                              |
 | File Assets | `src/assets/` (Astro image optimization)        |
-| Deployment  | Netlify (via `@astrojs/netlify` adapter); domain DNS on Cloudflare |
+| Deployment  | Cloudflare Workers (via `@astrojs/cloudflare` adapter); DNS on Cloudflare |
 
-> Astro DB (`@astrojs/db`) was removed in Astro 7 — the app now talks to the same Turso database directly via Drizzle ORM (see `db/`). Hosting adapter migration from Netlify to Cloudflare is queued but not yet done (see `context/current-feature.md`).
+> Astro DB (`@astrojs/db`) was removed in Astro 7 — the app now talks to the same Turso database directly via Drizzle ORM (see `db/`). Hosting moved from Netlify to Cloudflare Workers — deploy with `npm run deploy`; `TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` are Worker secrets.
 
 ---
 
