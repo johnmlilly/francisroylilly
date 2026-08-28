@@ -30,3 +30,6 @@ pnpm-debug.log*
 
 #Claude
 .claude
+
+# Cloudflare Workers local state
+.wrangler/
