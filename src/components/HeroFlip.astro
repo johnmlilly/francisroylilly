@@ -8,7 +8,7 @@ interface Props {
   flipSeconds?: number;
 }
 
-const { photos, alt, holdSeconds = 4, flipSeconds = 0.9 } = Astro.props;
+const { photos, alt, holdSeconds = 4, flipSeconds = 0.4 } = Astro.props;
 
 const cycle = photos.length * holdSeconds;
 const animated = photos.length > 1 && flipSeconds < holdSeconds;
