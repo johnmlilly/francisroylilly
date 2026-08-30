@@ -75,6 +75,7 @@ const posts = await Promise.all(
         )
       }
       <h1>Francis Roy Lilly</h1>
+      <h2>Our Little Lion</h2>
       <blockquote class="hero-quote">
         <p>It is so that the works of God might be made visible through him.</p>
         <cite>John 9:3</cite>
@@ -280,6 +281,13 @@ const posts = await Promise.all(
 
   .hero-text h1 {
     font-size: clamp(2rem, 5vw, 3rem);
+   
+  }
+
+  .hero-text h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    color: var(--primary-color);
+    font-weight: 600;
     margin-bottom: 1rem;
   }
 
