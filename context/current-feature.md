@@ -1,6 +1,6 @@
 # Current Feature
 
-## Finish CaringBridge post migration
+## Hero photo flip rotator
 
 ## Status
 
@@ -8,31 +8,42 @@ In Progress
 
 ## Goals
 
-- Port the remaining CaringBridge posts into `src/content/blog/` as `.md`/`.mdx`
-- Write a title and description for each, assign the author, set `pubDate`
-- Import each post's images into `src/assets/blog/` and wire up `heroImage` /
-  `galleryPhotos`
-- Migrate existing CaringBridge comments and reactions into the Turso
-  `Comment` / `Reaction` tables, keyed by the new `postSlug`
+- Rotate several hero photos on the homepage, one visible at a time, advancing
+  automatically every 4s
+- 3D card flip between photos via custom `@keyframes`, no user controls
+- Pure CSS — zero JS, no React island, no hydration on the hero
+- Only the first photo carries LCP cost; the rest load at low priority
 
 ## Notes
 
-- Content work, not a code change - the frontmatter schema in
-  `src/content.config.ts` already covers everything these posts need.
-- `BlogPost` auto-renders a 1/2/3-column grid from `galleryPhotos.length`.
-- Comment rows need `postSlug` to match the new filename-derived slug exactly,
-  or the comments will not show up on the post.
+- `src/components/HeroFlip.astro` — takes `photos: ImageMetadata[]`, `alt`,
+  optional `holdSeconds` (4) / `flipSeconds` (0.9). Keyframe stop percentages
+  depend on `photos.length`, and CSS keyframe stops can't be custom properties,
+  so the `@keyframes` rule is built in frontmatter and emitted with
+  `<style is:inline set:html={...}>`. Falls back to a single static card when
+  given fewer than two photos.
+- `src/pages/index.astro` now sets `export const prerender = true`. Required:
+  under `imageService: 'compile'` an SSR route ships full-size originals, so
+  without it the four hero photos would be ~1.2MB unoptimized. The homepage
+  frontmatter is build-time only (`getCollection` + `getImage`), so it is safe
+  to prerender. Scoped to `index.astro` — blog posts still SSR (queue item 7).
+- Cards 2-N use `loading="lazy"`, which demotes them to low priority rather
+  than truly deferring them — they sit inside the viewport. True deferral would
+  need JS.
+- **Open:** `heroImage2`/`3`/`4` in `index.astro` are placeholders pulled from
+  existing assets. Swap for real hero photos (~3:2 landscape) before merge.
 
 ## Upcoming Features (Queue)
 
-1. **Add E2E test coverage with Playwright** — follow-up to the Vitest unit tests; smoke tests for comment submission, love button, and `/blog` listing
-2. **Fix social preview / OG meta for blog posts** — each update post uses the site-wide default OG image instead of a per-post one; add proper per-post social preview + metadata
-3. **Replace Lucide icons with Astro Icon** — swap the Lucide icon package for the native [astro-icon](https://github.com/natemoo-re/astro-icon#readme) integration (used in `src/components/Cards.astro`)
-4. **Streamline SEO with astro-seo** — adopt [astro-seo](https://github.com/jonasmerlin/astro-seo#readme), passing per-page props for title/description/OG data across main pages instead of duplicated meta tags
-5. **Add a git-based CMS** — likely [Pages CMS](https://pagescms.org/), for editing blog content without touching markdown directly
-6. **Loading animation for comments** — visual cue in `src/components/Comments.astro` while comments fetch from Turso; covers initial load and the refresh after submit, with a graceful fallback if the fetch fails
-7. **Prerender blog posts for image optimization** — `src/pages/blog/[...slug].astro` is SSR, so `<Image>` emits `/_image?...` URLs that the Workers runtime cannot serve under `imageService: 'compile'`; full-size originals ship instead. Needs `prerender = true` plus `getStaticPaths()`
-8. **Migrate Turso → Cloudflare D1** — move the `Comment`/`Reaction` tables onto D1 so DB, Worker, and DNS all sit in one account. Swap `db/client.ts` to `drizzle-orm/d1` with a `d1_databases` binding (`import { env } from 'cloudflare:workers'`), keeping the libsql `:memory:` branch for Vitest and aliasing `cloudflare:workers` to a stub in `vitest.config.ts`. Drops the `TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` secrets and turns every query from an HTTP round-trip into an in-network binding call. Data moves via `turso db dump` → `wrangler d1 execute --remote --file=`. Call sites (actions, `src/pages/api/*`, `CommentsList.astro`, `ReactionsButton.astro`) need no edits — Drizzle's query API is identical. Costs: `db/migrate.ts` and `db/seed.ts` must become `wrangler d1` commands (no Node driver for D1), and D1 has no interactive transactions (unused today)
+1. **Finish CaringBridge post migration** — port the remaining CaringBridge posts into `src/content/blog/` as `.md`/`.mdx` (title, description, author, `pubDate`), import their images into `src/assets/blog/` and wire `heroImage`/`galleryPhotos`, and migrate the existing comments and reactions into the Turso `Comment`/`Reaction` tables keyed by the new filename-derived `postSlug` (must match exactly or comments will not show up). Content work, not a code change — the schema in `src/content.config.ts` already covers it.
+2. **Add E2E test coverage with Playwright** — follow-up to the Vitest unit tests; smoke tests for comment submission, love button, and `/blog` listing
+3. **Fix social preview / OG meta for blog posts** — each update post uses the site-wide default OG image instead of a per-post one; add proper per-post social preview + metadata
+4. **Replace Lucide icons with Astro Icon** — swap the Lucide icon package for the native [astro-icon](https://github.com/natemoo-re/astro-icon#readme) integration (used in `src/components/Cards.astro`)
+5. **Streamline SEO with astro-seo** — adopt [astro-seo](https://github.com/jonasmerlin/astro-seo#readme), passing per-page props for title/description/OG data across main pages instead of duplicated meta tags
+6. **Add a git-based CMS** — likely [Pages CMS](https://pagescms.org/), for editing blog content without touching markdown directly
+7. **Loading animation for comments** — visual cue in `src/components/Comments.astro` while comments fetch from Turso; covers initial load and the refresh after submit, with a graceful fallback if the fetch fails
+8. **Prerender blog posts for image optimization** — `src/pages/blog/[...slug].astro` is SSR, so `<Image>` emits `/_image?...` URLs that the Workers runtime cannot serve under `imageService: 'compile'`; full-size originals ship instead. Needs `prerender = true` plus `getStaticPaths()`
+9. **Migrate Turso → Cloudflare D1** — move the `Comment`/`Reaction` tables onto D1 so DB, Worker, and DNS all sit in one account. Swap `db/client.ts` to `drizzle-orm/d1` with a `d1_databases` binding (`import { env } from 'cloudflare:workers'`), keeping the libsql `:memory:` branch for Vitest and aliasing `cloudflare:workers` to a stub in `vitest.config.ts`. Drops the `TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` secrets and turns every query from an HTTP round-trip into an in-network binding call. Data moves via `turso db dump` → `wrangler d1 execute --remote --file=`. Call sites (actions, `src/pages/api/*`, `CommentsList.astro`, `ReactionsButton.astro`) need no edits — Drizzle's query API is identical. Costs: `db/migrate.ts` and `db/seed.ts` must become `wrangler d1` commands (no Node driver for D1), and D1 has no interactive transactions (unused today)
 
 
 ## Chores

@@ -1,17 +1,35 @@
 ---
-import { Image, getImage } from "astro:assets";
+import { getImage } from "astro:assets";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../consts.ts";
 import Timeline from "../components/Timeline.jsx";
 import { getCollection } from "astro:content";
 import heroImage from "../assets/images/francisroy-hero.jpeg";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Cards from "../components/Cards.astro";
+import HeroFlip from "../components/HeroFlip.astro";
+import FormattedDate from "../components/FormattedDate.astro";
+
+import heroImage2 from "../assets/images/Support.webp";
+import heroImage5 from "../assets/images/easter-2026.webp";
+import heroImage6 from "../assets/blog/feb-9-26-hero.jpg";
+import heroImage3 from "../assets/images/IMG_7630.webp";
+import heroImage4 from "../assets/images/IMG_8338.webp";
+
+// Prerendered so Sharp optimizes the hero photos at build time — under
+// imageService: 'compile' an SSR route ships the full-size originals instead.
+export const prerender = true;
 
 // Fetch all blog posts
 const rawPosts = (await getCollection("blog")).sort(
   (a, b) =>
     new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime(),
 ); // oldest → newest
+
+// Show a "new update" indicator when the latest post is under a week old.
+// Inline script rechecks time against the browsers to ensure no stale content against (posts are only rendered at build time).
+const latestPost = rawPosts[0];
+const hasNewUpdate =
+  latestPost && Date.now() - latestPost.data.pubDate.getTime() < 6048e5;
 
 // Optimize timeline images at build time
 const posts = await Promise.all(
@@ -44,20 +62,45 @@ const posts = await Promise.all(
   <!-- Hero Section -->
   <section class="hero">
     <div class="hero-text">
+      {
+        hasNewUpdate && (
+          <a
+            class="new-update"
+            href={`/blog/${latestPost.id}/`}
+            data-pubdate={latestPost.data.pubDate.toISOString()}>
+            <span class="new-dot" aria-hidden="true" />
+            New update &middot;{" "}
+            <FormattedDate date={latestPost.data.pubDate} format="short" />
+          </a>
+        )
+      }
       <h1>Francis Roy Lilly</h1>
+      <h2>Our Little Lion</h2>
       <blockquote class="hero-quote">
         <p>It is so that the works of God might be made visible through him.</p>
         <cite>John 9:3</cite>
       </blockquote>
       <p>
-        Our son Francis was born on April 1, 2025 without oxygen and suffered a
-        severe brain injury. During Holy Week, we were told to say our goodbyes.
+        Our son Francis couldn't breathe when he was born on April 1, 2025, resulting in a traumatic brain injury. During Holy Week, we were told to say our goodbyes.
         On Easter Sunday, he began breathing on his own.
       </p>
-      <a href="#story" class="cta">Read His Story</a>
+      <div class="cta-container">
+        <a href="#story" class="cta">Read His Story</a>
+        <a href="#updates" class="cta__secondary">See all updates</a>
+      </div>
     </div>
     <div class="hero-image">
-      <Image src={heroImage} alt="Francis Roy Lilly" class="hero-img" />
+      <HeroFlip
+        photos={[
+          heroImage,
+          heroImage2,
+          heroImage3,
+          heroImage4,
+          heroImage5,
+          heroImage6,
+        ]}
+        alt="Francis Roy Lilly"
+      />
     </div>
   </section>
   <section id="story" class="about">
@@ -67,7 +110,7 @@ const posts = await Promise.all(
         Francis Roy Lilly was born to us, John and Kara Lilly, on April 1, 2025,
         following severe complications during delivery that left him unable to
         breathe. He was without oxygen for the first 25 minutes of life and
-        required extensive resuscitation. He was intubated almost immediately
+        required extensive resuscitation to save his life. He was intubated almost immediately
         and flown to the Inova Neonatal Intensive Care Unit in Fairfax, VA.
       </p>
       <p>
@@ -82,10 +125,11 @@ const posts = await Promise.all(
       <p>
         On the morning of Palm Sunday, April 13, we met the godparents of
         another baby (named Thomas) born at the same hospital. We shared
-        Francis's story and prognosis with them, and they told us about
-        <a href="https://tvwguild.org/" target="_blank"> the story of Tom Vander Woude</a>. They
-        explained how he had interceded for baby Thomas and gave us the prayer
-        they had used, asking for God's help through Tom Vander Woude's
+        Francis's story and prognosis with them, and they told us about 
+         <a href="https://tvwguild.org/his-story" target="_blank"> 
+         &nbsp;the story of Tom Vander Woude</a
+        >. They explained how he had interceded for baby Thomas and gave us the
+        prayer they had used, asking for God's help through Tom Vander Woude's
         intercession.
       </p>
       <p>
@@ -112,23 +156,18 @@ const posts = await Promise.all(
         close friends.
       </p>
       <p>
-        John spent the night with Francis on Holy Thursday, and by morning he
-        had started to open both eyes and had a startle reflex. On the morning
-        of Good Friday, Kara visited with some family and close friends, and
-        Francis started moving his eyes around the room, reacting to touch and the sound of voices, and he even managed a
-        cough! To our amazement, he continued to show signs of gradual
-        improvement. We asked his doctors for more time to see how he would
-        progress, and they enthusiastically agreed.
+        John spent the night with Francis on Holy Thursday, keeping vigil with him just as the disciples had with the Lord. By the next morning, Francis had remarkably started to open both eyes and had a startle reflex. Later that day on Good Friday, Kara visited with some family and close friends. Francis started moving his eyes around the room, reacting to touch and the sound of our voices; he even managed a cough! To our amazement, he continued to show signs of gradual improvement. We asked his doctors for more time to see how he would progress, and they enthusiastically agreed.
       </p>
       <p>
-        On Easter Sunday morning, one of the doctors called to say she thought
+        On Easter Sunday morning while doing an Easter egg hunt with our girls, one of the doctors called to say Francis had made the most remarkable turnaround she had ever seen. He was nothing like the baby she had seen earlier that week. She told us she thought
         Francis was ready to be extubated. She believed he could breathe on his
         own!
       </p>
       <blockquote class="pull-quote">We call it our Easter Miracle.</blockquote>
       <p>
         Francis went home not long after and continues to amaze us and exceed
-        every expectation. We share updates here as he grows, heals, and recovers.
+        every expectation. We continue to share the miracle of his life as he grows, heals, and
+        recovers.
       </p>
     </div>
   </section>
@@ -141,6 +180,15 @@ const posts = await Promise.all(
     </div>
   </section>
 </BaseLayout>
+
+<script is:inline>
+  // The homepage is prerendered, so the freshness check above is frozen at
+  // build time. Drop the indicator if it has aged out since the last deploy.
+  const update = document.querySelector(".new-update");
+  if (update && Date.now() - Date.parse(update.dataset.pubdate) > 6048e5) {
+    update.remove();
+  }
+</script>
 
 <style>
   section {
@@ -175,8 +223,62 @@ const posts = await Promise.all(
     animation: hero-slide-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
   }
 
+  .new-update {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    font-style: italic;
+    color: rgb(var(--gray));
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .new-update:hover {
+    color: var(--accent);
+  }
+
+  .new-dot {
+    position: relative;
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .new-dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: new-dot-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes new-dot-pulse {
+    0% {
+      transform: scale(1);
+      opacity: 0.4;
+    }
+    70%,
+    100% {
+      transform: scale(2.8);
+      opacity: 0;
+    }
+  }
+
   .hero-text h1 {
     font-size: clamp(2rem, 5vw, 3rem);
+   
+  }
+
+  .hero-text h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    color: var(--primary-color);
+    font-weight: 600;
     margin-bottom: 1rem;
   }
 
@@ -214,13 +316,11 @@ const posts = await Promise.all(
     animation: hero-slide-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
   }
 
-  .hero-img {
-    width: 100%;
-    height: auto;
-    border-radius: 16px;
-    object-fit: cover;
-    display: block;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  .cta-container {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
   }
 
   .cta {
@@ -235,9 +335,28 @@ const posts = await Promise.all(
     transition: background 0.2s ease;
   }
 
+  .cta__secondary {
+    padding: 0.75rem 0.25rem;
+    display: inline-block;
+    margin-top: 0;
+    background: var(--primary-color-light);
+    color: var(--primary-color);
+    text-decoration: underline;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+  }
+
   .cta:hover {
     background: var(--primary-color-hover);
     color: white;
+  }
+
+  @media (min-width: 350px) {
+    .cta__secondary {
+      margin-top: 1rem;
+      padding: 0.75rem 1.25rem;
+    }
   }
 
   @media (min-width: 768px) {
@@ -314,7 +433,8 @@ const posts = await Promise.all(
   @media (prefers-reduced-motion: reduce) {
     .hero-text,
     .hero-image,
-    .about-prose {
+    .about-prose,
+    .new-dot::after {
       animation: none;
     }
   }
