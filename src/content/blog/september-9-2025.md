@@ -2,7 +2,7 @@
 title: "Swallow Study Results"
 pubDate: "2025-09-09"
 author: "Kara Lilly"
-description: "Francis passed his swallow study — no aspiration on the ultra-preemie or preemie nipples, and the green light to move up a size."
+description: "Francis passed his swallow study!"
 heroImage: '../../assets/blog/sept-9-2025.avif'
 galleryPhotos:
     - '../../assets/blog/sept-9-2025.avif'
