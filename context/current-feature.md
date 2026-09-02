@@ -19,7 +19,17 @@ In Progress
 - Content work, not a code change — the schema in `src/content.config.ts`
   already covers it.
 - `postSlug` must match the post filename exactly or comments will not show up.
-- Already migrated: April 1–13 2025, Oct 24 2025, Dec 16 2025, Feb 9 2026.
+- Already migrated: April 1–13 2025, May 31 2025, June 19 2025, July 8 2025,
+  Aug 12 2025, Sept 7 & 9 2025, Oct 24 2025, Dec 16 2025, Feb 9 2026,
+  April 10 2026, May 4 2026, June 29 2026, July 12 2026.
+- Remaining: the NICU-era posts between April 13 and May 31 2025.
+- Comments/reactions are hand-written `INSERT` statements run against Turso:
+  `email` is `placeholder@example.com` (never rendered), `createdAt` is a plain
+  date string, one `Reaction` row per post holding the total. CaringBridge
+  per-comment hearts and reply threading are dropped — no schema equivalent.
+- CaringBridge date headers are not titles; each post gets a descriptive title
+  matching the existing ones. Verify the stated date against the body — two
+  posts arrived mislabeled (June 29 2026, Aug 12 2025).
 
 ## Upcoming Features (Queue)
 
