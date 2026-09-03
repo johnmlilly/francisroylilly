@@ -3,7 +3,7 @@
 ## None — queue up next item from Upcoming Features
 
 ## Upcoming Features (Queue)
-
+1. **Add Blog Posts to Sitemap**: generated blog posts should appear in the sitemap-0.xml file on build.
 1. **Add E2E test coverage with Playwright** — follow-up to the Vitest unit tests; smoke tests for comment submission, love button, and `/blog` listing
 2. **Replace Lucide icons with Astro Icon** — swap the Lucide icon package for the native [astro-icon](https://github.com/natemoo-re/astro-icon#readme) integration (used in `src/components/Cards.astro`)
 3. **Streamline SEO with astro-seo** — adopt [astro-seo](https://github.com/jonasmerlin/astro-seo#readme), passing per-page props for title/description/OG data across main pages instead of duplicated meta tags
