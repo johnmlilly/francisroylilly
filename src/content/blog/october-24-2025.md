@@ -2,6 +2,7 @@
 title: "October 2025 Update"
 pubDate: "2025-10-24"
 author: "Kara Lilly"
+isPublished: true
 description: "Francis is now 6 months old!"
 heroImage: '../../assets/blog/oct-24-1.avif'
 galleryPhotos: 

@@ -2,6 +2,7 @@
 title: "Holding Our Precious Boy"
 pubDate: "2025-04-05T18:00:00"
 author: "John Lilly"
+isPublished: true
 description: "Please continue to pray for the complete and total healing of Francis' brain."
 heroImage: '../../assets/blog/april-5-pm-25-2.avif'
 galleryPhotos: 

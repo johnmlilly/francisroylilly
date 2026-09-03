@@ -20,7 +20,9 @@ import heroImage4 from "../assets/images/IMG_8338.webp";
 export const prerender = true;
 
 // Fetch all blog posts
-const rawPosts = (await getCollection("blog")).sort(
+const rawPosts = (
+  await getCollection("blog", ({ data }) => data.isPublished)
+).sort(
   (a, b) =>
     new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime(),
 ); // oldest → newest

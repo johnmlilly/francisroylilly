@@ -2,6 +2,7 @@
 title: "Swallow Study Results"
 pubDate: "2025-09-09"
 author: "Kara Lilly"
+isPublished: true
 description: "Francis passed his swallow study!"
 heroImage: '../../assets/blog/sept-9-2025.avif'
 galleryPhotos:

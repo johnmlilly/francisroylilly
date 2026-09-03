@@ -2,6 +2,7 @@
 title: "Exciting News and continued progress!"
 pubDate: "2025-12-15"
 author: "Kara Lilly"
+isPublished: true
 description: "We have been very busy the last few months, but have some exciting news to share."
 heroImage: '../../assets/blog/dec-15-1.avif'
 galleryPhotos: 

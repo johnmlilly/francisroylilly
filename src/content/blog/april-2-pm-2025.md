@@ -2,6 +2,7 @@
 title: "Many Visitors for Francis"
 pubDate: "2025-04-02T14:30:00"
 author: "John Lilly"
+isPublished: true
 description: "Francis received several visitors today, most notably several first class Saint relics."
 heroImage: '../../assets/blog/IMG_7511.jpeg'
 galleryPhotos: 

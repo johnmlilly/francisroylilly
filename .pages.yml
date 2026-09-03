@@ -1,24 +1,26 @@
 media:
-  input: src/assets
-  output: /assets
+  input: src/assets/blog
+  output: /src/assets/blog
 
 content:
   - name: blog
     label: Blog
     type: collection
-    path: src/blog
-    filename: "{primary}.md"
+    path: src/content/blog
     view:
-      fields: [ title, published, featured, date ]
+      fields: [title, pubDate, author, isPublished]
+      primary: title
+      sort: [pubDate]
     fields:
-      - { label: "Published", name: "published", type: "boolean", default: false }
       - { label: "Title", name: "title", type: "string" }
-      - { label: "Short Description", name: "description", type: "text" }
-      - { label: "Featured Image", name: "image", type: "image" }
-      - { label: "Image Caption", name: "imageAlt", type: "string" }
-      - { label: "Date", name: "date", type: "date" }
-      - { label: "Featured", name: "featured", type: "boolean", default: false }
- 
+      - { label: "Description", name: "description", type: "text" }
+      - { label: "Date", name: "pubDate", type: "date" }
+      - { label: "Author", name: "author", type: "string" }
+      - { label: "Published", name: "isPublished", type: "boolean", default: false }
+      - { label: "Hero Image", name: "heroImage", type: "image" }
+      - { label: "Gallery Photos", name: "galleryPhotos", type: "image", list: true }
+      - { label: "Body", name: "body", type: "rich-text" }
+
 settings:
-      content:
-        merge: true
+  content:
+    merge: true
