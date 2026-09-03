@@ -1,0 +1,24 @@
+media:
+  input: src/assets
+  output: /assets
+
+content:
+  - name: blog
+    label: Blog
+    type: collection
+    path: src/blog
+    filename: "{primary}.md"
+    view:
+      fields: [ title, published, featured, date ]
+    fields:
+      - { label: "Published", name: "published", type: "boolean", default: false }
+      - { label: "Title", name: "title", type: "string" }
+      - { label: "Short Description", name: "description", type: "text" }
+      - { label: "Featured Image", name: "image", type: "image" }
+      - { label: "Image Caption", name: "imageAlt", type: "string" }
+      - { label: "Date", name: "date", type: "date" }
+      - { label: "Featured", name: "featured", type: "boolean", default: false }
+ 
+settings:
+      content:
+        merge: true
