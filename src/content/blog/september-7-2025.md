@@ -2,6 +2,7 @@
 title: "Prayers for Tuesday's Swallow Study"
 pubDate: "2025-09-07"
 author: "John Lilly"
+isPublished: true
 description: "Francis has a swallow study on Tuesday that will decide whether he can start weaning off his feeding tube."
 heroImage: '../../assets/blog/sept-7-2025.avif'
 galleryPhotos:

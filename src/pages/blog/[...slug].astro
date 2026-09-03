@@ -14,7 +14,7 @@ if (!slug) {
 
 const post = await getEntry("blog", slug);
 
-if (!post) {
+if (!post || !post.data.isPublished) {
   return Astro.redirect("/404");
 }
 
