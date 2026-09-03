@@ -1,46 +1,32 @@
 # Current Feature
 
-## Finish CaringBridge post migration
+## Fix social preview / OG meta for blog posts
 
 ## Status
 
-In Progress
+Not Started
 
 ## Goals
 
-- Port remaining CaringBridge posts into `src/content/blog/` as `.md`/`.mdx`
-  (title, description, author, `pubDate`)
-- Import their images into `src/assets/blog/`, wire `heroImage` / `galleryPhotos`
-- Migrate existing comments and reactions into the Turso `Comment`/`Reaction`
-  tables, keyed by the filename-derived `postSlug`
+- Each update post currently uses the site-wide default OG image instead of
+  a per-post one
+- Add proper per-post social preview + metadata (OG image, title,
+  description) driven by each post's `heroImage`/`title`/`description`
+  frontmatter
 
 ## Notes
 
-- Content work, not a code change — the schema in `src/content.config.ts`
-  already covers it.
-- `postSlug` must match the post filename exactly or comments will not show up.
-- Already migrated: April 1–13 2025, May 31 2025, June 19 2025, July 8 2025,
-  Aug 12 2025, Sept 7 & 9 2025, Oct 24 2025, Dec 16 2025, Feb 9 2026,
-  April 10 2026, May 4 2026, June 29 2026, July 12 2026.
-- Remaining: the NICU-era posts between April 13 and May 31 2025.
-- Comments/reactions are hand-written `INSERT` statements run against Turso:
-  `email` is `placeholder@example.com` (never rendered), `createdAt` is a plain
-  date string, one `Reaction` row per post holding the total. CaringBridge
-  per-comment hearts and reply threading are dropped — no schema equivalent.
-- CaringBridge date headers are not titles; each post gets a descriptive title
-  matching the existing ones. Verify the stated date against the body — two
-  posts arrived mislabeled (June 29 2026, Aug 12 2025).
+- (none yet)
 
 ## Upcoming Features (Queue)
 
 1. **Add E2E test coverage with Playwright** — follow-up to the Vitest unit tests; smoke tests for comment submission, love button, and `/blog` listing
-2. **Fix social preview / OG meta for blog posts** — each update post uses the site-wide default OG image instead of a per-post one; add proper per-post social preview + metadata
-3. **Replace Lucide icons with Astro Icon** — swap the Lucide icon package for the native [astro-icon](https://github.com/natemoo-re/astro-icon#readme) integration (used in `src/components/Cards.astro`)
-4. **Streamline SEO with astro-seo** — adopt [astro-seo](https://github.com/jonasmerlin/astro-seo#readme), passing per-page props for title/description/OG data across main pages instead of duplicated meta tags
-5. **Add a git-based CMS** — likely [Pages CMS](https://pagescms.org/), for editing blog content without touching markdown directly
-6. **Loading animation for comments** — visual cue in `src/components/Comments.astro` while comments fetch from Turso; covers initial load and the refresh after submit, with a graceful fallback if the fetch fails
-7. **Prerender blog posts for image optimization** — `src/pages/blog/[...slug].astro` is SSR, so `<Image>` emits `/_image?...` URLs that the Workers runtime cannot serve under `imageService: 'compile'`; full-size originals ship instead. Needs `prerender = true` plus `getStaticPaths()`
-8. **Migrate Turso → Cloudflare D1** — move the `Comment`/`Reaction` tables onto D1 so DB, Worker, and DNS all sit in one account. Swap `db/client.ts` to `drizzle-orm/d1` with a `d1_databases` binding (`import { env } from 'cloudflare:workers'`), keeping the libsql `:memory:` branch for Vitest and aliasing `cloudflare:workers` to a stub in `vitest.config.ts`. Drops the `TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` secrets and turns every query from an HTTP round-trip into an in-network binding call. Data moves via `turso db dump` → `wrangler d1 execute --remote --file=`. Call sites (actions, `src/pages/api/*`, `CommentsList.astro`, `ReactionsButton.astro`) need no edits — Drizzle's query API is identical. Costs: `db/migrate.ts` and `db/seed.ts` must become `wrangler d1` commands (no Node driver for D1), and D1 has no interactive transactions (unused today)
+2. **Replace Lucide icons with Astro Icon** — swap the Lucide icon package for the native [astro-icon](https://github.com/natemoo-re/astro-icon#readme) integration (used in `src/components/Cards.astro`)
+3. **Streamline SEO with astro-seo** — adopt [astro-seo](https://github.com/jonasmerlin/astro-seo#readme), passing per-page props for title/description/OG data across main pages instead of duplicated meta tags
+4. **Add a git-based CMS** — likely [Pages CMS](https://pagescms.org/), for editing blog content without touching markdown directly
+5. **Loading animation for comments** — visual cue in `src/components/Comments.astro` while comments fetch from Turso; covers initial load and the refresh after submit, with a graceful fallback if the fetch fails
+6. **Prerender blog posts for image optimization** — `src/pages/blog/[...slug].astro` is SSR, so `<Image>` emits `/_image?...` URLs that the Workers runtime cannot serve under `imageService: 'compile'`; full-size originals ship instead. Needs `prerender = true` plus `getStaticPaths()`
+7. **Migrate Turso → Cloudflare D1** — move the `Comment`/`Reaction` tables onto D1 so DB, Worker, and DNS all sit in one account. Swap `db/client.ts` to `drizzle-orm/d1` with a `d1_databases` binding (`import { env } from 'cloudflare:workers'`), keeping the libsql `:memory:` branch for Vitest and aliasing `cloudflare:workers` to a stub in `vitest.config.ts`. Drops the `TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` secrets and turns every query from an HTTP round-trip into an in-network binding call. Data moves via `turso db dump` → `wrangler d1 execute --remote --file=`. Call sites (actions, `src/pages/api/*`, `CommentsList.astro`, `ReactionsButton.astro`) need no edits — Drizzle's query API is identical. Costs: `db/migrate.ts` and `db/seed.ts` must become `wrangler d1` commands (no Node driver for D1), and D1 has no interactive transactions (unused today)
 
 
 ## Chores
@@ -69,3 +55,4 @@ In Progress
 - **Cloudflare Workers Migration** — Replaced `@astrojs/netlify` with `@astrojs/cloudflare` (`imageService: 'compile'`, `session: false`), added a root `wrangler.jsonc` with `nodejs_compat`, and made `db/client.ts` build the libsql client lazily since Workers only populates `process.env` inside a request. The adapter is skipped when `VITEST` is set, because the Cloudflare Vite plugin cannot load in Vitest's Node environment. DNS cut over from the stale Netlify A/AAAA records to a Worker custom domain; `TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` are now Worker secrets and deploys run through Workers Builds. PR #14. `astro.config.mjs`, `wrangler.jsonc`, `db/client.ts`, `package.json`
 - **Homepage Story Consolidation** — Ported the story written for the other site into the homepage. The about section now carries the full account (birth and NICU transfer, HIE and subclinical seizures, meeting baby Thomas's godparents on Palm Sunday, the Tuesday care-team meeting, Kara's prayer to Tom Vander Woude, and Holy Thursday through Easter Sunday) under a "Francis's Story" heading. Hero and about are both first person now (John and Kara speaking); `<h1>` is just `Francis Roy Lilly`, followed by John 9:3 in a `.hero-quote` blockquote and a three-sentence summary. Two `.pull-quote` blockquotes: Kara's prayer and "We call it our Easter Miracle." Hero CTA changed to "Read His Story" targeting a new `#story` anchor on the about section instead of `#updates`. Added `.hero-quote` and `.about-prose h2` styles. PR #16. `src/pages/index.astro`
 - **Hero Photo Flip Rotator** — `src/components/HeroFlip.astro` rotates several homepage hero photos with a pure-CSS 3D flip (no JS island); keyframe stops depend on `photos.length`, so the `@keyframes` rule is built in frontmatter and emitted via `<style is:inline set:html={...}>`. `src/pages/index.astro` sets `export const prerender = true` — under `imageService: 'compile'` an SSR route would ship ~1.2MB of unoptimized originals. `src/components/HeroFlip.astro`, `src/pages/index.astro`
+- **Finish CaringBridge Post Migration** — Ported the remaining CaringBridge posts into `src/content/blog/`, closing every content gap through July 2026: April 1–13 2025, April 16–29 2025, May 5–24 2025, May 31 2025, June 19 2025, July 8 2025, Aug 12 2025, Sept 7 & 9 2025, Oct 24 2025, Dec 16 2025, Feb 9 2026, April 10 2026, May 4 2026, June 29 2026, July 12 2026. Phase 2 (the 12 posts from April 16–May 24 2025) pulled text/photos/comments straight from CaringBridge via an authenticated browser session, re-encoded photos to AVIF (584px wide, ~50 quality, matching the existing asset convention — 42.1MB → 1.3MB across 48 images), and wrote 237 comments + 12 `Reaction` rows to the live Turso DB via a one-off `tsx` script using `db/client.ts` (placeholder email, ISO `createdAt`, CaringBridge hearts/reply-threading dropped — no schema equivalent). Committed to `feature/caring-bridge-migration-phase2` (not yet merged to `main`). `src/content/blog/`, `src/assets/blog/`, `context/current-feature.md`
