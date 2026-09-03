@@ -1,6 +1,6 @@
 ---
 title: "Swallow Study Results"
-pubDate: "2025-09-09"
+pubDate: "2025-09-09T00:00:00"
 author: "Kara Lilly"
 isPublished: true
 description: "Francis passed his swallow study!"

@@ -1,6 +1,6 @@
 ---
 title: "New Home & New Routines"
-pubDate: "2026-02-09"
+pubDate: "2026-02-09T00:00:00"
 author: "John Lilly"
 isPublished: true
 description: "We've been settling into our new home the last few weeks, and Francis continues to show improvements in his development."

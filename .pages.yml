@@ -1,6 +1,6 @@
 media:
-  input: src/assets
-  output: /src/assets
+  input: src/assets/blog
+  output: "../../assets/blog"
 
 content:
   - name: blog
@@ -14,8 +14,8 @@ content:
     fields:
       - { label: "Title", name: "title", type: "string" }
       - { label: "Description", name: "description", type: "text" }
-      - { label: "Date", name: "pubDate", type: "date" }
-      - { label: "Author", name: "author", type: "string" }
+      - { label: "Date", name: "pubDate", type: "date", options: { time: true, format: "yyyy-MM-dd'T'HH:mm:ss" } }
+      - { label: "Author", name: "author", type: "select", options: { values: ["John Lilly", "Kara Lilly"] } }
       - { label: "Published", name: "isPublished", type: "boolean", default: false }
       - { label: "Hero Image", name: "heroImage", type: "image" }
       - { label: "Gallery Photos", name: "galleryPhotos", type: "image", list: true }

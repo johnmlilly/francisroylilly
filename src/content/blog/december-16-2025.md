@@ -1,6 +1,6 @@
 ---
 title: "Exciting News and continued progress!"
-pubDate: "2025-12-15"
+pubDate: "2025-12-15T00:00:00"
 author: "Kara Lilly"
 isPublished: true
 description: "We have been very busy the last few months, but have some exciting news to share."
