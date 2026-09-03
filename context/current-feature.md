@@ -4,7 +4,7 @@
 
 ## Status
 
-Not Started
+Implemented — verify in browser/social debugger before merge
 
 ## Goals
 

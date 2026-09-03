@@ -7,13 +7,14 @@ import BaseLayout from "./BaseLayout.astro";
 
 type Props = CollectionEntry<"blog">["data"];
 
-const { title, description, pubDate, author, galleryPhotos } = Astro.props;
+const { title, description, pubDate, author, heroImage, galleryPhotos } =
+  Astro.props;
 
 const hasGallery = galleryPhotos && galleryPhotos.length > 0;
 const galleryCount = hasGallery ? galleryPhotos.length : 0;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} image={heroImage?.src}>
   <article>
     <h1>{title}</h1>
     <div class="date">
