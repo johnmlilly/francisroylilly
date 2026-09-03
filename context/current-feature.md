@@ -1,53 +1,15 @@
 # Current Feature
 
-## Add git-based CMS (Pages CMS) for blog posts
-
-## Status
-
-Implemented — verify in Pages CMS UI before merge
-
-## Goals
-
-- Configure [Pages CMS](https://pagescms.org/) via `.pages.yml` so blog posts
-  can be edited without touching markdown directly
-- Scope to the `blog` collection for now — other content (homepage, prayers,
-  etc.) stays out of scope
-
-## Notes
-
-- `.pages.yml` was already added to the repo root with a config targeting a
-  stale `src/blog` path and fields (`published`, `featured`, `image`,
-  `imageAlt`, `date`) that don't match the real schema — corrected to point
-  at `src/content/blog` and match `src/content.config.ts`'s actual fields:
-  `title`, `description`, `pubDate`, `author`, `heroImage`,
-  `galleryPhotos` (+ `body` as rich-text for post content)
-- Media input scoped to `src/assets/blog` (where blog images actually live)
-  instead of all of `src/assets`
-- No `filename` pattern set — Pages CMS prompts for a filename per post
-  rather than forcing a convention, since existing filenames aren't strictly
-  date-derived
-- Added `isPublished` boolean field (`z.boolean().default(false)`) to the
-  blog schema and `.pages.yml`; backfilled all 36 existing posts with
-  `isPublished: true` so nothing already live goes dark. New posts created
-  without the field default to unpublished
-- `isPublished` now gates all public reads: `getCollection("blog", ({data}) =>
-  data.isPublished)` in `src/pages/blog/index.astro`, `src/pages/index.astro`
-  (homepage timeline), and `src/pages/rss.xml.js`; `src/pages/blog/[...slug].astro`
-  redirects to `/404` for an unpublished post hit by direct URL
-- Still need to: connect the repo in Pages CMS (pagescms.org), verify
-  reading/editing an existing post round-trips correctly (esp. the
-  `rich-text` body field against markdown with embedded HTML links), verify
-  `galleryPhotos` multi-image field works
+## None — queue up next item from Upcoming Features
 
 ## Upcoming Features (Queue)
 
-1. **Fix social preview / OG meta for blog posts** — each update post currently uses the site-wide default OG image instead of a per-post one; add proper per-post social preview + metadata (OG image, title, description) driven by each post's `heroImage`/`title`/`description` frontmatter
-2. **Add E2E test coverage with Playwright** — follow-up to the Vitest unit tests; smoke tests for comment submission, love button, and `/blog` listing
-3. **Replace Lucide icons with Astro Icon** — swap the Lucide icon package for the native [astro-icon](https://github.com/natemoo-re/astro-icon#readme) integration (used in `src/components/Cards.astro`)
-4. **Streamline SEO with astro-seo** — adopt [astro-seo](https://github.com/jonasmerlin/astro-seo#readme), passing per-page props for title/description/OG data across main pages instead of duplicated meta tags
-5. **Loading animation for comments** — visual cue in `src/components/Comments.astro` while comments fetch from Turso; covers initial load and the refresh after submit, with a graceful fallback if the fetch fails
-6. **Prerender blog posts for image optimization** — `src/pages/blog/[...slug].astro` is SSR, so `<Image>` emits `/_image?...` URLs that the Workers runtime cannot serve under `imageService: 'compile'`; full-size originals ship instead. Needs `prerender = true` plus `getStaticPaths()`
-7. **Migrate Turso → Cloudflare D1** — move the `Comment`/`Reaction` tables onto D1 so DB, Worker, and DNS all sit in one account. Swap `db/client.ts` to `drizzle-orm/d1` with a `d1_databases` binding (`import { env } from 'cloudflare:workers'`), keeping the libsql `:memory:` branch for Vitest and aliasing `cloudflare:workers` to a stub in `vitest.config.ts`. Drops the `TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` secrets and turns every query from an HTTP round-trip into an in-network binding call. Data moves via `turso db dump` → `wrangler d1 execute --remote --file=`. Call sites (actions, `src/pages/api/*`, `CommentsList.astro`, `ReactionsButton.astro`) need no edits — Drizzle's query API is identical. Costs: `db/migrate.ts` and `db/seed.ts` must become `wrangler d1` commands (no Node driver for D1), and D1 has no interactive transactions (unused today)
+1. **Add E2E test coverage with Playwright** — follow-up to the Vitest unit tests; smoke tests for comment submission, love button, and `/blog` listing
+2. **Replace Lucide icons with Astro Icon** — swap the Lucide icon package for the native [astro-icon](https://github.com/natemoo-re/astro-icon#readme) integration (used in `src/components/Cards.astro`)
+3. **Streamline SEO with astro-seo** — adopt [astro-seo](https://github.com/jonasmerlin/astro-seo#readme), passing per-page props for title/description/OG data across main pages instead of duplicated meta tags
+4. **Loading animation for comments** — visual cue in `src/components/Comments.astro` while comments fetch from Turso; covers initial load and the refresh after submit, with a graceful fallback if the fetch fails
+5. **Prerender blog posts for image optimization** — `src/pages/blog/[...slug].astro` is SSR, so `<Image>` emits `/_image?...` URLs that the Workers runtime cannot serve under `imageService: 'compile'`; full-size originals ship instead. Needs `prerender = true` plus `getStaticPaths()`
+6. **Migrate Turso → Cloudflare D1** — move the `Comment`/`Reaction` tables onto D1 so DB, Worker, and DNS all sit in one account. Swap `db/client.ts` to `drizzle-orm/d1` with a `d1_databases` binding (`import { env } from 'cloudflare:workers'`), keeping the libsql `:memory:` branch for Vitest and aliasing `cloudflare:workers` to a stub in `vitest.config.ts`. Drops the `TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` secrets and turns every query from an HTTP round-trip into an in-network binding call. Data moves via `turso db dump` → `wrangler d1 execute --remote --file=`. Call sites (actions, `src/pages/api/*`, `CommentsList.astro`, `ReactionsButton.astro`) need no edits — Drizzle's query API is identical. Costs: `db/migrate.ts` and `db/seed.ts` must become `wrangler d1` commands (no Node driver for D1), and D1 has no interactive transactions (unused today)
 
 
 ## Chores
@@ -76,4 +38,6 @@ Implemented — verify in Pages CMS UI before merge
 - **Cloudflare Workers Migration** — Replaced `@astrojs/netlify` with `@astrojs/cloudflare` (`imageService: 'compile'`, `session: false`), added a root `wrangler.jsonc` with `nodejs_compat`, and made `db/client.ts` build the libsql client lazily since Workers only populates `process.env` inside a request. The adapter is skipped when `VITEST` is set, because the Cloudflare Vite plugin cannot load in Vitest's Node environment. DNS cut over from the stale Netlify A/AAAA records to a Worker custom domain; `TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` are now Worker secrets and deploys run through Workers Builds. PR #14. `astro.config.mjs`, `wrangler.jsonc`, `db/client.ts`, `package.json`
 - **Homepage Story Consolidation** — Ported the story written for the other site into the homepage. The about section now carries the full account (birth and NICU transfer, HIE and subclinical seizures, meeting baby Thomas's godparents on Palm Sunday, the Tuesday care-team meeting, Kara's prayer to Tom Vander Woude, and Holy Thursday through Easter Sunday) under a "Francis's Story" heading. Hero and about are both first person now (John and Kara speaking); `<h1>` is just `Francis Roy Lilly`, followed by John 9:3 in a `.hero-quote` blockquote and a three-sentence summary. Two `.pull-quote` blockquotes: Kara's prayer and "We call it our Easter Miracle." Hero CTA changed to "Read His Story" targeting a new `#story` anchor on the about section instead of `#updates`. Added `.hero-quote` and `.about-prose h2` styles. PR #16. `src/pages/index.astro`
 - **Hero Photo Flip Rotator** — `src/components/HeroFlip.astro` rotates several homepage hero photos with a pure-CSS 3D flip (no JS island); keyframe stops depend on `photos.length`, so the `@keyframes` rule is built in frontmatter and emitted via `<style is:inline set:html={...}>`. `src/pages/index.astro` sets `export const prerender = true` — under `imageService: 'compile'` an SSR route would ship ~1.2MB of unoptimized originals. `src/components/HeroFlip.astro`, `src/pages/index.astro`
-- **Finish CaringBridge Post Migration** — Ported the remaining CaringBridge posts into `src/content/blog/`, closing every content gap through July 2026: April 1–13 2025, April 16–29 2025, May 5–24 2025, May 31 2025, June 19 2025, July 8 2025, Aug 12 2025, Sept 7 & 9 2025, Oct 24 2025, Dec 16 2025, Feb 9 2026, April 10 2026, May 4 2026, June 29 2026, July 12 2026. Phase 2 (the 12 posts from April 16–May 24 2025) pulled text/photos/comments straight from CaringBridge via an authenticated browser session, re-encoded photos to AVIF (584px wide, ~50 quality, matching the existing asset convention — 42.1MB → 1.3MB across 48 images), and wrote 237 comments + 12 `Reaction` rows to the live Turso DB via a one-off `tsx` script using `db/client.ts` (placeholder email, ISO `createdAt`, CaringBridge hearts/reply-threading dropped — no schema equivalent). Committed to `feature/caring-bridge-migration-phase2` (not yet merged to `main`). `src/content/blog/`, `src/assets/blog/`, `context/current-feature.md`
+- **Finish CaringBridge Post Migration** — Ported the remaining CaringBridge posts into `src/content/blog/`, closing every content gap through July 2026: April 1–13 2025, April 16–29 2025, May 5–24 2025, May 31 2025, June 19 2025, July 8 2025, Aug 12 2025, Sept 7 & 9 2025, Oct 24 2025, Dec 16 2025, Feb 9 2026, April 10 2026, May 4 2026, June 29 2026, July 12 2026. Phase 2 (the 12 posts from April 16–May 24 2025) pulled text/photos/comments straight from CaringBridge via an authenticated browser session, re-encoded photos to AVIF (584px wide, ~50 quality, matching the existing asset convention — 42.1MB → 1.3MB across 48 images), and wrote 237 comments + 12 `Reaction` rows to the live Turso DB via a one-off `tsx` script using `db/client.ts`.
+- **Git-Based CMS (Pages CMS)** — Added `.pages.yml` scoped to `src/content/blog`, matching the real schema (`title`, `description`, `pubDate`, `author`, `heroImage`, `galleryPhotos`, `body`). Added `isPublished` field gating all public reads (`/blog`, homepage timeline, RSS, direct-URL 404 for unpublished). `.pages.yml`, `src/content.config.ts`, `src/pages/blog/index.astro`, `src/pages/index.astro`, `src/pages/rss.xml.js`, `src/pages/blog/[...slug].astro`
+- **Social Preview / OG Meta for Blog Posts** — `BlogPost.astro` passes each post's `heroImage.src` into `BaseHead`'s `image` prop, which drives per-post `og:image`/`twitter:image` (falls back to site default when a post has no hero image). `title`/`description` already flowed through. `src/layouts/BlogPost.astro`, `src/components/BaseHead.astro`
