@@ -1,6 +1,9 @@
 import type { APIRoute } from 'astro';
 import { db, Comment, eq, desc } from '../../../db/client.js';
 
+// Hits Turso on every request — must run on-demand, not at build time.
+export const prerender = false;
+
 export const GET: APIRoute = async ({ url }) => {
   const postSlug = url.searchParams.get('postSlug');
 
