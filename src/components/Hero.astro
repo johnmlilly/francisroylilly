@@ -1,18 +1,20 @@
 ---
+import { Image } from "astro:assets";
+
 interface Props {
   title: string;
   subtitle?: string;
-  imageSrc?: string;
+  image?: ImageMetadata;
 }
 
-const { title, subtitle, imageSrc, } = Astro.props;
+const { title, subtitle, image } = Astro.props;
 ---
 
 <section>
   {
-    imageSrc && (
+    image && (
       <div class="hero-image">
-        <img src={imageSrc} alt={title} />
+        <Image src={image} alt={title} />
       </div>
     )
   }
