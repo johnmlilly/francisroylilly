@@ -3,12 +3,13 @@
 ## None — queue up next item from Upcoming Features
 
 ## Upcoming Features (Queue)
+
 1. **Add E2E test coverage with Playwright** — follow-up to the Vitest unit tests; smoke tests for comment submission, love button, and `/blog` listing
 2. **Replace Lucide icons with Astro Icon** — swap the Lucide icon package for the native [astro-icon](https://github.com/natemoo-re/astro-icon#readme) integration (used in `src/components/Cards.astro`)
 3. **Streamline SEO with astro-seo** — adopt [astro-seo](https://github.com/jonasmerlin/astro-seo#readme), passing per-page props for title/description/OG data across main pages instead of duplicated meta tags
 4. **Loading animation for comments** — visual cue in `src/components/Comments.astro` while comments fetch from Turso; covers initial load and the refresh after submit, with a graceful fallback if the fetch fails
 5. **Migrate Turso → Cloudflare D1** — move the `Comment`/`Reaction` tables onto D1 so DB, Worker, and DNS all sit in one account. Swap `db/client.ts` to `drizzle-orm/d1` with a `d1_databases` binding (`import { env } from 'cloudflare:workers'`), keeping the libsql `:memory:` branch for Vitest and aliasing `cloudflare:workers` to a stub in `vitest.config.ts`. Drops the `TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` secrets and turns every query from an HTTP round-trip into an in-network binding call. Data moves via `turso db dump` → `wrangler d1 execute --remote --file=`. Call sites (actions, `src/pages/api/*`, `CommentsList.astro`, `ReactionsButton.astro`) need no edits — Drizzle's query API is identical. Costs: `db/migrate.ts` and `db/seed.ts` must become `wrangler d1` commands (no Node driver for D1), and D1 has no interactive transactions (unused today)
-
+6. **Notify Subscribers of New Blog Posts**: replicate CaringBridge's update-notification email. New `Subscriber` table (Drizzle, single opt-in, token-based unsubscribe), subscribe form in `Footer.astro` + `/blog` listing (Astro Action, honeypot/timing anti-bot reused from `addComment`), and a manual `npm run notify -- --slug=<slug>` CLI script (mirrors `db/seed.ts`) that sends a text-only email via Resend batch send to all active subscribers. No external newsletter platform (Buttondown/Listmonk rejected — small scale, want data in-house). Full design + rationale + open decisions already resolved in plan: `~/.claude/plans/i-want-to-replicate-sleepy-rabin.md`.
 
 ## Chores
 
