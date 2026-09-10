@@ -7,7 +7,7 @@ isPublished: true
 galleryPhotos:
   - ../../assets/blog/IMG_4213.jpeg
   - ../../assets/blog/img8250.jpg
-  - ../../assets/blog/Screenshot 2026-09-09 at 9.37.04 PM.png
+  - ../../assets/blog/hallow-screenshot.png
   - ../../assets/blog/img9081.jpg
   - ../../assets/blog/img9004.jpg
   - ../../assets/blog/img8805.jpg
