@@ -13,7 +13,7 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   site: 'https://francisroylilly.com/',
   integrations: [mdx(), sitemap(), react()],
-  output: 'server',
+  output: 'static',
   // The Cloudflare Vite plugin conflicts with Vitest's Node environment, so
   // unit tests run without the adapter.
   adapter: process.env.VITEST

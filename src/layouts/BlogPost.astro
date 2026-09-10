@@ -12,6 +12,17 @@ const { title, description, pubDate, author, heroImage, galleryPhotos } =
 
 const hasGallery = galleryPhotos && galleryPhotos.length > 0;
 const galleryCount = hasGallery ? galleryPhotos.length : 0;
+
+// The 480x640 portrait crop below suits a single portrait-orientation photo,
+// but forces an aggressive centered crop on a landscape one. For a lone
+// landscape photo, size by width only so Astro preserves its native aspect
+// ratio instead of cropping it into a portrait box.
+function getPhotoDimensions(photo: { width: number; height: number }) {
+  if (galleryCount === 1 && photo.width > photo.height) {
+    return { width: 700 };
+  }
+  return { width: 480, height: 640 };
+}
 ---
 
 <BaseLayout title={title} description={description} image={heroImage?.src}>
@@ -38,8 +49,7 @@ const galleryCount = hasGallery ? galleryPhotos.length : 0;
               <div class="gallery-item">
                 <Image
                   priority
-                  width={480}
-                  height={640}
+                  {...getPhotoDimensions(photo)}
                   src={photo}
                   alt={`${title} photo ${i + 1}`}
                 />
