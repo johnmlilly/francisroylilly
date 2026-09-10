@@ -5,13 +5,13 @@ pubDate: 2026-09-09T21:19:00
 author: Kara Lilly
 isPublished: true
 galleryPhotos:
-  - - ../../assets/blog/IMG_4213.jpeg
-    - ../../assets/blog/img8250.jpg
-    - ../../assets/blog/img9081.jpg
-    - ../../assets/blog/img9004.jpg
-    - ../../assets/blog/img8805.jpg
-    - ../../assets/blog/img4274.jpeg
-    - ../../assets/blog/hallow-screenshot.png
+  - ../../assets/blog/IMG_4213.jpeg
+  - ../../assets/blog/img8250.jpg
+  - ../../assets/blog/Screenshot 2026-09-09 at 9.37.04 PM.png
+  - ../../assets/blog/img9081.jpg
+  - ../../assets/blog/img9004.jpg
+  - ../../assets/blog/img8805.jpg
+  - ../../assets/blog/img4274.jpeg
 heroImage: ../../assets/blog/IMG_4213.jpeg
 ---
 We apologize for leaving you all hanging after our last update and prayer request.
