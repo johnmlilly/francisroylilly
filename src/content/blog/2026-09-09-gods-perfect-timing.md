@@ -3,15 +3,15 @@ title: God's Perfect Timing
 description: A successful but eventful surgery, new braces, therapy intensive, and more!
 pubDate: 2026-09-09T21:19:00
 author: Kara Lilly
-isPublished: false
+isPublished: true
 galleryPhotos:
   - - ../../assets/blog/IMG_4213.jpeg
     - ../../assets/blog/img8250.jpg
-    - ../../assets/blog/img4274.webp
     - ../../assets/blog/Screenshot 2026-09-09 at 9.37.04 PM.png
     - ../../assets/blog/img9081.jpg
     - ../../assets/blog/img9004.jpg
     - ../../assets/blog/img8805.jpg
+    - ../../assets/blog/img4274.jpeg
 heroImage: ../../assets/blog/IMG_4213.jpeg
 ---
 We apologize for leaving you all hanging after our last update and prayer request.
@@ -43,6 +43,4 @@ Thank you from the bottom of our hearts for continuing on this journey with us. 
 - For miraculous progress towards Francis’s OT and PT goals at Richmond Hope Therapy this week specifically that he will begin crawling forward and putting weight through his legs for longer periods of time
 - For peace and patience as parents as we continue helping Francis grow and develop in his own time
 - For the Medicaid waiver process to go smoothly and quickly and for peace and trust navigating financial challenges with therapies
-
-  
 
