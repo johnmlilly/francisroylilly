@@ -4,6 +4,7 @@
 
 ## Upcoming Features (Queue)
 1. **Add Blog Posts to Sitemap**: generated blog posts should appear in the sitemap-0.xml file on build.
+1. **Notify Subscribers of New Blog Posts**: replicate CaringBridge's update-notification email. New `Subscriber` table (Drizzle, single opt-in, token-based unsubscribe), subscribe form in `Footer.astro` + `/blog` listing (Astro Action, honeypot/timing anti-bot reused from `addComment`), and a manual `npm run notify -- --slug=<slug>` CLI script (mirrors `db/seed.ts`) that sends a text-only email via Resend batch send to all active subscribers. No external newsletter platform (Buttondown/Listmonk rejected — small scale, want data in-house). Full design + rationale + open decisions already resolved in plan: `~/.claude/plans/i-want-to-replicate-sleepy-rabin.md`.
 1. **Add E2E test coverage with Playwright** — follow-up to the Vitest unit tests; smoke tests for comment submission, love button, and `/blog` listing
 2. **Replace Lucide icons with Astro Icon** — swap the Lucide icon package for the native [astro-icon](https://github.com/natemoo-re/astro-icon#readme) integration (used in `src/components/Cards.astro`)
 3. **Streamline SEO with astro-seo** — adopt [astro-seo](https://github.com/jonasmerlin/astro-seo#readme), passing per-page props for title/description/OG data across main pages instead of duplicated meta tags
