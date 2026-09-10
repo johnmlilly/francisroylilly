@@ -15,7 +15,7 @@ content:
     fields:
       - { label: "Title", name: "title", type: "string", required: true, description: "The title of the post. This is used for the post's title on the home page timeline and on the post's page." }
       - { label: "Description", name: "description", type: "text", required: true, description: "A brief description of the post. This is used for the post's excerpt on the home page timeline." }
-      - { label: "Date", name: "pubDate", type: "date", required: true, options: { time: true, format: "yyyy-MM-dd'T'HH:mm:ss" }, description: "The date and time to publish the post was published. This is used for sorting and display purposes." }
+      - { label: "Date", name: "pubDate", type: "date", required: true, options: { time: true, format: "yyyy-MM-dd'T'HH:mm:ss" }, description: "The date and time to publish the post. This is used for sorting and display purposes." }
       - { label: "Author", name: "author", type: "select", required: true, options: { values: ["John Lilly", "Kara Lilly"] } }
       - { label: "Published", name: "isPublished", type: "boolean", default: false, description: "If true, the post will be published and visible on the site. If false, the post will be hidden from the site." }
       - { label: "Hero Image", name: "heroImage", type: "image", description: "The hero image for the post. This is used for the post's thumbnail on the home page timeline." }
