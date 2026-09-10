@@ -19,7 +19,7 @@ content:
       - { label: "Author", name: "author", type: "select", required: true, options: { values: ["John Lilly", "Kara Lilly"] } }
       - { label: "Published", name: "isPublished", type: "boolean", default: false, description: "If true, the post will be published and visible on the site. If false, the post will be hidden from the site." }
       - { label: "Hero Image", name: "heroImage", type: "image", description: "The hero image for the post. This is used for the post's thumbnail on the home page timeline." }
-      - { label: "Gallery Photos", name: "galleryPhotos", type: "image", list: true, description: "A list of images for the post's gallery." }
+      - { label: "Gallery Photos", name: "galleryPhotos", type: "image", list: true, options: { multiple: true, rename: true }, description: "A list of images for the post's gallery." }
       - { label: "Body", name: "body", type: "rich-text" }
 
 settings:
