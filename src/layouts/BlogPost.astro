@@ -1,5 +1,5 @@
 ---
-import { Image } from "astro:assets";
+import { Image, getImage } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import FormattedDate from "../components/FormattedDate.astro";
 import Author from "../components/Author.astro";
@@ -9,6 +9,10 @@ type Props = CollectionEntry<"blog">["data"];
 
 const { title, description, pubDate, author, heroImage, galleryPhotos } =
   Astro.props;
+
+const ogImage = heroImage
+  ? (await getImage({ src: heroImage })).src
+  : undefined;
 
 const hasGallery = galleryPhotos && galleryPhotos.length > 0;
 const galleryCount = hasGallery ? galleryPhotos.length : 0;
@@ -25,7 +29,7 @@ function getPhotoDimensions(photo: { width: number; height: number }) {
 }
 ---
 
-<BaseLayout title={title} description={description} image={heroImage?.src}>
+<BaseLayout title={title} description={description} image={ogImage}>
   <article>
     <h1>{title}</h1>
     <div class="date">
