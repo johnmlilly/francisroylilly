@@ -20,7 +20,7 @@ const comments = await db
       <div class="p-4 bg-gray-50 rounded">
         <div class="flex flex-wrap gap-2 text-sm text-gray-400">
           <span class="font-semibold text-gray-500">{comment.name}</span>
-          <span> • {new Date(comment.createdAt).toLocaleDateString()}</span>
+          <span> • <time id={`comment-date-${comment.id}`} datetime={comment.createdAt}>{comment.createdAt}</time></span>
         </div>
         <div class="mt-2 text-base text-gray-800">{comment.message}</div>
       </div>
@@ -66,4 +66,15 @@ const comments = await db
   window.addEventListener("commentAdded", () => {
     refreshComments();
   });
+
+  // Localize comment dates
+  function localizeDates() {
+    document.querySelectorAll<HTMLTimeElement>('[id^="comment-date-"]').forEach((el) => {
+      const iso = el.getAttribute("datetime");
+      if (!iso) return;
+      el.textContent = new Date(iso).toLocaleDateString();
+    });
+  }
+
+  localizeDates();
 </script>
