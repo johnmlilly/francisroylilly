@@ -1,7 +1,11 @@
 // src/actions/index.ts
 import { defineAction } from 'astro:actions';
 import { z } from 'astro:schema';
+import { Resend } from 'resend';
 import { db, Comment, Reaction, eq, desc } from '../../db/client.js';
+import { d1, Subscriber } from '../../db/d1-client.js';
+import { confirmSubscriptionEmail } from '../../emails/confirmSubscription.js';
+import { SITE_URL } from '../consts.js';
 
 const addCommentInput = z.object({
   postSlug: z.string(),
@@ -123,6 +127,108 @@ export async function addLoveHandler({ postSlug }: z.infer<typeof addLoveInput>)
   return { success: true };
 }
 
+const subscribeToUpdatesInput = z.object({
+  email: z.string().email('Valid email is required'),
+  firstName: z.string().min(1, 'First name is required').max(100, 'First name too long'),
+  lastName: z.string().min(1, 'Last name is required').max(100, 'Last name too long'),
+  // Honeypot field - bots will fill this, humans won't see it
+  website: z.string().optional(),
+  // Timestamp to check submission speed
+  timestamp: z.string(),
+});
+
+async function sendConfirmationEmail(firstName: string, email: string, token: string) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  const confirmUrl = `${SITE_URL}/api/confirm?token=${token}`;
+  const { subject, html } = confirmSubscriptionEmail({ firstName, confirmUrl });
+
+  await resend.emails.send({
+    from: 'Francis Roy Lilly <updates@francisroylilly.com>',
+    to: email,
+    subject,
+    html,
+  });
+}
+
+// Extracted from defineAction() so it can be unit tested directly -
+// Astro Actions throw ActionCalledFromServerError when invoked outside Astro.callAction().
+export async function subscribeToUpdatesHandler({
+  email,
+  firstName,
+  lastName,
+  website,
+  timestamp,
+}: z.infer<typeof subscribeToUpdatesInput>) {
+  // 1. HONEYPOT CHECK - if website field is filled, it's a bot
+  if (website && website.length > 0) {
+    throw new Error('Spam detected.');
+  }
+
+  // 2. TIME-BASED CHECK - submission must take at least 3 seconds
+  const formLoadTime = parseInt(timestamp);
+  const currentTime = Date.now();
+  const timeDiff = (currentTime - formLoadTime) / 1000; // in seconds
+
+  if (timeDiff < 3) {
+    throw new Error('Submission too fast. Please try again.');
+  }
+
+  // 3. SANITIZE INPUT - strip HTML tags
+  const sanitizedFirstName = firstName.replace(/<[^>]*>/g, '');
+  const sanitizedLastName = lastName.replace(/<[^>]*>/g, '');
+  const normalizedEmail = email.trim().toLowerCase();
+
+  const existing = await d1
+    .select()
+    .from(Subscriber)
+    .where(eq(Subscriber.email, normalizedEmail))
+    .get();
+
+  // The response is the same in every branch - it never reveals whether
+  // an address was already on the list.
+  const response = { message: 'Check your email to confirm your subscription.' };
+
+  if (!existing) {
+    const token = crypto.randomUUID();
+    await d1.insert(Subscriber).values({
+      email: normalizedEmail,
+      firstName: sanitizedFirstName,
+      lastName: sanitizedLastName,
+      token,
+      createdAt: new Date(),
+    });
+    await sendConfirmationEmail(sanitizedFirstName, normalizedEmail, token);
+    return response;
+  }
+
+  if (!existing.confirmedAt) {
+    // Signed up before but never confirmed - resend using the same token.
+    await sendConfirmationEmail(existing.firstName, normalizedEmail, existing.token);
+    return response;
+  }
+
+  if (!existing.unsubscribedAt) {
+    // Already an active subscriber - no email sent.
+    return response;
+  }
+
+  // Previously unsubscribed - treat as a fresh opt-in and go through
+  // double opt-in again rather than silently reactivating.
+  const token = crypto.randomUUID();
+  await d1
+    .update(Subscriber)
+    .set({
+      firstName: sanitizedFirstName,
+      lastName: sanitizedLastName,
+      token,
+      confirmedAt: null,
+      unsubscribedAt: null,
+    })
+    .where(eq(Subscriber.email, normalizedEmail));
+  await sendConfirmationEmail(sanitizedFirstName, normalizedEmail, token);
+  return response;
+}
+
 export const server = {
   addComment: defineAction({
     accept: 'form',
@@ -134,5 +240,10 @@ export const server = {
     accept: 'form',
     input: addLoveInput,
     handler: addLoveHandler,
+  }),
+  subscribeToUpdates: defineAction({
+    accept: 'form',
+    input: subscribeToUpdatesInput,
+    handler: subscribeToUpdatesHandler,
   }),
 };
