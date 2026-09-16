@@ -237,7 +237,7 @@ function toDateInputValue(date: Date) {
       }
 
       .subscribe-cta {
-        margin-top: 2.5rem;
+        margin-bottom: 1.5rem;
         padding: 2rem 1.5rem;
         text-align: center;
         background: white;
@@ -288,6 +288,12 @@ function toDateInputValue(date: Date) {
   <body>
     <Header />
     <main>
+      <section class="subscribe-cta">
+        <h2>Get updates by email</h2>
+        <p>Never miss an update about Francis's journey.</p>
+        <SubscribeForm client:only="react" variant="inline" />
+      </section>
+
       <section>
         <div class="filter-toolbar">
           <div class="search-bar">
@@ -396,12 +402,6 @@ function toDateInputValue(date: Date) {
         <p id="no-results" class="no-results" hidden>
           No updates match your search.
         </p>
-      </section>
-
-      <section class="subscribe-cta">
-        <h2>Get updates by email</h2>
-        <p>Never miss an update about Francis's journey.</p>
-        <SubscribeForm client:only="react" variant="inline" />
       </section>
     </main>
     <Footer />
