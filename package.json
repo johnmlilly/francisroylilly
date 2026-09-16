@@ -8,6 +8,8 @@
     "astro": "astro",
     "db:migrate": "tsx db/migrate.ts",
     "db:seed": "tsx db/seed.ts",
+    "db:d1:generate": "drizzle-kit generate --config drizzle.d1.config.ts",
+    "cf-typegen": "wrangler types",
     "test": "vitest run",
     "test:watch": "vitest",
     "deploy": "astro build && wrangler deploy --config dist/server/wrangler.json"
@@ -28,6 +30,7 @@
     "react-dom": "^19.2.0",
     "react-image-gallery": "^2.0.8",
     "react-vertical-timeline-component": "^3.5.3",
+    "resend": "^6.28.1",
     "sharp": "^0.34.3",
     "tailwindcss": "^4.1.17"
   },
