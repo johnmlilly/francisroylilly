@@ -12,7 +12,7 @@ const variantWrapperClass = {
   modal: "",
 };
 
-export default function SubscribeForm({ variant = "page", onSubscribed }) {
+export default function SubscribeForm({ variant = "page", onSubscribed = () => {} }) {
   const formRef = useRef(null);
   const [status, setStatus] = useState("idle");
 
@@ -34,7 +34,7 @@ export default function SubscribeForm({ variant = "page", onSubscribed }) {
       });
       setStatus("success");
       form.reset();
-      onSubscribed?.();
+      onSubscribed();
     } catch {
       setStatus("error");
     }
