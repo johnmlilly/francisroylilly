@@ -3,7 +3,7 @@ import Modal from "react-modal";
 import SubscribeForm from "./SubscribeForm.jsx";
 
 const STORAGE_KEY = "frl-subscribe-modal-dismissed";
-const OPEN_DELAY_MS = 9000;
+const OPEN_DELAY_MS = 5000;
 const CLOSE_AFTER_SUBSCRIBE_MS = 2500;
 
 function dismiss() {
