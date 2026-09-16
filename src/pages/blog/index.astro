@@ -237,9 +237,12 @@ function toDateInputValue(date: Date) {
       }
 
       .subscribe-cta {
-        margin-top: 1.5rem;
-        padding: 2rem 1.5rem;
-        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+        padding: 1.5rem;
         background: white;
         border-radius: 16px;
         box-shadow:
@@ -247,18 +250,31 @@ function toDateInputValue(date: Date) {
           rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
       }
 
+      .subscribe-cta-text {
+        flex: 1 1 auto;
+      }
+
       .subscribe-cta h2 {
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.15rem;
       }
 
       .subscribe-cta p {
         color: rgb(var(--gray-dark));
-        margin-bottom: 1.25rem;
+        margin: 0;
+      }
+
+      .subscribe-cta :global(form) {
+        flex: 0 0 auto;
       }
 
       @media (max-width: 720px) {
         main {
           padding: 0 1rem;
+        }
+
+        .subscribe-cta {
+          flex-direction: column;
+          text-align: center;
         }
 
         .date-filter-panel {
@@ -289,8 +305,10 @@ function toDateInputValue(date: Date) {
     <Header />
     <main>
       <section class="subscribe-cta">
-        <h2>Get updates by email</h2>
-        <p>Never miss an update about Francis's journey.</p>
+        <div class="subscribe-cta-text">
+          <h2>Get updates by email</h2>
+          <p>Never miss an update about Francis's journey.</p>
+        </div>
         <SubscribeForm client:only="react" variant="inline" />
       </section>
 
