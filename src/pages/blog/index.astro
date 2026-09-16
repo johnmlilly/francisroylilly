@@ -162,13 +162,8 @@ function toDateInputValue(date: Date) {
       }
 
       ul li {
-        background: white;
-        border-radius: 16px;
         padding: 0.75rem;
         transition: 0.25s ease;
-        box-shadow:
-          rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
-          rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
       }
 
       ul li:hover {
@@ -243,11 +238,6 @@ function toDateInputValue(date: Date) {
         gap: 1.5rem;
         margin-top: 1.5rem;
         padding: 1.5rem;
-        background: white;
-        border-radius: 16px;
-        box-shadow:
-          rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
-          rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
       }
 
       .subscribe-cta-text {
@@ -304,7 +294,7 @@ function toDateInputValue(date: Date) {
   <body>
     <Header />
     <main>
-      <section class="subscribe-cta">
+      <section class="card subscribe-cta">
         <div class="subscribe-cta-text">
           <h2>Get updates by email</h2>
           <p>Never miss an update about Francis's journey.</p>
@@ -395,6 +385,7 @@ function toDateInputValue(date: Date) {
           {
             posts.map((post) => (
               <li
+                class="card"
                 data-search={`${post.data.title} ${post.data.description}`.toLowerCase()}
                 data-date={toDateInputValue(post.data.pubDate)}
               >
