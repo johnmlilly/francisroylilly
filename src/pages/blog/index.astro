@@ -6,6 +6,7 @@ import Footer from "../../components/Footer.astro";
 import FormattedDate from "../../components/FormattedDate.astro";
 import Header from "../../components/Header.astro";
 import SubscribeForm from "../../components/SubscribeForm.jsx";
+import SubscribeModal from "../../components/SubscribeModal.jsx";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../../consts.js";
 
 const posts = (
@@ -404,6 +405,8 @@ function toDateInputValue(date: Date) {
       </section>
     </main>
     <Footer />
+
+    <SubscribeModal client:only="react" />
   </body>
 </html>
 

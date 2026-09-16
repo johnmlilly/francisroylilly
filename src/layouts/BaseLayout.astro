@@ -2,6 +2,7 @@
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import BaseHead from "../components/BaseHead.astro";
+import SubscribeModal from "../components/SubscribeModal.jsx";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts.js";
 
 const {
@@ -24,5 +25,7 @@ const {
     </main>
 
     <Footer />
+
+    <SubscribeModal client:only="react" />
   </body>
 </html>
