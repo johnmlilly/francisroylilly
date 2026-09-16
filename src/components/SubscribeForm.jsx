@@ -54,7 +54,7 @@ export default function SubscribeForm({ variant = "page", onSubscribed = () => {
     <form
       ref={formRef}
       onSubmit={handleSubmit}
-      className={`${variantWrapperClass[variant]} flex flex-col gap-3 m-auto`}
+      className={`${variantWrapperClass[variant]} flex flex-col gap-3 m-auto mt-4 rounded-lg bg-white p-4 shadow-md`}
     >
       {status === "error" && (
         <div className="rounded-lg bg-red-100 px-4 py-3 text-sm text-red-700">
