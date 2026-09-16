@@ -25,6 +25,8 @@ This is the common workflow that we will use for every single feature/fix:
 
 Do NOT commit without permission and until the build passes. If build fails, fix the issues first.
 
+Feature/history entries in @context/current-feature.md should be succinct and direct — one or two sentences, not an exhaustive rundown of every file/decision.
+
 ## Branching
 
 We will create a new branch for every feature/fix. Name branch **feature/[feature]** or **fix[fix]**, etc. Ask to delete the branch once merged.
