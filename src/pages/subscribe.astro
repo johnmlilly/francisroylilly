@@ -15,9 +15,11 @@ const title = `Subscribe | ${SITE_TITLE}`;
     <div class="container">
       <p>
         We share updates on Francis's journey here on the site. Subscribe
-        below to get an email whenever we post something new — no spam, just
-        updates about Francis.
+        below to get an email whenever we post something new about Francis. 
       </p>
+      <small>
+        <em>Note: We will never send you any spam - ever!</em>
+      </small>
       <SubscribeForm client:only="react" variant="page" />
     </div>
   </section>
@@ -27,5 +29,12 @@ const title = `Subscribe | ${SITE_TITLE}`;
   .container {
     max-width: 800px;
     margin: 0 auto;
+    padding: 1.5rem;
+    text-align: center;
+    background: white;
+    border-radius: 16px;
+    box-shadow:
+      rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
+      rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
   }
 </style>
