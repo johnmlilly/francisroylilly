@@ -2,7 +2,10 @@
 import Hero from "../../components/Hero.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { SITE_TITLE } from "../../consts.js";
-import { confirmSubscription, lookupConfirmToken } from "../../lib/subscriptions.js";
+import {
+  confirmSubscription,
+  lookupConfirmToken,
+} from "../../lib/subscriptions.js";
 
 // Reads and writes D1 per request; never prerender.
 export const prerender = false;
@@ -42,12 +45,13 @@ if (Astro.request.method === "POST") {
   }
 }
 
-Astro.response.status = view === "missing" ? 400 : view === "pending" ? 200 : 404;
+Astro.response.status =
+  view === "missing" ? 400 : view === "pending" ? 200 : 404;
 const title = `Confirm subscription | ${SITE_TITLE}`;
 
 const heroTitle =
   view === "pending"
-    ? `Almost There, ${firstName}`
+    ? `Almost There!`
     : view === "used"
       ? "Already Confirmed"
       : "We Couldn't Find That Link";
@@ -55,10 +59,8 @@ const heroTitle =
 
 <BaseLayout
   title={title}
-  description="Confirm your subscription to updates about Francis."
   noindex
-  subscribeDialog={false}
->
+  subscribeDialog={false}>
   <Hero title={heroTitle} />
 
   <section>
@@ -66,10 +68,15 @@ const heroTitle =
       {
         view === "pending" && (
           <>
-            <p>Click below to confirm you'd like email updates about Francis's journey.</p>
+            <p>
+              Click below to confirm your subscription to start receiving
+              updates.
+            </p>
             <form method="POST" action="/api/confirm">
               <input type="hidden" name="token" value={token} />
-              <button type="submit" class="confirm__button">Confirm subscription</button>
+              <button type="submit" class="confirm__button">
+                Confirm subscription
+              </button>
             </form>
           </>
         )
@@ -77,8 +84,13 @@ const heroTitle =
       {
         view === "used" && (
           <>
-            <p>This link has already been used. You're subscribed and don't need to do anything else.</p>
-            <p><a href="/blog">Read the latest updates</a></p>
+            <p>
+              This link has already been used. You're subscribed and don't need
+              to do anything else.
+            </p>
+            <p>
+              <a href="/blog">Read the latest updates</a>
+            </p>
           </>
         )
       }
@@ -89,7 +101,9 @@ const heroTitle =
               The confirmation link is missing or no longer valid. You can
               <a href="/subscribe">subscribe again</a> any time.
             </p>
-            <p><a href="/">Back to the homepage</a></p>
+            <p>
+              <a href="/">Back to the homepage</a>
+            </p>
           </>
         )
       }
