@@ -16,8 +16,8 @@ the new site is emailing followers when a new update posts (see build plan).
 
 - Family and friends following Francis's progress (readers, commenters, "love"
   reactors, future email subscribers)
-- John and Kara Lilly (site owners; author posts via a git-based CMS, run the
-  notify script)
+- John and Kara Lilly (site owners; author posts via a git-based CMS;
+  publishing triggers subscriber notification automatically)
 
 Small, trusted audience. No accounts, no login.
 
@@ -45,7 +45,14 @@ Turso (libSQL) via Drizzle, schema in `db/schema.ts`:
 
 - `Comment` - id, postSlug, name, email, message, createdAt
 - `Reaction` - id, postSlug, loves (count)
-- `Subscriber` (planned) - id, email, unsubscribeToken, isActive, createdAt
+
+Cloudflare D1 (planned, `db/d1-schema.ts`, binding `SUBSCRIBERS_DB`), separate
+client `db/d1-client.ts`; `Comment`/`Reaction` fold into it later (build plan):
+
+- `Subscriber` - id, email (unique), firstName, lastName, token (unique),
+  createdAt, confirmedAt (nullable), unsubscribedAt (nullable); all timestamps
+  `integer({ mode: 'timestamp' })`
+- `PostNotification` - postSlug (PK), notifiedAt
 
 Blog posts are Markdown/MDX files in `src/content/blog/`, images in
 `src/assets/blog/`. No user accounts.
@@ -57,7 +64,8 @@ Blog posts are Markdown/MDX files in `src/content/blog/`, images in
 | Framework  | Astro 7, `output: 'static'` with on-demand routes via adapter |
 | Language   | TypeScript (strict)                                        |
 | UI         | Tailwind CSS v4 (CSS-first config) + React 19 islands      |
-| Database   | Drizzle ORM + `@libsql/client` against Turso               |
+| Database   | Drizzle ORM + `@libsql/client` against Turso; Cloudflare D1 via `drizzle-orm/d1` for subscribers (planned) |
+| Email      | Resend (planned), plain inline-styled HTML templates in `emails/` |
 | Icons      | lucide-react (planned swap to astro-icon)                  |
 | Testing    | Vitest (unit); GitHub Actions runs test + build on PRs     |
 | Hosting    | Cloudflare Workers via `@astrojs/cloudflare`; DNS on Cloudflare |
@@ -86,7 +94,11 @@ first (most readers arrive from shared links). Existing utilities: `.pull-quote`
   `npm run deploy` is the manual escape hatch
 - Build: `npm run build` (Astro, `imageService: 'compile'`, `session: false`)
 - Env / secrets: `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN` (Worker secrets);
-  `RESEND_API_KEY` planned for the notify script (local shell only)
+  planned `RESEND_API_KEY` and `NOTIFY_SECRET` (Worker secrets), D1 binding
+  `SUBSCRIBERS_DB` in `wrangler.jsonc`, `NOTIFY_SECRET` also as a GitHub
+  Actions repo secret
+- Planned `.github/workflows/notify-subscribers.yml`: on push to `main`
+  touching `src/content/blog/**`, POST `/api/notify` with the shared secret
 - Custom domain: francisroylilly.com (Worker custom domain)
 - Possible future: migrate Turso to Cloudflare D1 (build plan)
 
@@ -97,5 +109,5 @@ first (most readers arrive from shared links). Existing utilities: `.pull-quote`
   the comment and (planned) subscribe forms, which already carry anti-bot checks
 - Single-tenant, no compliance requirements
 - Non-requirements: accounts/auth, admin UI, external newsletter platform,
-  queues/cron
+  queues/cron, retry infrastructure (failed sends rerun manually)
 - Site owner writes content via git (Pages CMS), never through the app
