@@ -24,7 +24,7 @@ Shipped (adopted from an existing codebase):
 
 Roadmap:
 
-- [ ] 14. **Notify subscribers of new blog posts** - `Subscriber` table (single opt-in, token unsubscribe), subscribe form in Footer + `/blog`, `npm run notify -- --slug=<slug>` CLI sending text-only email via Resend batch. Full design already decided: `blueprint/plans/notify-subscribers.md`
+- [x] 14. **Notify subscribers of new blog posts** - `Subscriber` + `PostNotification` tables in a new Cloudflare D1 database, double opt-in with token confirm/unsubscribe (POST-only mutations), subscribe form on `/subscribe` (linked from footer and `/blog`) plus a site-wide popup, `/api/notify` triggered by a GitHub Actions workflow on push to `main`, HTML email via Resend. Full design: `blueprint/plans/notify-subscribers.md`.
 - [ ] 15. **Playwright E2E smoke tests** - comment submission, love button, `/blog` listing (use `/tests browser`)
 - [ ] 16. **Replace Lucide icons with astro-icon** - `src/components/Cards.astro`
 - [ ] 17. **Streamline SEO with astro-seo** - per-page title/description/OG props instead of duplicated meta tags

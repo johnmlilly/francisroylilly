@@ -1,0 +1,106 @@
+---
+import SubscribeForm from "./SubscribeForm.astro";
+---
+
+<dialog id="subscribe-dialog" class="subscribe-dialog" aria-labelledby="subscribe-dialog-title">
+  <div class="subscribe-dialog__panel">
+    <button type="button" class="subscribe-dialog__close" data-close aria-label="Close">
+      &times;
+    </button>
+    <SubscribeForm heading="Follow Francis's journey" headingId="subscribe-dialog-title" />
+  </div>
+</dialog>
+
+<style>
+  .subscribe-dialog {
+    /* Tailwind preflight zeroes margins; restore the UA centering for <dialog>. */
+    margin: auto;
+    max-width: min(92vw, 520px);
+    padding: 0;
+    border: none;
+    border-radius: 1rem;
+    background: transparent;
+  }
+
+  .subscribe-dialog::backdrop {
+    background: rgba(15, 18, 25, 0.55);
+  }
+
+  .subscribe-dialog__panel {
+    position: relative;
+  }
+
+  .subscribe-dialog__close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.75rem;
+    z-index: 1;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: rgb(var(--gray));
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .subscribe-dialog__close:hover,
+  .subscribe-dialog__close:focus-visible {
+    background: rgba(var(--gray-light), 0.8);
+    color: rgb(var(--gray-dark));
+  }
+</style>
+
+<script>
+  const STORAGE_KEY = "frl-subscribe-modal-dismissed";
+  const OPEN_DELAY_MS = 5000;
+
+  const dialog = document.getElementById("subscribe-dialog") as HTMLDialogElement | null;
+
+  function remember() {
+    try {
+      localStorage.setItem(STORAGE_KEY, "1");
+    } catch {
+      // Storage unavailable (private mode, blocked). The dialog simply reopens next visit.
+    }
+  }
+
+  function alreadyDismissed() {
+    try {
+      return localStorage.getItem(STORAGE_KEY) === "1";
+    } catch {
+      return false;
+    }
+  }
+
+  if (dialog && typeof dialog.showModal === "function" && !alreadyDismissed()) {
+    const dismiss = () => {
+      remember();
+      if (dialog.open) dialog.close();
+    };
+
+    setTimeout(() => {
+      if (!dialog.open && !alreadyDismissed()) dialog.showModal();
+    }, OPEN_DELAY_MS);
+
+    dialog.querySelector("[data-close]")?.addEventListener("click", dismiss);
+
+    // Clicks on the backdrop land on the <dialog> itself; clicks inside land on the panel.
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) dismiss();
+    });
+
+    // Esc fires `cancel` and closes natively; just remember the choice.
+    dialog.addEventListener("cancel", remember);
+
+    // Dispatched by SubscribeForm after a successful submit.
+    dialog.addEventListener("subscribed", () => {
+      remember();
+      setTimeout(() => {
+        if (dialog.open) dialog.close();
+      }, 2500);
+    });
+  }
+</script>

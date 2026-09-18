@@ -8,11 +8,24 @@ import react from '@astrojs/react';
 import cloudflare from '@astrojs/cloudflare';
 
 import tailwindcss from '@tailwindcss/vite';
+import { SITE_URL } from './src/consts.ts';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://francisroylilly.com/',
-  integrations: [mdx(), sitemap(), react()],
+  site: SITE_URL,
+  integrations: [
+    mdx(),
+    sitemap({
+      // Post-action confirmation pages and API/token routes carry no content
+      // worth indexing. `@astrojs/sitemap` includes parameterless on-demand
+      // routes, so /api/* must be filtered explicitly.
+      filter: (page) =>
+        !page.endsWith('/subscribed/') &&
+        !page.endsWith('/unsubscribed/') &&
+        !page.includes('/api/'),
+    }),
+    react(),
+  ],
   output: 'static',
   // The Cloudflare Vite plugin conflicts with Vitest's Node environment, so
   // unit tests run without the adapter.
@@ -26,5 +39,11 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    define: {
+      // Commit the deployed Worker was built from. Workers Builds sets
+      // WORKERS_CI_COMMIT_SHA; /api/version exposes it so the notify workflow
+      // can wait for its own commit to be live before triggering sends.
+      __BUILD_SHA__: JSON.stringify(process.env.WORKERS_CI_COMMIT_SHA ?? 'local'),
+    },
   },
 });

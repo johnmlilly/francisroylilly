@@ -1,0 +1,32 @@
+---
+import Hero from "../components/Hero.astro";
+import { SITE_TITLE } from "../consts.js";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const title = `You're subscribed | ${SITE_TITLE}`;
+---
+
+<BaseLayout
+  title={title}
+  description="You're subscribed to updates about Francis."
+  noindex
+  subscribeDialog={false}
+>
+  <Hero title="You're Subscribed" subtitle="Thank you for following along." />
+
+  <section>
+    <div class="container">
+      <p>
+        We'll email you whenever we post a new update about Francis. 
+      </p>
+      <p><a href="/blog">Read the latest updates</a></p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+</style>

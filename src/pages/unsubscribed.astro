@@ -1,0 +1,33 @@
+---
+import Hero from "../components/Hero.astro";
+import { SITE_TITLE } from "../consts.js";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const title = `Unsubscribed | ${SITE_TITLE}`;
+---
+
+<BaseLayout
+  title={title}
+  description="You've been unsubscribed from updates about Francis."
+  noindex
+  subscribeDialog={false}
+>
+  <Hero title="You've Been Unsubscribed" subtitle="You won't receive any more update emails." />
+
+  <section>
+    <div class="container">
+      <p>
+        Thank you for walking with us. You're always welcome back at
+        <a href="/blog">the updates page</a>, and you can <a href="/subscribe">subscribe again</a>
+        any time.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+</style>

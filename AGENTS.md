@@ -308,6 +308,10 @@ The user handles all commits and merges. Do not commit or merge without
 permission, and never until `npm run build` and `npm run test` pass. Never
 delete files without asking.
 
+Completion ends with a pull request: `/complete` pushes the work branch and
+opens a PR against `main` with `gh`. Never squash-merge or otherwise merge
+into `main` locally, and never push `main`; the user merges on GitHub.
+
 Browser testing is opt-in. Run `/tests browser` or `$tests browser` to add
 or normalize a browser harness and document its exact command as `Browser
 tests`. Check and Continuous Mode can then reuse it without installing tooling

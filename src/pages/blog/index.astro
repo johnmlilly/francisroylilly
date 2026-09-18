@@ -5,6 +5,7 @@ import BaseHead from "../../components/BaseHead.astro";
 import Footer from "../../components/Footer.astro";
 import FormattedDate from "../../components/FormattedDate.astro";
 import Header from "../../components/Header.astro";
+import SubscribeDialog from "../../components/SubscribeDialog.astro";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../../consts.js";
 
 const posts = (
@@ -28,6 +29,21 @@ function toDateInputValue(date: Date) {
         max-width: 960px;
         margin: 0 auto;
         padding: 0 1.5rem;
+      }
+
+      .subscribe-cta {
+        margin: 0 0 1.5rem;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        background: #f5f2e9;
+        text-align: center;
+        color: rgb(var(--gray-dark));
+      }
+
+      .subscribe-cta a {
+        margin-left: 0.25rem;
+        color: var(--secondary-color);
+        font-weight: 600;
       }
 
       .filter-toolbar {
@@ -267,6 +283,10 @@ function toDateInputValue(date: Date) {
     <Header />
     <main>
       <section>
+        <p class="subscribe-cta">
+          Want new updates in your inbox?
+          <a href="/subscribe">Subscribe by email</a>
+        </p>
         <div class="filter-toolbar">
           <div class="search-bar">
             <svg
@@ -377,6 +397,7 @@ function toDateInputValue(date: Date) {
       </section>
     </main>
     <Footer />
+    <SubscribeDialog />
   </body>
 </html>
 

@@ -1,0 +1,37 @@
+---
+import Hero from "../components/Hero.astro";
+import SubscribeForm from "../components/SubscribeForm.astro";
+import { SITE_TITLE } from "../consts.js";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const title = `Subscribe | ${SITE_TITLE}`;
+const description =
+  "Get an email whenever we post a new update about Francis's journey.";
+---
+
+<BaseLayout title={title} description={description} subscribeDialog={false}>
+  <Hero
+    title="Follow Francis's Journey"
+  />
+
+  <section>
+    <div class="container">
+      <p>
+        Stay up to date on Francis's journey and progress. No spam ever, we promise! Whenever we post a new update, we'll send it straight to your inbox.
+      </p>
+
+      <SubscribeForm heading="Stay Updated" />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .container > p {
+    margin-bottom: 1.5rem;
+  }
+</style>

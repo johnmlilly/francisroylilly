@@ -1,0 +1,121 @@
+---
+import Hero from "../../components/Hero.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { SITE_TITLE } from "../../consts.js";
+import { confirmSubscription, lookupConfirmToken } from "../../lib/subscriptions.js";
+
+// Reads and writes D1 per request; never prerender.
+export const prerender = false;
+
+type View = "missing" | "not-found" | "used" | "pending";
+
+let view: View;
+let firstName = "";
+let token = "";
+
+if (Astro.request.method === "POST") {
+  const form = await Astro.request.formData();
+  const submitted = form.get("token");
+
+  if (typeof submitted !== "string" || submitted.length === 0) {
+    view = "missing";
+  } else {
+    const result = await confirmSubscription(submitted, new Date());
+    if (result === "confirmed") {
+      return Astro.redirect("/subscribed", 303);
+    }
+    view = result === "not-found" ? "not-found" : "used";
+  }
+} else {
+  token = Astro.url.searchParams.get("token") ?? "";
+
+  if (!token) {
+    view = "missing";
+  } else {
+    const lookup = await lookupConfirmToken(token);
+    if (lookup.status === "pending") {
+      view = "pending";
+      firstName = lookup.firstName;
+    } else {
+      view = lookup.status === "not-found" ? "not-found" : "used";
+    }
+  }
+}
+
+Astro.response.status = view === "missing" ? 400 : view === "pending" ? 200 : 404;
+const title = `Confirm subscription | ${SITE_TITLE}`;
+
+const heroTitle =
+  view === "pending"
+    ? `Almost There, ${firstName}`
+    : view === "used"
+      ? "Already Confirmed"
+      : "We Couldn't Find That Link";
+---
+
+<BaseLayout
+  title={title}
+  description="Confirm your subscription to updates about Francis."
+  noindex
+  subscribeDialog={false}
+>
+  <Hero title={heroTitle} />
+
+  <section>
+    <div class="container">
+      {
+        view === "pending" && (
+          <>
+            <p>Click below to confirm you'd like email updates about Francis's journey.</p>
+            <form method="POST" action="/api/confirm">
+              <input type="hidden" name="token" value={token} />
+              <button type="submit" class="confirm__button">Confirm subscription</button>
+            </form>
+          </>
+        )
+      }
+      {
+        view === "used" && (
+          <>
+            <p>This link has already been used. You're subscribed and don't need to do anything else.</p>
+            <p><a href="/blog">Read the latest updates</a></p>
+          </>
+        )
+      }
+      {
+        (view === "not-found" || view === "missing") && (
+          <>
+            <p>
+              The confirmation link is missing or no longer valid. You can
+              <a href="/subscribe">subscribe again</a> any time.
+            </p>
+            <p><a href="/">Back to the homepage</a></p>
+          </>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .confirm__button {
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    background: var(--primary-color);
+    color: white;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .confirm__button:hover {
+    background: var(--primary-color-hover);
+  }
+</style>
