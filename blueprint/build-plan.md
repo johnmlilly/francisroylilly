@@ -30,3 +30,4 @@ Roadmap:
 - [ ] 17. **Streamline SEO with astro-seo** - per-page title/description/OG props instead of duplicated meta tags
 - [ ] 18. **Loading animation for comments** - cue in `Comments.astro` during initial fetch and post-submit refresh, graceful failure fallback
 - [ ] 19. **Migrate Turso to Cloudflare D1** - `drizzle-orm/d1` binding, keep libsql `:memory:` for Vitest, `db/migrate.ts`/`db/seed.ts` become `wrangler d1` commands
+- [ ] 20. **Remove unused `react-image-gallery` and `prop-types` dependencies** - legacy template leftovers, no imports in `src/`

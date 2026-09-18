@@ -62,16 +62,14 @@ Blog posts are Markdown/MDX files in `src/content/blog/`, images in
 | Testing    | Vitest (unit); GitHub Actions runs test + build on PRs     |
 | Hosting    | Cloudflare Workers via `@astrojs/cloudflare`; DNS on Cloudflare |
 
-> TODO (confirm): `react-image-gallery`, `react-vertical-timeline-component`,
-> `prop-types`, and the untyped `src/components/Timeline.jsx` look like legacy
-> from the original template. Keep as-is, or flag for cleanup?
+Legacy template deps: keep `react-vertical-timeline-component` and the untyped
+`src/components/Timeline.jsx` as-is. `react-image-gallery` and `prop-types` are
+unused and will be removed (build plan).
 
 ## 6. Monetize - How will this make money?
 
 It doesn't. Personal site. `/support` page exists for people who want to help
 the family.
-
-> TODO (confirm): nothing else planned here.
 
 ## 7. UI/UX - How should this look and feel?
 
