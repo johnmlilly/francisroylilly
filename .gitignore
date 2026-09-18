@@ -30,8 +30,8 @@ pnpm-debug.log*
 # Local Netlify folder
 .netlify
 
-#Claude
-.claude
+#Claude (local settings only; Blueprint skills in .claude/skills are tracked)
+.claude/settings.local.json
 
 # Cloudflare Workers local state
 .wrangler/
