@@ -1,6 +1,6 @@
 # Francis Roy Lilly - Project Overview
 
-<!-- blueprint:source-hash 1e2ad36d6ce2dc6c55ff3f8c13477683bdadae32c33aab4c5d85f6769ded4713 -->
+<!-- blueprint:source-hash 3126d59947639baf938dbbe9a395ee2ee64a37d4d040ecd4572503bc5946ee75 -->
 
 > Personal site documenting Francis Roy Lilly's journey after a severe brain
 > injury (HIE) at birth. Permanent, ad-free replacement for CaringBridge.
@@ -59,7 +59,7 @@ Items 14-20 are the roadmap. Item 14 is in progress on
 
 ### Roadmap
 
-14. **Notify subscribers of new blog posts** (headline, in progress) - `Subscriber` + `PostNotification` tables in a new Cloudflare D1 database; double opt-in with token confirm/unsubscribe (POST-only mutations); subscribe form in `Footer` and on `/blog` plus a site-wide `react-modal` popup; `/api/notify` triggered by a GitHub Actions workflow on push to `main`; HTML email via Resend. Design: `blueprint/plans/notify-subscribers.md`.
+14. **Notify subscribers of new blog posts** (headline, in progress) - `Subscriber` + `PostNotification` tables in a new Cloudflare D1 database; double opt-in with token confirm/unsubscribe (POST-only mutations); subscribe form on `/subscribe` (linked from footer and `/blog`) plus a site-wide native `<dialog>` popup; `/api/notify` triggered by a GitHub Actions workflow on push to `main`; HTML email via Resend. Design: `blueprint/plans/notify-subscribers.md`.
 15. **Playwright E2E smoke tests** - comment submission, love button, `/blog` listing. Set up via `/tests browser`.
 16. **Replace Lucide icons with astro-icon** - `src/components/Cards.astro`.
 17. **Streamline SEO with astro-seo** - per-page title/description/OG props instead of duplicated meta tags.
@@ -139,7 +139,7 @@ Frontmatter schema (`src/content.config.ts`, mirrored in `.pages.yml`):
 - **Astro 7** - framework; `output: 'static'` with on-demand routes via adapter; `site` comes from `SITE_URL` in `src/consts.ts`
 - **TypeScript (strict)** - app code; `Timeline.jsx` is the untyped legacy exception
 - **Tailwind CSS v4** - CSS-first config via `@tailwindcss/vite`; utilities `.pull-quote`, `.hero-quote` in `src/styles/global.css`
-- **React 19** - islands only (timeline via `react-vertical-timeline-component`; planned `react-modal` subscribe popup)
+- **React 19** - islands only (timeline via `react-vertical-timeline-component`)
 - **Drizzle ORM** - `@libsql/client` against Turso; `drizzle-orm/d1` against D1 (planned)
 - **Astro Actions** - form handling (`addComment`, `addLove`, `subscribeToUpdates`) in `src/actions/index.ts`
 - **Resend** (planned) - transactional email; plain inline-styled HTML templates in `emails/` with `escapeHtml`
@@ -163,9 +163,10 @@ first; most readers arrive from shared links. Emails reuse brand tokens
 Routes:
 
 - `/` - hero flip rotator, "Francis's Story", cards, React timeline of posts
-- `/blog` - updates listing with search and date-range filter; planned subscribe form
+- `/blog` - updates listing with search and date-range filter; link banner to `/subscribe`
 - `/blog/[slug]` - post with hero, photo gallery, comments, love button, share button, per-post OG meta
 - `/prayers`, `/support` - static pages
+- `/subscribe` - subscribe form page, linked from footer nav
 - `/rss.xml`, `/sitemap-index.xml` - feed and sitemap
 - `/api/comments`, `/api/reactions` - GET, on-demand
 - `/api/confirm?token=` (planned) - GET renders confirm page; POST sets `confirmedAt`, redirects to `/subscribed`
@@ -173,7 +174,7 @@ Routes:
 - `/api/notify` (planned) - POST only, `x-notify-secret` header; `?skipSend=true` backfills
 - `/subscribed`, `/unsubscribed` (planned) - static confirmation pages
 
-Planned site-wide subscribe modal opens ~9s after load, dismissal persisted in
+Planned site-wide subscribe modal opens ~5s after load, dismissal persisted in
 `localStorage` (`frl-subscribe-modal-dismissed`).
 
 ## Deployment

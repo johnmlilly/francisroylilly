@@ -1,9 +1,19 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "francisroylilly",
-  "compatibility_date": "2026-08-01",
-  "compatibility_flags": ["nodejs_compat"],
-  "observability": {
-    "enabled": true
-  }
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "francisroylilly",
+	"compatibility_date": "2026-08-01",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"observability": {
+		"enabled": true
+	},
+	"vars": {},
+	"d1_databases": [
+		{
+			"binding": "SUBSCRIBERS_DB",
+			"database_name": "francisroylilly",
+			"database_id": "651b67c6-8731-4b81-8650-92feb7dfc33c"
+		}
+	]
 }

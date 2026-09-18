@@ -1,0 +1,118 @@
+---
+import Hero from "../../components/Hero.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { SITE_TITLE } from "../../consts.js";
+import { lookupUnsubscribeToken, unsubscribe } from "../../lib/subscriptions.js";
+
+// Reads and writes D1 per request; never prerender.
+export const prerender = false;
+
+type View = "missing" | "not-found" | "already" | "found";
+
+let view: View;
+let firstName = "";
+let token = "";
+
+if (Astro.request.method === "POST") {
+  const form = await Astro.request.formData();
+  const submitted = form.get("token");
+
+  if (typeof submitted !== "string" || submitted.length === 0) {
+    view = "missing";
+  } else {
+    const result = await unsubscribe(submitted, new Date());
+    if (result === "unsubscribed") {
+      return Astro.redirect("/unsubscribed", 303);
+    }
+    view = "not-found";
+  }
+} else {
+  token = Astro.url.searchParams.get("token") ?? "";
+
+  if (!token) {
+    view = "missing";
+  } else {
+    const lookup = await lookupUnsubscribeToken(token);
+    if (lookup.status === "not-found") {
+      view = "not-found";
+    } else {
+      firstName = lookup.firstName;
+      view = lookup.alreadyUnsubscribed ? "already" : "found";
+    }
+  }
+}
+
+Astro.response.status =
+  view === "missing" ? 400 : view === "not-found" ? 404 : 200;
+const title = `Unsubscribe | ${SITE_TITLE}`;
+
+const heroTitle =
+  view === "found"
+    ? "Unsubscribe From Updates?"
+    : view === "already"
+      ? "You're Already Unsubscribed"
+      : "We Couldn't Find That Link";
+---
+
+<BaseLayout title={title} description="Unsubscribe from email updates about Francis.">
+  <Hero title={heroTitle} />
+
+  <section>
+    <div class="container">
+      {
+        view === "found" && (
+          <>
+            <p>
+              {firstName}, click below and you'll stop receiving emails when a new update is
+              posted. You can subscribe again any time.
+            </p>
+            <form method="POST" action="/api/unsubscribe">
+              <input type="hidden" name="token" value={token} />
+              <button type="submit" class="unsubscribe__button">Unsubscribe</button>
+            </form>
+          </>
+        )
+      }
+      {
+        view === "already" && (
+          <>
+            <p>You won't receive any more update emails.</p>
+            <p><a href="/">Back to the homepage</a></p>
+          </>
+        )
+      }
+      {
+        (view === "not-found" || view === "missing") && (
+          <>
+            <p>The unsubscribe link is missing or no longer valid.</p>
+            <p><a href="/">Back to the homepage</a></p>
+          </>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .unsubscribe__button {
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid var(--secondary-color);
+    border-radius: 0.5rem;
+    background: white;
+    color: var(--secondary-color);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .unsubscribe__button:hover {
+    background: var(--secondary-color);
+    color: white;
+  }
+</style>

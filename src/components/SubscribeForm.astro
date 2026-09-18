@@ -1,0 +1,273 @@
+---
+import { actions } from "astro:actions";
+
+interface Props {
+  variant?: "compact" | "prominent";
+  heading?: string;
+  headingId?: string;
+}
+
+const { variant = "prominent", heading, headingId } = Astro.props;
+// Several instances can share a page (footer, /blog, dialog); suffix ids so
+// labels stay associated with their own inputs.
+const uid = Math.random().toString(36).slice(2, 8);
+---
+
+<form
+  method="POST"
+  action={actions.subscribeToUpdates}
+  class:list={["subscribe-form", `subscribe-form--${variant}`]}
+  data-subscribe-form
+  aria-labelledby={heading ? headingId ?? `subscribe-heading-${uid}` : undefined}
+>
+  {
+    heading && (
+      <h2 class="subscribe-form__heading" id={headingId ?? `subscribe-heading-${uid}`}>
+        {heading}
+      </h2>
+    )
+  }
+  {
+    variant === "prominent" && (
+      <p class="subscribe-form__intro">
+        Get an email about the latest on Francis.
+      </p>
+    )
+  }
+
+  <input type="hidden" name="timestamp" value="" />
+
+  <!-- Honeypot. `hidden` (display:none) rather than sr-only: browsers and
+       password managers autofill visually-hidden-but-rendered inputs, which
+       tripped the spam check for real people. Bots parsing HTML still fill it. -->
+  <div hidden aria-hidden="true">
+    <label for={`website-${uid}`}>Website</label>
+    <input type="text" id={`website-${uid}`} name="website" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <div class="subscribe-form__fields">
+    <!-- Input before label so CSS can float the label on :placeholder-shown / :focus -->
+    <div class="subscribe-form__field">
+      <input type="text" id={`firstName-${uid}`} name="firstName" required maxlength="100" autocomplete="given-name" placeholder=" " />
+      <label for={`firstName-${uid}`}>First name</label>
+    </div>
+    <div class="subscribe-form__field">
+      <input type="text" id={`lastName-${uid}`} name="lastName" required maxlength="100" autocomplete="family-name" placeholder=" " />
+      <label for={`lastName-${uid}`}>Last name</label>
+    </div>
+    <div class="subscribe-form__field subscribe-form__field--email">
+      <input type="email" id={`email-${uid}`} name="email" required autocomplete="email" placeholder=" " />
+      <label for={`email-${uid}`}>Email</label>
+    </div>
+    <button type="submit" class="subscribe-form__submit">Subscribe</button>
+  </div>
+
+  <p class="subscribe-form__status" data-status role="status" aria-live="polite"></p>
+</form>
+
+<style>
+  .subscribe-form {
+    width: 100%;
+  }
+
+  .subscribe-form__heading {
+    margin: 0 0 0.25rem;
+    font-size: 1.25rem;
+  }
+
+  .subscribe-form__intro {
+    margin: 0 0 1rem;
+    font-size: 0.95rem;
+  }
+
+  .subscribe-form__fields {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  /* Floating label: sits inside the input like a placeholder, shrinks to the
+     top on focus or once the field has a value. Same pattern as CommentsForm. */
+  .subscribe-form__field {
+    position: relative;
+    text-align: left;
+  }
+
+  .subscribe-form__field input {
+    width: 100%;
+    padding: 1.35rem 0.75rem 0.5rem;
+    border: 1px solid rgba(var(--gray), 0.4);
+    border-radius: 0.5rem;
+    font: inherit;
+    background: white;
+    color: rgb(var(--gray-dark));
+  }
+
+  .subscribe-form__field input:focus {
+    outline: 2px solid var(--secondary-color);
+    outline-offset: 1px;
+  }
+
+  .subscribe-form__field label {
+    position: absolute;
+    left: 0.75rem;
+    top: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgb(var(--gray));
+    pointer-events: none;
+    transition: top 0.15s ease, font-size 0.15s ease, color 0.15s ease;
+  }
+
+  .subscribe-form__field input:placeholder-shown:not(:focus) + label {
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    font-weight: 400;
+    color: rgba(var(--gray), 0.8);
+  }
+
+  .subscribe-form__field input:focus + label {
+    color: var(--secondary-color);
+  }
+
+  .subscribe-form__submit {
+    align-self: end;
+    padding: 0.65rem 1.25rem;
+    border: none;
+    border-radius: 0.5rem;
+    background: var(--primary-color);
+    color: white;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .subscribe-form__submit:hover {
+    background: var(--primary-color-hover);
+  }
+
+  .subscribe-form__submit:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  .subscribe-form__status {
+    min-height: 1.25rem;
+    margin: 0.75rem 0 0;
+    font-size: 0.9rem;
+  }
+
+  .subscribe-form__status[data-state="success"] {
+    color: #2f6b3a;
+  }
+
+  .subscribe-form__status[data-state="error"] {
+    color: #b3261e;
+  }
+
+  @media (min-width: 640px) {
+    .subscribe-form__fields {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .subscribe-form__field--email {
+      grid-column: 1 / -1;
+    }
+
+    .subscribe-form__submit {
+      grid-column: 1 / -1;
+      justify-self: start;
+    }
+  }
+
+  /* Prominent: card on the /blog listing and inside the dialog */
+  .subscribe-form--prominent {
+    padding: 1.5rem;
+    border-radius: 1rem;
+    background: #f5f2e9;
+    color: rgb(var(--gray-dark));
+  }
+
+  .subscribe-form--prominent .subscribe-form__heading {
+    color: var(--secondary-color);
+  }
+
+  /* Compact: sits on the dark footer */
+  .subscribe-form--compact {
+    max-width: 640px;
+    color: #f2eede;
+  }
+
+  .subscribe-form--compact .subscribe-form__heading {
+    font-size: 1rem;
+    color: #f2eede;
+  }
+
+  .subscribe-form--compact .subscribe-form__field input:focus + label {
+    color: var(--secondary-color);
+  }
+
+  .subscribe-form--compact .subscribe-form__status[data-state="success"] {
+    color: #cfe8d3;
+  }
+
+  .subscribe-form--compact .subscribe-form__status[data-state="error"] {
+    color: #f4b8b3;
+  }
+</style>
+
+<script>
+  import { actions, isInputError } from "astro:actions";
+
+  const forms = document.querySelectorAll<HTMLFormElement>("form[data-subscribe-form]");
+
+  forms.forEach((form) => {
+    const status = form.querySelector<HTMLElement>("[data-status]");
+    const button = form.querySelector<HTMLButtonElement>("button[type=submit]");
+    const timestamp = form.querySelector<HTMLInputElement>("input[name=timestamp]");
+
+    // Pages are prerendered, so the timing check has to start from the real
+    // page load, not the build.
+    if (timestamp) timestamp.value = Date.now().toString();
+
+    const show = (state: "success" | "error", message: string) => {
+      if (!status) return;
+      status.dataset.state = state;
+      status.textContent = message;
+    };
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (button) button.disabled = true;
+      if (status) {
+        status.textContent = "";
+        delete status.dataset.state;
+      }
+
+      try {
+        const { data, error } = await actions.subscribeToUpdates(new FormData(form));
+
+        if (error) {
+          if (isInputError(error)) {
+            const first = Object.values(error.fields).flat()[0];
+            show("error", first ?? "Please check your details and try again.");
+          } else {
+            show("error", error.message || "Something went wrong. Please try again.");
+          }
+          return;
+        }
+
+        show("success", data.message);
+        form.reset();
+        if (timestamp) timestamp.value = Date.now().toString();
+        form.dispatchEvent(new CustomEvent("subscribed", { bubbles: true }));
+      } catch {
+        show("error", "Something went wrong. Please try again.");
+      } finally {
+        if (button) button.disabled = false;
+      }
+    });
+  });
+</script>

@@ -6,6 +6,7 @@ import { db, Comment, Reaction, eq, desc } from '../../db/client.js';
 import { d1, Subscriber } from '../../db/d1-client.js';
 import { confirmSubscriptionEmail } from '../../emails/confirmSubscription.js';
 import { SITE_URL } from '../consts.js';
+import { decideSubscribe } from '../lib/subscribeDecision.js';
 
 const addCommentInput = z.object({
   postSlug: z.string(),
@@ -184,49 +185,33 @@ export async function subscribeToUpdatesHandler({
     .where(eq(Subscriber.email, normalizedEmail))
     .get();
 
+  const decision = decideSubscribe(
+    existing,
+    { email: normalizedEmail, firstName: sanitizedFirstName, lastName: sanitizedLastName },
+    new Date(),
+    () => crypto.randomUUID()
+  );
+
+  switch (decision.kind) {
+    case 'insert':
+      await d1.insert(Subscriber).values(decision.values);
+      break;
+    case 'reactivate':
+      await d1.update(Subscriber).set(decision.set).where(eq(Subscriber.email, normalizedEmail));
+      break;
+    case 'resend':
+    case 'noop':
+      break;
+  }
+
+  if (decision.kind !== 'noop') {
+    const { firstName, email: to, token } = decision.sendTo;
+    await sendConfirmationEmail(firstName, to, token);
+  }
+
   // The response is the same in every branch - it never reveals whether
   // an address was already on the list.
-  const response = { message: 'Check your email to confirm your subscription.' };
-
-  if (!existing) {
-    const token = crypto.randomUUID();
-    await d1.insert(Subscriber).values({
-      email: normalizedEmail,
-      firstName: sanitizedFirstName,
-      lastName: sanitizedLastName,
-      token,
-      createdAt: new Date(),
-    });
-    await sendConfirmationEmail(sanitizedFirstName, normalizedEmail, token);
-    return response;
-  }
-
-  if (!existing.confirmedAt) {
-    // Signed up before but never confirmed - resend using the same token.
-    await sendConfirmationEmail(existing.firstName, normalizedEmail, existing.token);
-    return response;
-  }
-
-  if (!existing.unsubscribedAt) {
-    // Already an active subscriber - no email sent.
-    return response;
-  }
-
-  // Previously unsubscribed - treat as a fresh opt-in and go through
-  // double opt-in again rather than silently reactivating.
-  const token = crypto.randomUUID();
-  await d1
-    .update(Subscriber)
-    .set({
-      firstName: sanitizedFirstName,
-      lastName: sanitizedLastName,
-      token,
-      confirmedAt: null,
-      unsubscribedAt: null,
-    })
-    .where(eq(Subscriber.email, normalizedEmail));
-  await sendConfirmationEmail(sanitizedFirstName, normalizedEmail, token);
-  return response;
+  return { message: 'Check your email to confirm your subscription.' };
 }
 
 export const server = {

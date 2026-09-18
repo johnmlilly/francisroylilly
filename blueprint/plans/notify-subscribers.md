@@ -29,8 +29,9 @@ external client or REST workaround.
   build-time image hashing isn't resolvable from this path).
 - **Plain HTML string templates**, not `@react-email/*`. Two templates don't
   justify JSX rendering risk inside a Worker.
-- **Site-wide subscribe modal** (`react-modal`) opening ~9s after load,
-  dismissal or success persisted in `localStorage` so it never reappears.
+- **Site-wide subscribe popup** (native `<dialog>` reusing `SubscribeForm.astro`)
+  opening ~5s after load, dismissal or success persisted in `localStorage` so it
+  never reappears.
 
 ## Data model (D1, `db/d1-schema.ts`)
 
@@ -99,8 +100,9 @@ names, lowercase/trim email. Lookup by email:
 
 Every branch returns the same generic "check your email" message.
 
-`src/components/SubscribeForm.astro` (modeled on `CommentsForm.astro`) embedded
-in `Footer.astro` and `src/pages/blog/index.astro`.
+`src/components/SubscribeForm.astro` (modeled on `CommentsForm.astro`) on a
+dedicated `src/pages/subscribe.astro` page linked from the `Footer.astro` nav,
+with a link banner on `src/pages/blog/index.astro`.
 
 ## Confirm flow (`src/pages/api/confirm.ts`, `prerender = false`)
 
@@ -138,19 +140,20 @@ step with the secret header. No checkout, no Node.
 
 All interpolated user/frontmatter values pass through `escapeHtml`.
 
-## Site-wide subscribe modal
+## Site-wide subscribe popup
 
-`react-modal`; `SubscribeModal.jsx` opens after ~9s, `ariaHideApp={false}`,
-closes on overlay/Esc/×, persists dismissal or success in `localStorage`
-(`frl-subscribe-modal-dismissed`). Mounted in `BaseLayout.astro` and
-`blog/index.astro`. Inner form `SubscribeFormReact.jsx` calls
-`actions.subscribeToUpdates(formData)` directly; same anti-bot fields.
+`SubscribeDialog.astro`: native `<dialog>` wrapping `SubscribeForm.astro`, opens
+~5s after load, closes on backdrop/Esc/×, persists dismissal or success in
+`localStorage` (`frl-subscribe-modal-dismissed`). Mounted in `BaseLayout.astro`
+and `blog/index.astro`. No extra dependency, one form implementation.
 
-## Backfill (before the workflow goes live)
+## Backfill (before merge)
 
-1. Apply D1 migration. 2. Deploy with `/api/notify` and secrets.
-3. `curl -X POST ".../api/notify?skipSend=true" -H "x-notify-secret: ..."` once.
-4. Only then merge the workflow file. Reuse `skipSend=true` for any later bulk import.
+Run `db/d1-backfill-post-notifications.sql` against the remote DB with
+`wrangler d1 execute francisroylilly --remote --file=` so every post published
+before the feature shipped is already marked notified. Because this happens
+before merge, the workflow file can ship with the feature. Reuse
+`/api/notify?skipSend=true` for any later bulk import.
 
 ## Testing (Vitest)
 

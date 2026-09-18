@@ -1,0 +1,22 @@
+name: Notify subscribers
+
+# Fires when blog content lands on main. The Worker decides which published
+# posts are new (PostNotification table), so editing drafts sends nothing.
+# Re-run manually via workflow_dispatch if a send fails.
+on:
+  push:
+    branches: [main]
+    paths: ['src/content/blog/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger /api/notify
+        run: |
+          curl -sf -X POST "https://francisroylilly.com/api/notify" \
+            -H "x-notify-secret: ${{ secrets.NOTIFY_SECRET }}"
