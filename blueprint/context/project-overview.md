@@ -1,6 +1,6 @@
 # Francis Roy Lilly - Project Overview
 
-<!-- blueprint:source-hash 3126d59947639baf938dbbe9a395ee2ee64a37d4d040ecd4572503bc5946ee75 -->
+<!-- blueprint:source-hash f9cc734d9df57cdd819561c83302749d5553b3b187d7c7b9090e261c97b7c9fe -->
 
 > Personal site documenting Francis Roy Lilly's journey after a severe brain
 > injury (HIE) at birth. Permanent, ad-free replacement for CaringBridge.
