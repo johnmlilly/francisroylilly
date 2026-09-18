@@ -37,6 +37,7 @@ const row = (overrides: Partial<SubscriberRow> = {}): SubscriberRow => ({
   createdAt: new Date('2026-01-01T00:00:00Z'),
   confirmedAt: null,
   unsubscribedAt: null,
+  lastEmailedAt: null,
   ...overrides,
 });
 
@@ -97,6 +98,7 @@ describe('subscribeToUpdatesHandler', () => {
     expect(sent.to).toBe('jane@example.com');
     expect(sent.subject).toBe('Confirm your subscription');
     expect(sent.html).toContain(`/api/confirm?token=${inserted.token}`);
+    expect(d1State.updated).toEqual([{ lastEmailedAt: expect.any(Date) }]);
   });
 
   it('strips HTML tags from names before storing them', async () => {
@@ -112,10 +114,27 @@ describe('subscribeToUpdatesHandler', () => {
 
     expect(result).toEqual({ message: expectedMessage });
     expect(d1State.inserted).toHaveLength(0);
-    expect(d1State.updated).toHaveLength(0);
+    expect(d1State.updated).toEqual([{ lastEmailedAt: expect.any(Date) }]);
     expect(sendMock).toHaveBeenCalledTimes(1);
     const sent = sendMock.mock.calls[0][0] as { html: string };
     expect(sent.html).toContain('/api/confirm?token=old-token');
+  });
+
+  it('sends nothing and writes nothing when a confirmation went out in the last 10 minutes', async () => {
+    resetD1([row({ lastEmailedAt: new Date(Date.now() - 60_000) })]);
+    const result = await subscribeToUpdatesHandler(validInput);
+
+    expect(result).toEqual({ message: expectedMessage });
+    expect(d1State.inserted).toHaveLength(0);
+    expect(d1State.updated).toHaveLength(0);
+    expect(sendMock).not.toHaveBeenCalled();
+  });
+
+  it('does not stamp lastEmailedAt when the send fails', async () => {
+    sendMock.mockResolvedValueOnce({ data: null, error: { message: 'boom', name: 'application_error' } } as never);
+    resetD1([row()]);
+    await expect(subscribeToUpdatesHandler(validInput)).rejects.toThrow('We could not send');
+    expect(d1State.updated).toHaveLength(0);
   });
 
   it('sends nothing and changes nothing for an active subscriber', async () => {
@@ -133,7 +152,8 @@ describe('subscribeToUpdatesHandler', () => {
     const result = await subscribeToUpdatesHandler(validInput);
 
     expect(result).toEqual({ message: expectedMessage });
-    expect(d1State.updated).toHaveLength(1);
+    expect(d1State.updated).toHaveLength(2);
+    expect(d1State.updated[1]).toEqual({ lastEmailedAt: expect.any(Date) });
     const set = d1State.updated[0];
     expect(set.confirmedAt).toBeNull();
     expect(set.unsubscribedAt).toBeNull();

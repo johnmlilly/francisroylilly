@@ -9,6 +9,8 @@ export const Subscriber = sqliteTable('Subscriber', {
   createdAt: integer('createdAt', { mode: 'timestamp' }).notNull(),
   confirmedAt: integer('confirmedAt', { mode: 'timestamp' }),
   unsubscribedAt: integer('unsubscribedAt', { mode: 'timestamp' }),
+  // Last time a confirmation email went to this address; throttles resends.
+  lastEmailedAt: integer('lastEmailedAt', { mode: 'timestamp' }),
 });
 
 export const PostNotification = sqliteTable('PostNotification', {

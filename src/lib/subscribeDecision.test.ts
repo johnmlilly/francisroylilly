@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { decideSubscribe, type SubscriberRow } from './subscribeDecision.js';
+import { CONFIRMATION_RESEND_WINDOW_MS, decideSubscribe, type SubscriberRow } from './subscribeDecision.js';
 
 const now = new Date('2026-09-17T12:00:00Z');
 const input = { email: 'jane@example.com', firstName: 'Jane', lastName: 'Doe' };
@@ -14,8 +14,11 @@ const row = (overrides: Partial<SubscriberRow> = {}): SubscriberRow => ({
   createdAt: new Date('2026-01-01T00:00:00Z'),
   confirmedAt: null,
   unsubscribedAt: null,
+  lastEmailedAt: null,
   ...overrides,
 });
+
+const msAgo = (ms: number) => new Date(now.getTime() - ms);
 
 describe('decideSubscribe', () => {
   it('inserts a new unconfirmed row and sends a confirmation for a new email', () => {
@@ -57,6 +60,39 @@ describe('decideSubscribe', () => {
         unsubscribedAt: null,
       },
       sendTo: { firstName: 'Jane', email: input.email, token: 'fresh-token' },
+    });
+  });
+
+  describe('throttle', () => {
+    const unsubscribed = { confirmedAt: new Date('2026-02-01T00:00:00Z'), unsubscribedAt: new Date('2026-03-01T00:00:00Z') };
+
+    it('throttles a resend when a confirmation went out inside the window', () => {
+      const existing = row({ lastEmailedAt: msAgo(CONFIRMATION_RESEND_WINDOW_MS - 1) });
+      expect(decideSubscribe(existing, input, now, newToken)).toEqual({ kind: 'throttled' });
+    });
+
+    it('throttles a reactivation when a confirmation went out inside the window', () => {
+      const existing = row({ ...unsubscribed, lastEmailedAt: msAgo(1000) });
+      expect(decideSubscribe(existing, input, now, newToken)).toEqual({ kind: 'throttled' });
+    });
+
+    it('allows a resend at exactly the window and beyond', () => {
+      expect(decideSubscribe(row({ lastEmailedAt: msAgo(CONFIRMATION_RESEND_WINDOW_MS) }), input, now, newToken).kind).toBe('resend');
+      expect(decideSubscribe(row({ lastEmailedAt: msAgo(CONFIRMATION_RESEND_WINDOW_MS * 3) }), input, now, newToken).kind).toBe('resend');
+    });
+
+    it('allows a reactivation once the window has passed', () => {
+      const existing = row({ ...unsubscribed, lastEmailedAt: msAgo(CONFIRMATION_RESEND_WINDOW_MS) });
+      expect(decideSubscribe(existing, input, now, newToken).kind).toBe('reactivate');
+    });
+
+    it('never throttles a row that has no lastEmailedAt (pre-migration rows)', () => {
+      expect(decideSubscribe(row({ lastEmailedAt: null }), input, now, newToken).kind).toBe('resend');
+      expect(decideSubscribe(row({ ...unsubscribed, lastEmailedAt: null }), input, now, newToken).kind).toBe('reactivate');
+    });
+
+    it('never throttles an active subscriber into a send', () => {
+      expect(decideSubscribe(row({ confirmedAt: now, lastEmailedAt: msAgo(1000) }), input, now, newToken)).toEqual({ kind: 'noop' });
     });
   });
 });

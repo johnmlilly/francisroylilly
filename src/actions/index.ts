@@ -191,10 +191,11 @@ export async function subscribeToUpdatesHandler({
     .where(eq(Subscriber.email, normalizedEmail))
     .get();
 
+  const now = new Date();
   const decision = decideSubscribe(
     existing,
     { email: normalizedEmail, firstName: sanitizedFirstName, lastName: sanitizedLastName },
-    new Date(),
+    now,
     () => crypto.randomUUID()
   );
 
@@ -207,12 +208,16 @@ export async function subscribeToUpdatesHandler({
       break;
     case 'resend':
     case 'noop':
+    case 'throttled':
       break;
   }
 
-  if (decision.kind !== 'noop') {
+  if (decision.kind !== 'noop' && decision.kind !== 'throttled') {
     const { firstName, email: to, token } = decision.sendTo;
     await sendConfirmationEmail(firstName, to, token);
+    // Stamp only after a successful send so a Resend failure (already surfaced
+    // to the reader as an error) never locks them out for the window.
+    await d1.update(Subscriber).set({ lastEmailedAt: now }).where(eq(Subscriber.email, normalizedEmail));
   }
 
   // The response is the same in every branch - it never reveals whether
