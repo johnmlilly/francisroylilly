@@ -66,10 +66,13 @@ const heroTitle =
       {
         view === "pending" && (
           <>
-            <p>Click below to confirm you'd like email updates about Francis's journey.</p>
-            <form method="POST" action="/api/confirm">
+            <p id="confirm-status">One moment, confirming your subscription.</p>
+            <form method="POST" action="/api/confirm" id="confirm-form">
               <input type="hidden" name="token" value={token} />
-              <button type="submit" class="confirm__button">Confirm subscription</button>
+              <noscript>
+                <p>Click below to confirm you'd like email updates about Francis's journey.</p>
+                <button type="submit" class="confirm__button">Confirm subscription</button>
+              </noscript>
             </form>
           </>
         )
@@ -119,3 +122,12 @@ const heroTitle =
     background: var(--primary-color-hover);
   }
 </style>
+
+<script>
+  // Email link stays a plain GET (scanners prefetch links, so a mutating GET
+  // would confirm before the recipient opens the message). This script is
+  // what turns that GET into the one click the reader actually feels: a
+  // scanner fetching the HTML never runs it, but a real browser submits the
+  // form immediately, so there's no second click on the page.
+  document.getElementById("confirm-form")?.submit();
+</script>
