@@ -1,4 +1,4 @@
-import { renderEmail, button } from './layout.js';
+import { renderEmail, button, escapeHtml } from './layout.js';
 
 interface ConfirmSubscriptionParams {
   firstName: string;
@@ -12,7 +12,7 @@ export function confirmSubscriptionEmail({ firstName, confirmUrl }: ConfirmSubsc
   const subject = 'Confirm your subscription';
 
   const bodyHtml = `
-    <p>Hi ${firstName},</p>
+    <p>Hi ${escapeHtml(firstName)},</p>
     <p>Thanks for signing up for updates about Francis's journey. Please confirm your email to start receiving them.</p>
     ${button(confirmUrl, 'Confirm subscription')}
     <p style="margin-top:24px;font-size:13px;color:#60739f;">If you didn't request this, you can ignore this email.</p>

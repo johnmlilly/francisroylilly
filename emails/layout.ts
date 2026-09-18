@@ -3,6 +3,17 @@ import { SITE_TITLE } from '../src/consts.js';
 const FONT_STACK =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 
+// Values interpolated into email HTML come from user-submitted form fields or
+// post frontmatter; escape them so a stray `<` or `&` can't break the markup.
+export function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 interface LayoutOptions {
   previewText: string;
   bodyHtml: string;

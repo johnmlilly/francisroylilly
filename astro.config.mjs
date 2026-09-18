@@ -8,10 +8,11 @@ import react from '@astrojs/react';
 import cloudflare from '@astrojs/cloudflare';
 
 import tailwindcss from '@tailwindcss/vite';
+import { SITE_URL } from './src/consts.ts';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://francisroylilly.com/',
+  site: SITE_URL,
   integrations: [mdx(), sitemap(), react()],
   output: 'static',
   // The Cloudflare Vite plugin conflicts with Vitest's Node environment, so
