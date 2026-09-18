@@ -7,18 +7,26 @@
 > finding is `open` or `fixed`, then archives resolved findings with the work
 > and resets this file.
 
-### F-11 [P2] fixed - Subscribe action re-sends a confirmation email on every submission for an unconfirmed or unsubscribed address, with no throttle
-
-**File:** src/lib/subscribeDecision.ts:50-56, 63-75 (caller src/actions/index.ts:213-216)
-**Found:** 2026-09-18 by /audit (scope: current; lens: quality, security, performance, tests; independent)
-**Why it matters:** The `resend` and `reactivate` branches send a fresh confirmation email each time the form is posted for that address. The only gates are the honeypot and the client-supplied `timestamp`, both trivially satisfied by a script that posts `timestamp = now - 4000`. Anyone can therefore point the public action at a third party's address and trigger an unbounded stream of "Confirm your subscription" emails from `updates@mail.francisroylilly.com`: unsolicited mail to a victim, sender-reputation damage, and exhaustion of the Resend quota, which would then block real confirmations and the next post notification. Impact is bounded by the Resend plan limits, and the spec accepted these soft gates, so this stays at P2 rather than P1.
-**Suggested fix:** Smallest repository-native option: skip the send in `decideSubscribe` when the row was emailed recently (for example within 10 minutes), which needs one nullable `lastEmailedAt` column on `Subscriber` (D1 migration) set on every send, and a test for the throttled branch; the response stays identical so nothing is revealed. Platform-native alternative with no code: one Cloudflare rate-limiting rule on `POST /_actions/*` per client IP. Either changes shipped behavior slightly (a genuine "I didn't get it" resend within the window is suppressed), so it needs the user's decision on the window or the WAF path. No current requirement is lost.
-**Resolution:** User chose the lastEmailedAt column with a 10 minute window (2026-09-18). decideSubscribe returns `throttled` for resend/reactivate when lastEmailedAt is inside CONFIRMATION_RESEND_WINDOW_MS; the handler stamps lastEmailedAt only after a successful send; response unchanged. Migration drizzle/d1/0001_*.sql. Fixed by /implement 2026-09-18.
-
 ### F-13 [P3] open - Notify workflow stays green when every batch send fails, so missed notifications go unnoticed
 
 **File:** .github/workflows/notify-subscribers.yml:41-43 (see also src/pages/api/notify.ts:79-85, 91-96)
 **Found:** 2026-09-18 by /audit (scope: current; lens: quality, security, performance, tests; independent)
 **Why it matters:** `/api/notify` answers 200 with `{ notified: [{ slug, sent, failed }] }` whether or not a batch failed, and the `PostNotification` row is written regardless, so a rerun sends nothing. `curl -sf` fails only on a non-2xx status, so a run in which Resend rejected every chunk (429, an invalid address failing its whole chunk of up to 100, an expired API key) is a green Actions run. The only signal is the JSON body in the step log, and nothing prompts anyone to read it, so subscribers never hear about that post. Response-only reporting is the spec's chosen contract, so this is a follow-up, not a blocker.
 **Suggested fix:** In the trigger step, capture the body and pipe it through `jq -e '([.notified[].failed] | add // 0) == 0'` so a non-zero `failed` count fails the run and GitHub sends its failure email; print the body first so the counts stay in the log. No current requirement is lost.
+**Resolution:**
+
+### F-14 [P3] open - Resend throttle is check-then-act, so concurrent submissions for one address can each send before the first stamp lands
+
+**File:** src/actions/index.ts:188-221 (decision at src/lib/subscribeDecision.ts:31-36)
+**Found:** 2026-09-18 by /audit (scope: current; lens: security, performance; independent)
+**Why it matters:** The handler reads the row, decides, sends, then writes `lastEmailedAt`. Nothing serialises requests for the same email, so N requests fired in parallel all observe the pre-send `lastEmailedAt` (null or stale) and all send; only requests arriving after the first stamp commits are throttled. The abuse F-11 closed is therefore reduced from unbounded to one burst (bounded by how many requests land inside roughly one Resend round-trip) per address per 10 minutes, not to one email. Bursts still count against the Resend quota and land as duplicate mail on the victim. The window is short and the throttle materially reduces the risk, so this is a follow-up, not a blocker.
+**Suggested fix:** Claim the window before sending: on `resend` and `reactivate`, run one conditional `UPDATE Subscriber SET lastEmailedAt = ? WHERE email = ? AND (lastEmailedAt IS NULL OR lastEmailedAt <= ?)` (D1 returns `meta.changes`; `0` means another request won and the handler treats it as `throttled`), then send, and on a Resend error reset `lastEmailedAt` to its prior value so the reader is not locked out. This changes the spec's "stamp only after a successful send" contract to "stamp first, roll back on failure", so it needs the user's decision. No current requirement is lost.
+**Resolution:**
+
+### F-15 [P3] open - Every Subscriber read selects the new column, so deploying before the remote migration breaks confirm, unsubscribe, and notify, not only subscribe
+
+**File:** src/lib/subscriptions.ts:17, src/pages/api/notify.ts:56-59, src/actions/index.ts:188-192 (deployment note in blueprint/context/current-feature.md:58-66)
+**Found:** 2026-09-18 by /audit (scope: current; lens: quality; independent)
+**Why it matters:** Drizzle's `select()` with no column list expands to every schema column, so once this code is live any query against a production `Subscriber` table that lacks `lastEmailedAt` fails with `no such column`. That includes the token lookup behind `/api/confirm` and `/api/unsubscribe` (readers clicking emailed links get an error page) and the active-subscriber query in `/api/notify` (the Actions run goes red; `PostNotification` is not written, so a rerun after the migration recovers). The spec's deployment note only says "the deployed action will fail", which understates the blast radius and could lead to applying the migration after merge rather than before.
+**Suggested fix:** Apply `drizzle/d1/0001_hard_major_mapleleaf.sql` to the remote D1 before merging to `main` (the migration is additive and harmless to run ahead of the code), and correct the deployment note to say that confirm, unsubscribe, and notify also depend on it. No code change needed. No current requirement is lost.
 **Resolution:**
