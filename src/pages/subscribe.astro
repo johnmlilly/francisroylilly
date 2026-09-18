@@ -5,21 +5,17 @@ import { SITE_TITLE } from "../consts.js";
 import BaseLayout from "../layouts/BaseLayout.astro";
 
 const title = `Subscribe | ${SITE_TITLE}`;
-const description =
-  "Get an email whenever we post a new update about Francis's journey.";
 ---
 
-<BaseLayout title={title} description={description} subscribeDialog={false}>
-  <Hero
-    title="Follow Francis's Journey"
-  />
+<BaseLayout title={title} subscribeDialog={false}>
+  <Hero title="Subscribe for Updates" />
 
   <section>
     <div class="container">
       <p>
-        Stay up to date on Francis's journey and progress. No spam ever, we promise! Whenever we post a new update, we'll send it straight to your inbox.
+        Stay up to date on Francis's journey and progress. We will never share
+        your email address with anyone else and never send you any spam.
       </p>
-
       <SubscribeForm heading="Stay Updated" />
     </div>
   </section>
