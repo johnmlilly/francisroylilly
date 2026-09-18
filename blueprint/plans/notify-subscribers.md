@@ -131,7 +131,7 @@ with a link banner on `src/pages/blog/index.astro`.
 group so overlapping pushes never double-send. Workers Builds deploys minutes
 after the push and `/api/notify` reads posts from the deployed bundle, so the
 first step polls `GET /api/version` (build commit from `WORKERS_CI_COMMIT_SHA`)
-until it equals `github.sha`, up to 10 minutes, then a `curl -sf -X POST` with
+until it equals `github.sha`, up to 6 minutes (24 × 15s), then a `curl -sf -X POST` with
 the secret header. No checkout, no Node. Sends go through `resend.batch.send`
 in chunks of 100 from `EMAIL_FROM` (`updates@mail.francisroylilly.com`).
 

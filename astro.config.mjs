@@ -16,8 +16,13 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap({
-      // Post-action confirmation pages carry no content worth indexing.
-      filter: (page) => !page.endsWith('/subscribed/') && !page.endsWith('/unsubscribed/'),
+      // Post-action confirmation pages and API/token routes carry no content
+      // worth indexing. `@astrojs/sitemap` includes parameterless on-demand
+      // routes, so /api/* must be filtered explicitly.
+      filter: (page) =>
+        !page.endsWith('/subscribed/') &&
+        !page.endsWith('/unsubscribed/') &&
+        !page.includes('/api/'),
     }),
     react(),
   ],

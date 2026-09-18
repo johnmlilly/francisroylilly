@@ -25,16 +25,17 @@ jobs:
     steps:
       - name: Wait for Workers Builds to deploy this commit
         run: |
-          for attempt in $(seq 1 40); do
+          # 24 x 15s = 6 minute ceiling; exits on the first match.
+          for attempt in $(seq 1 24); do
             deployed=$(curl -sf https://francisroylilly.com/api/version | jq -r '.sha' || echo unknown)
             if [ "$deployed" = "${{ github.sha }}" ]; then
               echo "Deployed commit matches: $deployed"
               exit 0
             fi
-            echo "Deployed: $deployed, waiting for ${{ github.sha }} ($attempt/40)"
+            echo "Deployed: $deployed, waiting for ${{ github.sha }} ($attempt/24)"
             sleep 15
           done
-          echo "Timed out after 10 minutes waiting for the deploy" >&2
+          echo "Timed out after 6 minutes waiting for the deploy" >&2
           exit 1
 
       - name: Trigger /api/notify

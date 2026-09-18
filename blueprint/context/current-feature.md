@@ -31,7 +31,7 @@ the trigger is a GitHub Actions workflow on push to `main`. Full design:
 - Site-wide subscribe popup after ~5s with persisted dismissal, not mounted on
   the subscription pages themselves.
 - `/subscribed`, `/unsubscribed`, `/api/confirm`, `/api/unsubscribe` hidden from
-  search engines (`noindex, nofollow` meta, sitemap exclusion).
+  search engines (`noindex, nofollow` meta; sitemap excludes them and every `/api/` route).
 
 ## Out of scope
 
@@ -59,7 +59,7 @@ commands and verifies results read-only.
 - [x] **Step 7 - Backfill production + workflow** *(remote `PostNotification` count 37 verified; workflow file written; GitHub `NOTIFY_SECRET` present)* - User runs one `wrangler d1 execute francisroylilly --remote` INSERT of every currently published slug into `PostNotification` (AI generates the SQL from `src/content/blog/`). Add `.github/workflows/notify-subscribers.yml` (push to `main`, `paths: ['src/content/blog/**']`, plus `workflow_dispatch`; single `curl -sf -X POST https://francisroylilly.com/api/notify -H "x-notify-secret: ${{ secrets.NOTIFY_SECRET }}"`). User adds `NOTIFY_SECRET` GitHub repo secret. *Done when:* remote `SELECT count(*) FROM PostNotification` equals published post count; workflow file lints (`actionlint` if available, else YAML parse); build passes.
 - [x] **Step 8 - Subscribe popup** *(verified in Chrome: opens after delay, centered, Esc closes and persists, reload stays closed, dialog submit succeeds and auto-closes)* - Site-wide popup opening ~5s after load using a native `<dialog>` wrapping `SubscribeForm.astro` (no new dependency, see Open questions); closes on backdrop click, Esc, ×; sets `localStorage['frl-subscribe-modal-dismissed']` on close or success and never reopens when set; mounted in `BaseLayout.astro` and `src/pages/blog/index.astro`. *Done when:* dialog appears once after ~5s on `/` and `/blog`, reload does not reopen after dismissal, submitting works and closes; focus returns to trigger-less page body without trap; `npm run build` passes.
 
-- [x] **Step 9 - Repair independent-review findings F-01 to F-10** - F-01: `GET /api/version` returns the build commit (`__BUILD_SHA__` from `WORKERS_CI_COMMIT_SHA` via `vite.define`); workflow polls it up to 10 min until it equals `github.sha`, then POSTs notify. F-02: confirm send throws on Resend `error`. F-03: timestamp must be all digits, else rejected. F-04: notify uses `resend.batch.send` in chunks of 100. F-05: preview text escaped. F-06: workflow `concurrency` group + `onConflictDoNothing` on `PostNotification` insert. F-07: `BaseLayout` `subscribeDialog` prop, off on subscription pages. F-08: `compact` variant removed. F-09: comment punctuation. F-10: `emails/layout.test.ts`, `emails/templates.test.ts`. *Done when:* `npm run test` green with new cases (66); `npm run build` passes; `/api/version` returns `{"sha":...}`; workflow YAML has the wait step.
+- [x] **Step 9 - Repair independent-review findings F-01 to F-10** - F-01: `GET /api/version` returns the build commit (`__BUILD_SHA__` from `WORKERS_CI_COMMIT_SHA` via `vite.define`); workflow polls it up to 6 min (24 × 15s) until it equals `github.sha`, then POSTs notify. F-02: confirm send throws on Resend `error`. F-03: timestamp must be all digits, else rejected. F-04: notify uses `resend.batch.send` in chunks of 100. F-05: preview text escaped. F-06: workflow `concurrency` group + `onConflictDoNothing` on `PostNotification` insert. F-07: `BaseLayout` `subscribeDialog` prop, off on subscription pages. F-08: `compact` variant removed. F-09: comment punctuation. F-10: `emails/layout.test.ts`, `emails/templates.test.ts`. *Done when:* `npm run test` green with new cases (66); `npm run build` passes; `/api/version` returns `{"sha":...}`; workflow YAML has the wait step.
 - [x] **Step 10 - Hide confirmation pages from crawlers** - `noindex` prop on `BaseLayout`/`BaseHead` emits `noindex, nofollow` and suppresses the default `index, follow`; used by `/subscribed`, `/unsubscribed`, `/api/confirm`, `/api/unsubscribe`. Sitemap filter drops `/subscribed/` and `/unsubscribed/`. *Done when:* built pages carry exactly one robots meta; sitemap has no `subscribed` entries; build passes.
 
 ## Files / areas
@@ -113,7 +113,7 @@ end-to-end Actions run are manual, once, before `/complete`.
   pass plain objects.
 - Workers Builds deploys minutes after a push, and `/api/notify` reads posts
   from the deployed bundle. The workflow therefore polls `/api/version` until
-  the live commit equals the pushed commit (10 min cap) before notifying. If
+  the live commit equals the pushed commit (6 min cap, 24 × 15s) before notifying. If
   the deploy takes longer, the run fails visibly and `workflow_dispatch` reruns it.
 - Do not create Cloudflare or Resend resources, set secrets, or push. Prepare
   commands, the user runs them.
