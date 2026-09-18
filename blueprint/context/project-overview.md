@@ -1,6 +1,6 @@
 # Francis Roy Lilly - Project Overview
 
-<!-- blueprint:source-hash b71a79d7dae5d2cdf9ee335c8a619b1614aac3fe4449a3db34930f0ef8127c96 -->
+<!-- blueprint:source-hash 2d3664dbd284b6455bc50cd99478e504c4612df1fd62175afed52952fd542ee3 -->
 
 > Personal site documenting Francis Roy Lilly's journey after a severe brain
 > injury (HIE) at birth. Permanent, ad-free replacement for CaringBridge.
@@ -38,7 +38,7 @@ Small, trusted audience. No accounts, no login, no admin UI.
 ## Features
 
 Build-plan order. Items 1-13 are shipped (adopted from the existing codebase).
-Items 14-19 are the roadmap.
+Items 14-20 are the roadmap.
 
 ### Shipped
 
@@ -64,6 +64,7 @@ Items 14-19 are the roadmap.
 17. **Streamline SEO with astro-seo** - per-page title/description/OG props instead of duplicated meta tags.
 18. **Loading animation for comments** - cue in `Comments.astro` during initial fetch and post-submit refresh; graceful failure fallback.
 19. **Migrate Turso to Cloudflare D1** - `drizzle-orm/d1` binding; keep libsql `:memory:` for Vitest; `db/migrate.ts`/`db/seed.ts` become `wrangler d1` commands.
+20. **Remove unused `react-image-gallery` and `prop-types` dependencies** - legacy template leftovers; no imports in `src/`.
 
 ## Data model
 
@@ -116,7 +117,7 @@ Frontmatter schema (`src/content.config.ts`, mirrored in `.pages.yml`):
 - **Astro 7** - framework; `output: 'static'` with on-demand routes via adapter; `site` is `https://francisroylilly.com/`
 - **TypeScript (strict)** - app code; `Timeline.jsx` is the untyped legacy exception
 - **Tailwind CSS v4** - CSS-first config via `@tailwindcss/vite`; utilities `.pull-quote`, `.hero-quote` in `src/styles/global.css`
-- **React 19** - islands only (timeline, image gallery)
+- **React 19** - islands only (timeline via `react-vertical-timeline-component` in `Timeline.jsx`, kept as-is)
 - **Drizzle ORM + `@libsql/client`** - data access against Turso
 - **Astro Actions** - form handling (`addComment`, `addLove`; planned `subscribe`) in `src/actions/index.ts`
 - **lucide-react** - icons (planned swap to astro-icon, feature 16)
@@ -164,16 +165,6 @@ Site-wide `Footer` will host the compact subscribe form (planned).
 
 ## Open questions
 
-- **Legacy dependencies (project-plan §5 TODO):** `react-image-gallery`,
-  `react-vertical-timeline-component`, `prop-types`, and untyped
-  `src/components/Timeline.jsx` look like template leftovers. Keep or add a
-  cleanup item to the build plan?
-- **Monetization (project-plan §6 TODO):** confirm nothing else is planned.
-- **Legacy `context/` directory:** root-level `context/` (old
-  `project-overview.md`, `coding-standards.md`, `ai-interaction.md`,
-  `current-feature.md`) is still tracked. Blueprint now owns
-  `blueprint/context/`. Decide whether to delete the old folder.
-- **Build-plan note references `/tests browser` for feature 15:** that is a
-  setup skill, not a feature step. Fine as a hint, but `/feature 15` should
-  probably start by running `/tests browser` rather than implementing Playwright
-  by hand.
+- **Feature 15 note references `/tests browser`:** that is a setup skill, not a
+  feature step. `/feature 15` should start by running `/tests browser` rather
+  than implementing Playwright by hand.
