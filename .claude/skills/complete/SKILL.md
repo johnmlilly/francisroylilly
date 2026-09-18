@@ -1,10 +1,10 @@
 ---
 name: complete
-description: Complete a finished feature, fix, or rollback by running final gates, archiving its spec, updating plans, creating the work commit, and requesting approval before squash merge. Use for /complete or requests to finish, wrap up, merge, or close the current work item.
+description: Complete a finished feature, fix, or rollback by running final gates, archiving its spec, updating plans, creating the work commit, and requesting approval before pushing the branch and opening a pull request. Use for /complete or requests to finish, wrap up, merge, or close the current work item.
 disable-model-invocation: true
 ---
 
-# complete - log the finished work, make the work commit, and merge
+# complete - log the finished work, make the work commit, and open a PR
 
 **Context reuse:** Reuse any required file already loaded in project instructions or the current session. Read it again only if absent, changed, or exact current bytes or line references are needed.
 
@@ -15,11 +15,12 @@ contract in `AGENTS.md`.
 Where this sits in the workflow:
 
     /feature, /fix, or /rollback  ->  /implement  ->  [complete]  ->  next
-    (the spec)                         (build it)      (commit + merge + log)
+    (the spec)                         (build it)      (commit + PR + log)
 
 `/implement` built the feature, fix, or rollback on its branch, with optional per-step commit
 checkpoints. This skill closes it out: it logs the work, makes the single
-work-level commit, and squash-merges. Run it only when the work is done,
+work-level commit, pushes the branch, and opens a pull request against the
+default branch. Merging happens on GitHub, by the user, never locally. Run it only when the work is done,
 reviewed, and the documented `Verify` command, or the fallback build and tests,
 passes.
 
@@ -309,19 +310,22 @@ then obtain explicit commit approval. Only then stage the reviewed branch work
 `fix: <name>`, or `revert: roll back <feature>`). `Verify`, or the fallback build
 and tests, must pass first.
 
-## Step 3 - merge
+## Step 3 - push and open a pull request
+
+This project never merges into `main` locally. The user merges on GitHub.
 
 1. Confirm the recorded local default branch has not advanced and the final work
-   commit is unchanged. Squash-merge into that default branch only with the user's
-   explicit go-ahead, so
-   the feature lands as one clean commit regardless of how many checkpoints the
-   branch carried.
-2. Verify the resulting default-branch commit, parent, archive, and full tree
-   using `reference/completion-recovery.md`, then perform approved branch cleanup.
-3. Stop and ask whether to push local `main` to its upstream. The merge approval
-   does not count as push approval.
-4. Push main only after a separate explicit yes to push main in the current chat.
-   If the repo has no remote or upstream, say so instead of guessing.
+   commit is unchanged. If `main` has moved, merge it into the work branch
+   (never rebase a reviewed branch) and rerun the required checks.
+2. Ask for one explicit yes to push the work branch and open the PR. Commit
+   approval does not count as push approval.
+3. Push the branch to `origin` with upstream tracking, then open the PR with
+   `gh pr create --base main`. The PR body summarizes scope, verification
+   evidence (test and build commands, review verdict, archive path), open
+   ledger findings, and any post-merge steps. No AI attribution.
+4. Report the PR URL. Do not merge, do not push `main`, do not delete the
+   branch. After the user merges on GitHub, they say so and approve local
+   cleanup (`git checkout main && git pull`, delete the local branch).
 
 Then point the user at `/feature`, `/fix`, or `/rollback` for the next thing.
 
@@ -333,25 +337,25 @@ that command can read the archived feature after `current-feature.md` is reset.
 
 ## Rules
 
-- The work item is the unit of history: one squashed feature, fix, or rollback
-  commit on main, even if the branch carried several checkpoint commits.
+- The work item is the unit of history: one feature, fix, or rollback per PR.
+  The user picks the merge method on GitHub.
 - A rollback preserves the original feature archive and adds a separate rollback
   archive. Never rewrite history to make the feature look as if it never existed.
-- Don't merge unfinished or failing work. The documented `Verify` command, or
-  the fallback build and tests, must pass first.
-- Never merge while a P0 or P1 finding is `open` or `fixed` in the ledger. The
+- Don't open a PR for unfinished or failing work. The documented `Verify`
+  command, or the fallback build and tests, must pass first.
+- Never open the PR while a P0 or P1 finding is `open` or `fixed` in the ledger. The
   recorded ways past the gate without code are `accepted` (only by the user's
   explicit decision, with their reason) or `invalid` (only from re-examination
   evidence or the user's explicit call); both travel into the archive, never a
   silent drop.
-- Never merge with a required or explicitly initiated independent review that
+- Never open the PR with a required or explicitly initiated independent review that
   is missing, pending, changes-requested, malformed, or stale. The user may
   explicitly cancel a manual review before completion, but the agent never
   resets or waives it on the user's behalf.
-- Merging and pushing are the user's calls: get an explicit yes for the merge,
-  then ask whether to push main. Do not treat merge approval, `/complete`, or
-  "looks good" as permission to push.
-- Push main only after a separate explicit yes to push main in the current chat.
+- Pushing the branch and opening the PR need an explicit yes in the current
+  chat. Do not treat commit approval, `/complete`, or "looks good" as that yes.
+- Never merge locally and never push `main`. Merging is done by the user on
+  GitHub.
 - One item per completion. If a parent feature still has unchecked sub-features,
   leave the parent unchecked.
 
