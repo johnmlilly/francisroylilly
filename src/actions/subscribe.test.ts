@@ -59,6 +59,27 @@ describe('subscribeToUpdatesHandler', () => {
     ).rejects.toThrow('Submission too fast');
   });
 
+  it.each(['', 'abc', '12ab', ' '])(
+    'rejects an empty or non-numeric timestamp "%s" instead of skipping the check',
+    async (timestamp) => {
+      await expect(subscribeToUpdatesHandler({ ...validInput, timestamp })).rejects.toThrow(
+        'Submission too fast'
+      );
+      expect(sendMock).not.toHaveBeenCalled();
+    }
+  );
+
+  it('surfaces a Resend error instead of claiming the email was sent', async () => {
+    resetD1([undefined]);
+    sendMock.mockResolvedValueOnce({ data: null, error: { message: 'boom', name: 'application_error' } } as never);
+
+    await expect(subscribeToUpdatesHandler(validInput)).rejects.toThrow(
+      'could not send the confirmation email'
+    );
+    // Row is kept so a retry takes the resend branch with the same token.
+    expect(d1State.inserted).toHaveLength(1);
+  });
+
   it('inserts a normalized, unconfirmed row and emails a confirm link for a new address', async () => {
     resetD1([undefined]);
     const result = await subscribeToUpdatesHandler(validInput);

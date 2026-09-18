@@ -187,7 +187,7 @@ Planned site-wide subscribe modal opens ~5s after load, dismissal persisted in
 - **Bindings (planned):** `d1_databases` entry `SUBSCRIBERS_DB` in `wrangler.jsonc`; `npm run cf-typegen` generates `worker-configuration.d.ts`.
 - **DB ops:** `npm run db:migrate`, `npm run db:seed` (Turso, `tsx`). `npm run db:d1:generate` then `wrangler d1 execute francisroylilly --remote --file=` (D1).
 - **CI:** `.github/workflows/test.yml` runs tests and build on PRs. Planned `notify-subscribers.yml`: on push to `main` touching `src/content/blog/**`, one `curl` POST to `/api/notify` with `NOTIFY_SECRET` (also a GitHub repo secret). Merge it last, after backfill.
-- **Resend:** sending domain `updates@francisroylilly.com` must be verified (SPF/DKIM TXT records on Cloudflare DNS).
+- **Resend:** sending domain `updates@mail.francisroylilly.com` must be verified (SPF/DKIM TXT records on Cloudflare DNS).
 
 ## Open questions
 

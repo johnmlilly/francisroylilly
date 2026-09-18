@@ -2,21 +2,20 @@
 import { actions } from "astro:actions";
 
 interface Props {
-  variant?: "compact" | "prominent";
   heading?: string;
   headingId?: string;
 }
 
-const { variant = "prominent", heading, headingId } = Astro.props;
-// Several instances can share a page (footer, /blog, dialog); suffix ids so
-// labels stay associated with their own inputs.
+const { heading, headingId } = Astro.props;
+// Several instances can share a page (/subscribe page plus the dialog); suffix
+// ids so labels stay associated with their own inputs.
 const uid = Math.random().toString(36).slice(2, 8);
 ---
 
 <form
   method="POST"
   action={actions.subscribeToUpdates}
-  class:list={["subscribe-form", `subscribe-form--${variant}`]}
+  class="subscribe-form"
   data-subscribe-form
   aria-labelledby={heading ? headingId ?? `subscribe-heading-${uid}` : undefined}
 >
@@ -27,13 +26,7 @@ const uid = Math.random().toString(36).slice(2, 8);
       </h2>
     )
   }
-  {
-    variant === "prominent" && (
-      <p class="subscribe-form__intro">
-        Get an email about the latest on Francis.
-      </p>
-    )
-  }
+  <p class="subscribe-form__intro">Get an email about the latest on Francis.</p>
 
   <input type="hidden" name="timestamp" value="" />
 
@@ -68,11 +61,16 @@ const uid = Math.random().toString(36).slice(2, 8);
 <style>
   .subscribe-form {
     width: 100%;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    background: #f5f2e9;
+    color: rgb(var(--gray-dark));
   }
 
   .subscribe-form__heading {
     margin: 0 0 0.25rem;
     font-size: 1.25rem;
+    color: var(--secondary-color);
   }
 
   .subscribe-form__intro {
@@ -180,41 +178,6 @@ const uid = Math.random().toString(36).slice(2, 8);
       grid-column: 1 / -1;
       justify-self: start;
     }
-  }
-
-  /* Prominent: card on the /blog listing and inside the dialog */
-  .subscribe-form--prominent {
-    padding: 1.5rem;
-    border-radius: 1rem;
-    background: #f5f2e9;
-    color: rgb(var(--gray-dark));
-  }
-
-  .subscribe-form--prominent .subscribe-form__heading {
-    color: var(--secondary-color);
-  }
-
-  /* Compact: sits on the dark footer */
-  .subscribe-form--compact {
-    max-width: 640px;
-    color: #f2eede;
-  }
-
-  .subscribe-form--compact .subscribe-form__heading {
-    font-size: 1rem;
-    color: #f2eede;
-  }
-
-  .subscribe-form--compact .subscribe-form__field input:focus + label {
-    color: var(--secondary-color);
-  }
-
-  .subscribe-form--compact .subscribe-form__status[data-state="success"] {
-    color: #cfe8d3;
-  }
-
-  .subscribe-form--compact .subscribe-form__status[data-state="error"] {
-    color: #f4b8b3;
   }
 </style>
 

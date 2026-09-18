@@ -70,7 +70,7 @@ All timestamps use `integer({ mode: 'timestamp' })` (real `Date` on read/write).
    ```
 3. `npm run cf-typegen` to generate `worker-configuration.d.ts` (types `env.SUBSCRIBERS_DB`).
 4. `wrangler secret put RESEND_API_KEY` and `wrangler secret put NOTIFY_SECRET`.
-5. Verify sending domain in Resend (`updates@francisroylilly.com`).
+5. Verify sending domain in Resend (`updates@mail.francisroylilly.com`).
 6. Add `NOTIFY_SECRET` as a GitHub Actions repo secret.
 7. Local dev: add `RESEND_API_KEY` to `.dev.vars`.
 
@@ -127,8 +127,13 @@ with a link banner on `src/pages/blog/index.astro`.
 5. Return JSON summary. No retry queue; rerun via `workflow_dispatch`.
 
 `.github/workflows/notify-subscribers.yml`: `on: push` to `main` with
-`paths: ['src/content/blog/**']` plus `workflow_dispatch`. Single `curl -sf -X POST`
-step with the secret header. No checkout, no Node.
+`paths: ['src/content/blog/**']` plus `workflow_dispatch`, one `concurrency`
+group so overlapping pushes never double-send. Workers Builds deploys minutes
+after the push and `/api/notify` reads posts from the deployed bundle, so the
+first step polls `GET /api/version` (build commit from `WORKERS_CI_COMMIT_SHA`)
+until it equals `github.sha`, up to 10 minutes, then a `curl -sf -X POST` with
+the secret header. No checkout, no Node. Sends go through `resend.batch.send`
+in chunks of 100 from `EMAIL_FROM` (`updates@mail.francisroylilly.com`).
 
 ## Email templates (`emails/`)
 

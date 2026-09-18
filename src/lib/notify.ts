@@ -25,6 +25,15 @@ export function selectNewPosts<T extends NotifiablePost>(
     .sort((a, b) => a.pubDate.getTime() - b.pubDate.getTime());
 }
 
+/** Split a list into consecutive groups of at most `size`. */
+export function chunk<T>(items: readonly T[], size: number): T[][] {
+  const groups: T[][] = [];
+  for (let i = 0; i < items.length; i += size) {
+    groups.push(items.slice(i, i + size));
+  }
+  return groups;
+}
+
 /**
  * Constant-time comparison of the `x-notify-secret` header against the
  * configured secret. Works in both workerd and Node (no `timingSafeEqual`

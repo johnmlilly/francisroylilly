@@ -9,7 +9,7 @@ const description =
   "Get an email whenever we post a new update about Francis's journey.";
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} subscribeDialog={false}>
   <Hero
     title="Follow Francis's Journey"
     subtitle="Get each new update delivered to your inbox."
@@ -22,7 +22,7 @@ const description =
         confirm your email first, and every message includes a one-click unsubscribe link.
       </p>
 
-      <SubscribeForm variant="prominent" heading="Stay Updated" />
+      <SubscribeForm heading="Stay Updated" />
     </div>
   </section>
 </BaseLayout>

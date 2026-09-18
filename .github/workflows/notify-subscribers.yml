@@ -1,8 +1,10 @@
 name: Notify subscribers
 
-# Fires when blog content lands on main. The Worker decides which published
-# posts are new (PostNotification table), so editing drafts sends nothing.
-# Re-run manually via workflow_dispatch if a send fails.
+# Fires when blog content lands on main. Cloudflare Workers Builds deploys the
+# same push a few minutes later, and /api/notify reads posts from the deployed
+# bundle, so this job first waits until /api/version reports this commit.
+# The Worker decides which published posts are new (PostNotification table),
+# so editing drafts sends nothing. Re-run via workflow_dispatch if a send fails.
 on:
   push:
     branches: [main]
@@ -12,10 +14,29 @@ on:
 permissions:
   contents: read
 
+# Two quick pushes must not race each other into double sends.
+concurrency:
+  group: notify-subscribers
+  cancel-in-progress: false
+
 jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
+      - name: Wait for Workers Builds to deploy this commit
+        run: |
+          for attempt in $(seq 1 40); do
+            deployed=$(curl -sf https://francisroylilly.com/api/version | jq -r '.sha' || echo unknown)
+            if [ "$deployed" = "${{ github.sha }}" ]; then
+              echo "Deployed commit matches: $deployed"
+              exit 0
+            fi
+            echo "Deployed: $deployed, waiting for ${{ github.sha }} ($attempt/40)"
+            sleep 15
+          done
+          echo "Timed out after 10 minutes waiting for the deploy" >&2
+          exit 1
+
       - name: Trigger /api/notify
         run: |
           curl -sf -X POST "https://francisroylilly.com/api/notify" \

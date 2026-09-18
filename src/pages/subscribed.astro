@@ -6,7 +6,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 const title = `You're subscribed | ${SITE_TITLE}`;
 ---
 
-<BaseLayout title={title} description="You're subscribed to updates about Francis.">
+<BaseLayout
+  title={title}
+  description="You're subscribed to updates about Francis."
+  noindex
+  subscribeDialog={false}
+>
   <Hero title="You're Subscribed" subtitle="Thank you for following along." />
 
   <section>

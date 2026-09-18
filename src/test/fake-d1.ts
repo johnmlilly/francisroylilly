@@ -38,8 +38,13 @@ export const fakeD1 = {
     },
   }),
   insert: () => ({
-    values: async (values: Record<string, unknown>) => {
+    values: (values: Record<string, unknown>) => {
       d1State.inserted.push(values);
+      // Awaitable directly, or via `.onConflictDoNothing()`.
+      return {
+        then: (resolve: (v: undefined) => void) => resolve(undefined),
+        onConflictDoNothing: async () => {},
+      };
     },
   }),
   update: () => ({

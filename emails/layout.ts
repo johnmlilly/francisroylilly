@@ -20,7 +20,7 @@ interface LayoutOptions {
   footerHtml?: string;
 }
 
-// Plain inline-styled HTML rather than @react-email/* — a couple of simple
+// Plain inline-styled HTML rather than @react-email/*. A couple of simple
 // templates don't justify the extra runtime-compatibility risk of rendering
 // JSX inside a Worker request, and email HTML needs inline styles regardless
 // of how it's authored.
@@ -33,7 +33,7 @@ export function renderEmail({ previewText, bodyHtml, footerHtml }: LayoutOptions
     <title>${SITE_TITLE}</title>
   </head>
   <body style="margin:0;padding:0;background:#f5f2e9;font-family:${FONT_STACK};">
-    <span style="display:none;font-size:1px;color:#f5f2e9;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">${previewText}</span>
+    <span style="display:none;font-size:1px;color:#f5f2e9;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">${escapeHtml(previewText)}</span>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5f2e9;padding:32px 16px;">
       <tr>
         <td align="center">

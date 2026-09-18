@@ -6,7 +6,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 const title = `Unsubscribed | ${SITE_TITLE}`;
 ---
 
-<BaseLayout title={title} description="You've been unsubscribed from updates about Francis.">
+<BaseLayout
+  title={title}
+  description="You've been unsubscribed from updates about Francis."
+  noindex
+  subscribeDialog={false}
+>
   <Hero title="You've Been Unsubscribed" subtitle="You won't receive any more update emails." />
 
   <section>

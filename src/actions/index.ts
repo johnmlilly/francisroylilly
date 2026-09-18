@@ -5,7 +5,7 @@ import { Resend } from 'resend';
 import { db, Comment, Reaction, eq, desc } from '../../db/client.js';
 import { d1, Subscriber } from '../../db/d1-client.js';
 import { confirmSubscriptionEmail } from '../../emails/confirmSubscription.js';
-import { SITE_URL } from '../consts.js';
+import { EMAIL_FROM, SITE_URL } from '../consts.js';
 import { decideSubscribe } from '../lib/subscribeDecision.js';
 
 const addCommentInput = z.object({
@@ -143,12 +143,17 @@ async function sendConfirmationEmail(firstName: string, email: string, token: st
   const confirmUrl = `${SITE_URL}/api/confirm?token=${token}`;
   const { subject, html } = confirmSubscriptionEmail({ firstName, confirmUrl });
 
-  await resend.emails.send({
-    from: 'Francis Roy Lilly <updates@francisroylilly.com>',
+  // The SDK reports failures through `error` instead of throwing.
+  const { error } = await resend.emails.send({
+    from: EMAIL_FROM,
     to: email,
     subject,
     html,
   });
+
+  if (error) {
+    throw new Error('We could not send the confirmation email. Please try again.');
+  }
 }
 
 // Extracted from defineAction() so it can be unit tested directly -
@@ -165,12 +170,13 @@ export async function subscribeToUpdatesHandler({
     throw new Error('Spam detected.');
   }
 
-  // 2. TIME-BASED CHECK - submission must take at least 3 seconds
-  const formLoadTime = parseInt(timestamp);
-  const currentTime = Date.now();
-  const timeDiff = (currentTime - formLoadTime) / 1000; // in seconds
+  // 2. TIME-BASED CHECK - submission must take at least 3 seconds. The page
+  // script fills `timestamp`; an empty or non-numeric value means the form was
+  // posted without running it, which is treated the same as too fast.
+  const formLoadTime = /^\d+$/.test(timestamp) ? Number(timestamp) : Number.NaN;
+  const timeDiff = (Date.now() - formLoadTime) / 1000; // in seconds
 
-  if (timeDiff < 3) {
+  if (!Number.isFinite(timeDiff) || timeDiff < 3) {
     throw new Error('Submission too fast. Please try again.');
   }
 

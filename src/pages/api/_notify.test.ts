@@ -1,8 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { d1State, resetD1 } from '../../test/fake-d1.js';
 
-const { sendMock, getCollectionMock } = vi.hoisted(() => ({
-  sendMock: vi.fn(async () => ({ data: { id: 'msg' }, error: null })),
+const { batchSendMock, getCollectionMock } = vi.hoisted(() => ({
+  batchSendMock: vi.fn(async (emails: unknown[]) => ({
+    data: { data: emails.map((_, i) => ({ id: `msg-${i}` })) },
+    error: null,
+  })),
   getCollectionMock: vi.fn(async () => [] as unknown[]),
 }));
 
@@ -14,7 +17,7 @@ vi.mock('../../../db/d1-client.js', async (importOriginal) => {
 
 vi.mock('resend', () => ({
   Resend: class {
-    emails = { send: sendMock };
+    batch = { send: batchSendMock };
   },
 }));
 
@@ -35,22 +38,24 @@ const entry = (id: string, pubDate: string) => ({
   data: { title: `Title ${id}`, description: `About ${id}`, pubDate: new Date(pubDate), isPublished: true },
 });
 
-const activeSubscriber = {
-  id: 1,
-  email: 'jane@example.com',
-  firstName: 'Jane',
+const subscriber = (n: number) => ({
+  id: n,
+  email: `reader${n}@example.com`,
+  firstName: `Reader${n}`,
   lastName: 'Doe',
-  token: 'tok-jane',
+  token: `tok-${n}`,
   createdAt: new Date('2026-01-01'),
   confirmedAt: new Date('2026-01-02'),
   unsubscribedAt: null,
-};
+});
+
+type SentEmail = { to: string; subject: string; html: string };
 
 describe('POST /api/notify', () => {
   beforeEach(() => {
     process.env.NOTIFY_SECRET = SECRET;
     resetD1();
-    sendMock.mockClear();
+    batchSendMock.mockClear();
     getCollectionMock.mockReset();
     getCollectionMock.mockResolvedValue([]);
   });
@@ -71,48 +76,62 @@ describe('POST /api/notify', () => {
     expect(response.status).toBe(405);
   });
 
-  it('emails each active subscriber about each new post and records the post', async () => {
+  it('batch-emails active subscribers about each new post and records the post', async () => {
     getCollectionMock.mockResolvedValue([entry('old-post', '2026-01-01'), entry('new-post', '2026-02-01')]);
     // 1st list: PostNotification rows; 2nd list: active subscribers.
-    resetD1([], [[{ postSlug: 'old-post' }], [activeSubscriber]]);
+    resetD1([], [[{ postSlug: 'old-post' }], [subscriber(1)]]);
 
     const response = await call({ 'x-notify-secret': SECRET });
     expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      notified: [{ slug: 'new-post', sent: 1, failed: 0 }],
+      skipped: false,
+    });
 
-    const body = await response.json();
-    expect(body).toEqual({ notified: [{ slug: 'new-post', sent: 1, failed: 0 }], skipped: false });
-
-    expect(sendMock).toHaveBeenCalledTimes(1);
-    const sent = sendMock.mock.calls[0][0] as { to: string; subject: string; html: string };
-    expect(sent.to).toBe('jane@example.com');
-    expect(sent.subject).toBe('New update: Title new-post');
-    expect(sent.html).toContain('/blog/new-post/');
-    expect(sent.html).toContain('/api/unsubscribe?token=tok-jane');
+    expect(batchSendMock).toHaveBeenCalledTimes(1);
+    const batch = batchSendMock.mock.calls[0][0] as SentEmail[];
+    expect(batch).toHaveLength(1);
+    expect(batch[0].to).toBe('reader1@example.com');
+    expect(batch[0].subject).toBe('New update: Title new-post');
+    expect(batch[0].html).toContain('/blog/new-post/');
+    expect(batch[0].html).toContain('/api/unsubscribe?token=tok-1');
 
     expect(d1State.inserted).toHaveLength(1);
     expect(d1State.inserted[0].postSlug).toBe('new-post');
+  });
+
+  it('splits more than 100 recipients into multiple batch calls', async () => {
+    getCollectionMock.mockResolvedValue([entry('p', '2026-01-01')]);
+    const many = Array.from({ length: 150 }, (_, i) => subscriber(i + 1));
+    resetD1([], [[], many]);
+
+    const body = await (await call({ 'x-notify-secret': SECRET })).json();
+
+    expect(batchSendMock).toHaveBeenCalledTimes(2);
+    expect((batchSendMock.mock.calls[0][0] as unknown[]).length).toBe(100);
+    expect((batchSendMock.mock.calls[1][0] as unknown[]).length).toBe(50);
+    expect(body.notified).toEqual([{ slug: 'p', sent: 150, failed: 0 }]);
   });
 
   it('with skipSend=true records rows and sends nothing', async () => {
     getCollectionMock.mockResolvedValue([entry('a', '2026-01-01'), entry('b', '2026-02-01')]);
     resetD1([], [[]]);
 
-    const response = await call({ 'x-notify-secret': SECRET }, '?skipSend=true');
-    const body = await response.json();
+    const body = await (await call({ 'x-notify-secret': SECRET }, '?skipSend=true')).json();
 
     expect(body.skipped).toBe(true);
     expect(body.notified.map((n: { slug: string }) => n.slug)).toEqual(['a', 'b']);
-    expect(sendMock).not.toHaveBeenCalled();
+    expect(batchSendMock).not.toHaveBeenCalled();
     expect(d1State.inserted.map((r) => r.postSlug)).toEqual(['a', 'b']);
   });
 
-  it('counts a failed send but still records the post so a rerun never double-sends', async () => {
+  it('counts a failed batch but still records the post so a rerun never double-sends', async () => {
     getCollectionMock.mockResolvedValue([entry('p', '2026-01-01')]);
-    resetD1([], [[], [activeSubscriber]]);
-    sendMock.mockResolvedValueOnce({ data: null, error: { message: 'boom' } } as never);
+    resetD1([], [[], [subscriber(1), subscriber(2)]]);
+    batchSendMock.mockResolvedValueOnce({ data: null, error: { message: 'boom' } } as never);
 
     const body = await (await call({ 'x-notify-secret': SECRET })).json();
-    expect(body.notified).toEqual([{ slug: 'p', sent: 0, failed: 1 }]);
+    expect(body.notified).toEqual([{ slug: 'p', sent: 0, failed: 2 }]);
     expect(d1State.inserted).toHaveLength(1);
   });
 });

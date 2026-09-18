@@ -5,17 +5,29 @@ import SubscribeDialog from "../components/SubscribeDialog.astro";
 import BaseHead from "../components/BaseHead.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts.js";
 
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  /** Hide from search engines. */
+  noindex?: boolean;
+  /** Mount the timed subscribe popup. Off on subscription pages themselves. */
+  subscribeDialog?: boolean;
+}
+
 const {
   title = SITE_TITLE,
   description = SITE_DESCRIPTION,
   image,
+  noindex = false,
+  subscribeDialog = true,
 } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title={title} description={description} image={image} />
+    <BaseHead title={title} description={description} image={image} noindex={noindex} />
   </head>
   <body>
     <Header />
@@ -25,6 +37,6 @@ const {
     </main>
 
     <Footer />
-    <SubscribeDialog />
+    {subscribeDialog && <SubscribeDialog />}
   </body>
 </html>

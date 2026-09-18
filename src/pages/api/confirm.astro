@@ -53,7 +53,12 @@ const heroTitle =
       : "We Couldn't Find That Link";
 ---
 
-<BaseLayout title={title} description="Confirm your subscription to updates about Francis.">
+<BaseLayout
+  title={title}
+  description="Confirm your subscription to updates about Francis."
+  noindex
+  subscribeDialog={false}
+>
   <Hero title={heroTitle} />
 
   <section>

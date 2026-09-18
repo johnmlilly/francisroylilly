@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { secretsMatch, selectNewPosts } from './notify.js';
+import { chunk, secretsMatch, selectNewPosts } from './notify.js';
 
 const now = new Date('2026-09-17T12:00:00Z');
 const post = (id: string, pubDate: string, isPublished = true) => ({
@@ -28,6 +28,14 @@ describe('selectNewPosts', () => {
   it('returns nothing when everything is already notified', () => {
     const posts = [post('a', '2026-01-01'), post('b', '2026-02-01')];
     expect(selectNewPosts(posts, ['a', 'b'], now)).toEqual([]);
+  });
+});
+
+describe('chunk', () => {
+  it('splits into groups of at most size, keeping order', () => {
+    expect(chunk([1, 2, 3, 4, 5], 2)).toEqual([[1, 2], [3, 4], [5]]);
+    expect(chunk([1, 2], 100)).toEqual([[1, 2]]);
+    expect(chunk([], 3)).toEqual([]);
   });
 });
 

@@ -3,13 +3,15 @@ import { getCollection } from 'astro:content';
 import { Resend } from 'resend';
 import { d1, PostNotification, Subscriber, and, isNotNull, isNull } from '../../../db/d1-client.js';
 import { newPostNotificationEmail } from '../../../emails/newPostNotification.js';
-import { SITE_URL } from '../../consts.js';
-import { secretsMatch, selectNewPosts } from '../../lib/notify.js';
+import { EMAIL_FROM, SITE_URL } from '../../consts.js';
+import { chunk, secretsMatch, selectNewPosts } from '../../lib/notify.js';
 
 // Reads D1 and content per request; never prerender.
 export const prerender = false;
 
-const FROM = 'Francis Roy Lilly <updates@francisroylilly.com>';
+// Resend's batch endpoint accepts up to 100 emails per call. One call per
+// chunk keeps us well under the per-second request limit.
+const BATCH_SIZE = 100;
 
 function json(body: unknown, status: number) {
   return new Response(JSON.stringify(body), {
@@ -19,9 +21,9 @@ function json(body: unknown, status: number) {
 }
 
 /**
- * Called by `.github/workflows/notify-subscribers.yml` after a push to `main`
- * touching blog content. Emails every active subscriber about each published
- * post that has no `PostNotification` row yet, then records the row.
+ * Called by `.github/workflows/notify-subscribers.yml` once the pushed commit
+ * is deployed. Emails every active subscriber about each published post that
+ * has no `PostNotification` row yet, then records the row.
  * `?skipSend=true` records rows without sending (backfill after bulk imports).
  */
 export const POST: APIRoute = async ({ request, url }) => {
@@ -62,7 +64,7 @@ export const POST: APIRoute = async ({ request, url }) => {
       let sent = 0;
       let failed = 0;
 
-      for (const subscriber of subscribers) {
+      const emails = subscribers.map((subscriber) => {
         const { subject, html } = newPostNotificationEmail({
           firstName: subscriber.firstName,
           title: post.title,
@@ -70,19 +72,26 @@ export const POST: APIRoute = async ({ request, url }) => {
           postUrl: `${SITE_URL}/blog/${post.id}/`,
           unsubscribeUrl: `${SITE_URL}/api/unsubscribe?token=${subscriber.token}`,
         });
+        return { from: EMAIL_FROM, to: subscriber.email, subject, html };
+      });
 
+      for (const group of chunk(emails, BATCH_SIZE)) {
         try {
-          const { error } = await resend!.emails.send({ from: FROM, to: subscriber.email, subject, html });
-          if (error) failed++;
-          else sent++;
+          const { error } = await resend!.batch.send(group);
+          if (error) failed += group.length;
+          else sent += group.length;
         } catch {
-          failed++;
+          failed += group.length;
         }
       }
 
       // Record regardless of partial failures so a rerun never double-sends;
-      // failures are visible in the response and the Actions log.
-      await d1.insert(PostNotification).values({ postSlug: post.id, notifiedAt: new Date() });
+      // failures are visible in the response and the Actions log. Ignore a
+      // conflict in case two runs overlap despite the workflow concurrency group.
+      await d1
+        .insert(PostNotification)
+        .values({ postSlug: post.id, notifiedAt: new Date() })
+        .onConflictDoNothing();
       notified.push({ slug: post.id, sent, failed });
     }
   }
