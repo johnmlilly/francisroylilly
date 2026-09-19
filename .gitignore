@@ -35,3 +35,4 @@ pnpm-debug.log*
 
 # Cloudflare Workers local state
 .wrangler/
+.fallow/
