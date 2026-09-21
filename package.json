@@ -12,6 +12,7 @@
     "cf-typegen": "wrangler types",
     "test": "vitest run",
     "test:watch": "vitest",
+    "analyze": "fallow",
     "deploy": "astro build && wrangler deploy --config dist/server/wrangler.json"
   },
   "dependencies": {
