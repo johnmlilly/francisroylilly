@@ -2,10 +2,13 @@ import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 import { Resend } from 'resend';
 import { d1, PostNotification, Subscriber, and, isNotNull, isNull } from '../../../db/d1-client.js';
-import { newPostNotificationEmail } from '../../../emails/newPostNotification.js';
-import { EMAIL_FROM, SITE_URL } from '../../consts.js';
 import { json } from '../../lib/http.js';
-import { chunk, secretsMatch, selectNewPosts } from '../../lib/notify.js';
+import {
+  buildNotificationEmails,
+  secretsMatch,
+  selectNewPosts,
+  sendInBatches,
+} from '../../lib/notify.js';
 
 // Reads D1 and content per request; never prerender.
 export const prerender = false;
@@ -55,29 +58,9 @@ export const POST: APIRoute = async ({ request, url }) => {
     const resend = skipSend ? null : new Resend(process.env.RESEND_API_KEY);
 
     for (const post of newPosts) {
-      let sent = 0;
-      let failed = 0;
-
-      const emails = subscribers.map((subscriber) => {
-        const { subject, html } = newPostNotificationEmail({
-          firstName: subscriber.firstName,
-          title: post.title,
-          description: post.description,
-          postUrl: `${SITE_URL}/blog/${post.id}/`,
-          unsubscribeUrl: `${SITE_URL}/api/unsubscribe?token=${subscriber.token}`,
-        });
-        return { from: EMAIL_FROM, to: subscriber.email, subject, html };
-      });
-
-      for (const group of chunk(emails, BATCH_SIZE)) {
-        try {
-          const { error } = await resend!.batch.send(group);
-          if (error) failed += group.length;
-          else sent += group.length;
-        } catch {
-          failed += group.length;
-        }
-      }
+      const { sent, failed } = resend
+        ? await sendInBatches(resend, buildNotificationEmails(post, subscribers), BATCH_SIZE)
+        : { sent: 0, failed: 0 };
 
       // Record regardless of partial failures so a rerun never double-sends;
       // failures are visible in the response and the Actions log. Ignore a
