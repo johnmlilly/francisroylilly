@@ -21,4 +21,4 @@ export const d1 = new Proxy({} as Db, {
 });
 
 export { Subscriber, PostNotification } from './d1-schema.js';
-export { eq, desc, isNull, and, isNotNull } from 'drizzle-orm';
+export { eq, isNull, and, isNotNull } from 'drizzle-orm';
