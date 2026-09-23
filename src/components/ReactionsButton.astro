@@ -5,7 +5,7 @@ import { Heart } from "lucide-react";
 const { postSlug } = Astro.props;
 
 const reaction = await db
-  .select()
+  .select({ loves: Reaction.loves })
   .from(Reaction)
   .where(eq(Reaction.postSlug, postSlug))
   .get();
@@ -59,15 +59,8 @@ const loves = reaction?.loves || 0;
         console.error("Failed to add love:", error);
         // Optionally show an error message to the user
       } else if (data) {
-        // Fetch the updated count
-        const postSlug = formData.get("postSlug");
-        const response = await fetch(
-          `/api/reactions?postSlug=${encodeURIComponent(postSlug as string)}`
-        );
-        const reactionData = await response.json();
-
-        // Update the count with the new value
-        countElement.textContent = reactionData.loves.toString();
+        // The action returns the new count, so no second request is needed.
+        countElement.textContent = data.loves.toString();
 
         // Add a little animation
         countElement.classList.add("scale-125");

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { db, Reaction, eq } from '../../db/client.js';
+import { db, Comment, Reaction, eq } from '../../db/client.js';
 import { addCommentHandler, addLoveHandler } from './index.js';
 
 const validComment = {
@@ -52,7 +52,16 @@ describe('addCommentHandler', () => {
 
     expect(result.name).toBe('Jane');
     expect(result.message).toBe('Great news!');
-    expect(result.email).toBe('strip-html@example.com');
+
+    // The returned row goes straight to the browser, so it must not carry the
+    // email, even though the row itself stores one for rate limiting.
+    expect(result).not.toHaveProperty('email');
+
+    const [stored] = await db
+      .select({ email: Comment.email })
+      .from(Comment)
+      .where(eq(Comment.id, result.id));
+    expect(stored.email).toBe('strip-html@example.com');
   });
 
   it('rate-limits a second comment from the same email within 30 seconds', async () => {
@@ -75,7 +84,8 @@ describe('addLoveHandler', () => {
     const postSlug = 'love-test-first';
     const result = await addLoveHandler({ postSlug });
 
-    expect(result.success).toBe(true);
+    // The count comes back from the action so the button needs no second read.
+    expect(result.loves).toBe(1);
 
     const rows = await lovesFor(postSlug);
     expect(rows).toHaveLength(1);
@@ -87,7 +97,7 @@ describe('addLoveHandler', () => {
     await addLoveHandler({ postSlug });
     const result = await addLoveHandler({ postSlug });
 
-    expect(result.success).toBe(true);
+    expect(result.loves).toBe(2);
 
     // Still one row - incremented, not duplicated.
     const rows = await lovesFor(postSlug);

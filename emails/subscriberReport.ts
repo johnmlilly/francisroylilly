@@ -1,6 +1,6 @@
 import { renderEmail, escapeHtml } from './layout.js';
 
-export interface SubscriberReportRow {
+interface SubscriberReportRow {
   firstName: string;
   lastName: string;
   email: string;

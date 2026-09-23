@@ -1,0 +1,28 @@
+name: Fallow Audit
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Pinned to a commit, not the mutable v3 tag: this job holds
+      # pull-requests: write, so whoever controls the tag would control the
+      # token. Bump deliberately alongside the fallow devDependency.
+      - uses: fallow-rs/fallow@bd8fca5af5df4ccfd94c7a835d17bd93c31a7cef # v3.28.0
+        continue-on-error: true
+        with:
+          command: audit
+          comment: true
+          fail-on-issues: false

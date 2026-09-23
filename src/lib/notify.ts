@@ -1,3 +1,6 @@
+import { newPostNotificationEmail } from '../../emails/newPostNotification.js';
+import { EMAIL_FROM, SITE_URL } from '../consts.js';
+
 export interface NotifiablePost {
   id: string;
   pubDate: Date;
@@ -32,6 +35,67 @@ export function chunk<T>(items: readonly T[], size: number): T[][] {
     groups.push(items.slice(i, i + size));
   }
   return groups;
+}
+
+export interface NotificationRecipient {
+  firstName: string;
+  email: string;
+  token: string;
+}
+
+export interface NotificationEmail {
+  from: string;
+  to: string;
+  subject: string;
+  html: string;
+}
+
+/** Resend's `batch.send`, narrowed to what sending a post notification needs. */
+export interface BatchSender {
+  batch: { send(emails: NotificationEmail[]): Promise<{ error: unknown }> };
+}
+
+/** One rendered email per subscriber for a single post. */
+export function buildNotificationEmails(
+  post: { id: string; title: string; description: string },
+  subscribers: readonly NotificationRecipient[]
+): NotificationEmail[] {
+  return subscribers.map((subscriber) => {
+    const { subject, html } = newPostNotificationEmail({
+      firstName: subscriber.firstName,
+      title: post.title,
+      description: post.description,
+      postUrl: `${SITE_URL}/blog/${post.id}/`,
+      unsubscribeUrl: `${SITE_URL}/api/unsubscribe?token=${subscriber.token}`,
+    });
+    return { from: EMAIL_FROM, to: subscriber.email, subject, html };
+  });
+}
+
+/**
+ * Send in batches and tally the outcome. A rejected call or an error in the
+ * response fails that whole batch; the rest still go out, and the caller
+ * reports the counts.
+ */
+export async function sendInBatches(
+  resend: BatchSender,
+  emails: readonly NotificationEmail[],
+  batchSize: number
+): Promise<{ sent: number; failed: number }> {
+  let sent = 0;
+  let failed = 0;
+
+  for (const group of chunk(emails, batchSize)) {
+    try {
+      const { error } = await resend.batch.send(group);
+      if (error) failed += group.length;
+      else sent += group.length;
+    } catch {
+      failed += group.length;
+    }
+  }
+
+  return { sent, failed };
 }
 
 /**

@@ -157,7 +157,7 @@ const generalError =
 
     try {
       // Call the action directly
-      const { error } = await actions.addComment(formData);
+      const { data, error } = await actions.addComment(formData);
 
       if (error) {
         // Handle input errors
@@ -188,8 +188,9 @@ const generalError =
         // Reset form
         form.reset();
 
-        // Dispatch event to refresh comments list
-        window.dispatchEvent(new CustomEvent("commentAdded"));
+        // Hand the new comment to the list so it can render it without a
+        // second request. The action returns no email.
+        window.dispatchEvent(new CustomEvent("commentAdded", { detail: data }));
 
         // Hide success message after 3 seconds
         setTimeout(() => {

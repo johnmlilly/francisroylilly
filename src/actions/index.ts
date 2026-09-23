@@ -62,7 +62,7 @@ export async function addCommentHandler({
 
   // 4. RATE LIMITING - check recent comments from same email
   const recentComments = await db
-    .select()
+    .select({ createdAt: Comment.createdAt })
     .from(Comment)
     .where(eq(Comment.email, email))
     .orderBy(desc(Comment.createdAt))
@@ -92,7 +92,14 @@ export async function addCommentHandler({
       message: sanitizedMessage,
       createdAt: new Date().toISOString(),
     })
-    .returning();
+    // Never return the email: this row is handed straight to the browser.
+    .returning({
+      id: Comment.id,
+      postSlug: Comment.postSlug,
+      name: Comment.name,
+      message: Comment.message,
+      createdAt: Comment.createdAt,
+    });
 
   return comment[0];
 }
@@ -106,26 +113,29 @@ const addLoveInput = z.object({
 export async function addLoveHandler({ postSlug }: z.infer<typeof addLoveInput>) {
   // Find existing record
   const existing = await db
-    .select()
+    .select({ loves: Reaction.loves })
     .from(Reaction)
     .where(eq(Reaction.postSlug, postSlug))
     .get();
+
+  const loves = existing ? existing.loves + 1 : 1;
 
   if (existing) {
     // Increment love count
     await db
       .update(Reaction)
-      .set({ loves: existing.loves + 1 })
+      .set({ loves })
       .where(eq(Reaction.postSlug, postSlug));
   } else {
     // Create new record
     await db.insert(Reaction).values({
       postSlug,
-      loves: 1,
+      loves,
     });
   }
 
-  return { success: true };
+  // The new count, so the button can update without a second request.
+  return { loves };
 }
 
 const subscribeToUpdatesInput = z.object({
