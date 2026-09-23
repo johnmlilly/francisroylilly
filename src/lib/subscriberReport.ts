@@ -4,6 +4,7 @@ export interface ReportSubscriber {
   email: string;
   createdAt: Date;
   confirmedAt: Date | null;
+  unsubscribedAt: Date | null;
 }
 
 /** `now` minus 7 days: the default weekly report window. */

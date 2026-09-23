@@ -54,6 +54,7 @@ describe('subscriberReportEmail', () => {
           email: 'jane@example.com',
           createdAt: new Date('2026-09-12T00:00:00Z'),
           confirmedAt: new Date('2026-09-12T01:00:00Z'),
+          unsubscribedAt: null,
         },
         {
           firstName: 'Sam',
@@ -61,6 +62,7 @@ describe('subscriberReportEmail', () => {
           email: 'sam@example.com',
           createdAt: new Date('2026-09-13T00:00:00Z'),
           confirmedAt: null,
+          unsubscribedAt: null,
         },
       ],
       periodStart,
@@ -72,7 +74,37 @@ describe('subscriberReportEmail', () => {
     expect(html).not.toContain('<b>Jane</b>');
     expect(html).toContain('jane@example.com');
     expect(html).toContain('sam@example.com');
-    expect(html).toContain('>Yes<');
-    expect(html).toContain('>No<');
+    expect(html).toContain('>Confirmed<');
+    expect(html).toContain('>Pending<');
+  });
+
+  it('excludes churned subscribers from the count but keeps them in the table', () => {
+    const { subject, html } = subscriberReportEmail({
+      rows: [
+        {
+          firstName: 'Jane',
+          lastName: 'Doe',
+          email: 'jane@example.com',
+          createdAt: new Date('2026-09-12T00:00:00Z'),
+          confirmedAt: new Date('2026-09-12T01:00:00Z'),
+          unsubscribedAt: null,
+        },
+        {
+          firstName: 'Sam',
+          lastName: 'Roe',
+          email: 'sam@example.com',
+          createdAt: new Date('2026-09-13T00:00:00Z'),
+          confirmedAt: new Date('2026-09-13T01:00:00Z'),
+          unsubscribedAt: new Date('2026-09-14T00:00:00Z'),
+        },
+      ],
+      periodStart,
+      periodEnd,
+    });
+
+    expect(subject).toBe('Weekly subscriber report: 1 new subscriber');
+    expect(html).toContain('1 also unsubscribed');
+    expect(html).toContain('sam@example.com');
+    expect(html).toContain('>Unsubscribed<');
   });
 });

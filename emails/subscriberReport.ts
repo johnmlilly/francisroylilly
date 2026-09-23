@@ -6,6 +6,7 @@ export interface SubscriberReportRow {
   email: string;
   createdAt: Date;
   confirmedAt: Date | null;
+  unsubscribedAt: Date | null;
 }
 
 interface SubscriberReportParams {
@@ -25,7 +26,11 @@ export function subscriberReportEmail({ rows, periodStart, periodEnd }: Subscrib
   subject: string;
   html: string;
 } {
-  const subject = `Weekly subscriber report: ${rows.length} new subscriber${rows.length === 1 ? '' : 's'}`;
+  // Someone who signed up and left inside the same window still belongs in the
+  // table, but counting them would overstate growth.
+  const churned = rows.filter((row) => Boolean(row.unsubscribedAt)).length;
+  const netCount = rows.length - churned;
+  const subject = `Weekly subscriber report: ${netCount} new subscriber${netCount === 1 ? '' : 's'}`;
 
   const tableRows = rows
     .map(
@@ -34,7 +39,7 @@ export function subscriberReportEmail({ rows, periodStart, periodEnd }: Subscrib
           <td style="${cellStyle}">${escapeHtml(row.firstName)} ${escapeHtml(row.lastName)}</td>
           <td style="${cellStyle}">${escapeHtml(row.email)}</td>
           <td style="${cellStyle}">${formatDate(row.createdAt)}</td>
-          <td style="${cellStyle}">${row.confirmedAt ? 'Yes' : 'No'}</td>
+          <td style="${cellStyle}">${row.unsubscribedAt ? 'Unsubscribed' : row.confirmedAt ? 'Confirmed' : 'Pending'}</td>
         </tr>`
     )
     .join('');
@@ -45,14 +50,15 @@ export function subscriberReportEmail({ rows, periodStart, periodEnd }: Subscrib
         <th style="${headerStyle}">Name</th>
         <th style="${headerStyle}">Email</th>
         <th style="${headerStyle}">Subscribed</th>
-        <th style="${headerStyle}">Confirmed</th>
+        <th style="${headerStyle}">Status</th>
       </tr>
       ${tableRows}
     </table>`;
 
   const bodyHtml = `
     <p style="margin:0;color:#60739f;">${formatDate(periodStart)} to ${formatDate(periodEnd)}</p>
-    <p style="margin:8px 0 0;font-size:24px;font-weight:700;color:#4C6085;">${rows.length} new subscriber${rows.length === 1 ? '' : 's'}</p>
+    <p style="margin:8px 0 0;font-size:24px;font-weight:700;color:#4C6085;">${netCount} new subscriber${netCount === 1 ? '' : 's'}</p>
+    ${churned > 0 ? `<p style="margin:4px 0 0;color:#60739f;">${churned} also unsubscribed before this report.</p>` : ''}
     ${rows.length === 0 ? '<p style="margin-top:16px;">No new subscribers this week.</p>' : table}
   `;
 
