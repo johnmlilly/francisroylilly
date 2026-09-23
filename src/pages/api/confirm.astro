@@ -68,15 +68,20 @@ const heroTitle =
       {
         view === "pending" && (
           <>
-            <p>
-              Click below to confirm your subscription to start receiving
-              updates.
+            <p id="confirm-status" hidden>
+              One moment, confirming your subscription.
             </p>
-            <form method="POST" action="/api/confirm">
+            <form method="POST" action="/api/confirm" id="confirm-form">
               <input type="hidden" name="token" value={token} />
-              <button type="submit" class="confirm__button">
-                Confirm subscription
-              </button>
+              <div id="confirm-fallback">
+                <p>
+                  Click below to confirm your subscription to start receiving
+                  updates.
+                </p>
+                <button type="submit" class="confirm__button">
+                  Confirm subscription
+                </button>
+              </div>
             </form>
           </>
         )
@@ -133,3 +138,17 @@ const heroTitle =
     background: var(--primary-color-hover);
   }
 </style>
+
+<script>
+  // Email link stays a plain GET so a prefetch cannot confirm the address.
+  // The button below is the real fallback and ships visible: if this bundle is
+  // blocked or throws, JS is still "enabled", so a <noscript> fallback would
+  // stay hidden and strand the reader with no way to confirm.
+  const form = document.getElementById("confirm-form") as HTMLFormElement | null;
+
+  if (form) {
+    document.getElementById("confirm-fallback")?.setAttribute("hidden", "");
+    document.getElementById("confirm-status")?.removeAttribute("hidden");
+    form.submit();
+  }
+</script>
