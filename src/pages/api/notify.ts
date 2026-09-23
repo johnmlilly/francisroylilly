@@ -4,6 +4,7 @@ import { Resend } from 'resend';
 import { d1, PostNotification, Subscriber, and, isNotNull, isNull } from '../../../db/d1-client.js';
 import { newPostNotificationEmail } from '../../../emails/newPostNotification.js';
 import { EMAIL_FROM, SITE_URL } from '../../consts.js';
+import { json } from '../../lib/http.js';
 import { chunk, secretsMatch, selectNewPosts } from '../../lib/notify.js';
 
 // Reads D1 and content per request; never prerender.
@@ -12,13 +13,6 @@ export const prerender = false;
 // Resend's batch endpoint accepts up to 100 emails per call. One call per
 // chunk keeps us well under the per-second request limit.
 const BATCH_SIZE = 100;
-
-function json(body: unknown, status: number) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  });
-}
 
 /**
  * Called by `.github/workflows/notify-subscribers.yml` once the pushed commit

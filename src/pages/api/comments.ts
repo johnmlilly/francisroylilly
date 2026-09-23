@@ -1,34 +1,23 @@
 import type { APIRoute } from 'astro';
 import { db, Comment, eq, desc } from '../../../db/client.js';
+import { json, requirePostSlug } from '../../lib/http.js';
 
 // Hits Turso on every request — must run on-demand, not at build time.
 export const prerender = false;
 
 export const GET: APIRoute = async ({ url }) => {
-  const postSlug = url.searchParams.get('postSlug');
-
-  if (!postSlug) {
-    return new Response(JSON.stringify({ error: 'postSlug is required' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
+  const scope = requirePostSlug(url);
+  if ('error' in scope) return scope.error;
 
   try {
     const comments = await db
       .select()
       .from(Comment)
-      .where(eq(Comment.postSlug, postSlug))
+      .where(eq(Comment.postSlug, scope.postSlug))
       .orderBy(desc(Comment.createdAt));
 
-    return new Response(JSON.stringify(comments), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return json(comments, 200);
   } catch (error) {
-    return new Response(JSON.stringify({ error: 'Failed to fetch comments' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return json({ error: 'Failed to fetch comments' }, 500);
   }
 };
