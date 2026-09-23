@@ -7,8 +7,15 @@ interface Props {
 
 const { postSlug } = Astro.props;
 
+// Named columns, never `select()`: the row must not carry the commenter's
+// email into the rendered island.
 const comments = await db
-  .select()
+  .select({
+    id: Comment.id,
+    name: Comment.name,
+    message: Comment.message,
+    createdAt: Comment.createdAt,
+  })
   .from(Comment)
   .where(eq(Comment.postSlug, postSlug))
   .orderBy(desc(Comment.createdAt));
@@ -29,42 +36,47 @@ const comments = await db
 </div>
 
 <script>
-  function renderComment(comment: any) {
-    const date = new Date(comment.createdAt).toLocaleDateString();
-    return `
-      <div class="p-4 bg-gray-50 rounded">
-        <div class="flex flex-wrap gap-2 text-sm text-gray-400">
-          <span class="font-semibold text-gray-500">${comment.name}</span>
-          <span> • ${date}</span>
-        </div>
-        <div class="mt-2 text-base text-gray-800">${comment.message}</div>
-      </div>
-    `;
+  interface AddedComment {
+    name: string;
+    message: string;
+    createdAt: string;
   }
 
-  function refreshComments() {
+  // Built with textContent, never innerHTML: a comment is untrusted input, and
+  // the server-side tag strip does not stop an unterminated tag.
+  function buildComment(comment: AddedComment) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "p-4 bg-gray-50 rounded";
+
+    const meta = document.createElement("div");
+    meta.className = "flex flex-wrap gap-2 text-sm text-gray-400";
+
+    const name = document.createElement("span");
+    name.className = "font-semibold text-gray-500";
+    name.textContent = comment.name;
+
+    const date = document.createElement("span");
+    date.textContent = ` • ${new Date(comment.createdAt).toLocaleDateString()}`;
+
+    meta.append(name, date);
+
+    const body = document.createElement("div");
+    body.className = "mt-2 text-base text-gray-800";
+    body.textContent = comment.message;
+
+    wrapper.append(meta, body);
+    return wrapper;
+  }
+
+  // The form hands over the row the action returned, so the new comment appears
+  // without a second request. Comments posted by other people since this island
+  // rendered arrive on the next page load.
+  window.addEventListener("commentAdded", (event) => {
     const commentsList = document.getElementById("comments-list");
-    if (!commentsList) return;
+    const comment = (event as CustomEvent<AddedComment | undefined>).detail;
+    if (!commentsList || !comment) return;
 
-    const postSlug = commentsList.dataset.postSlug;
-    if (!postSlug) return;
-
-    // Fetch updated comments
-    fetch(`/api/comments?postSlug=${encodeURIComponent(postSlug)}`)
-      .then((res) => res.json())
-      .then((comments) => {
-        if (comments && comments.length > 0) {
-          commentsList.innerHTML = comments.map(renderComment).join("");
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to refresh comments:", err);
-      });
-  }
-
-  // Listen for custom event from the form
-  window.addEventListener("commentAdded", () => {
-    refreshComments();
+    commentsList.prepend(buildComment(comment));
   });
 
   // Localize comment dates

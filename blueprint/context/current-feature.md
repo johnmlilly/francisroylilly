@@ -49,6 +49,12 @@ Five commits, `16cecbe` through `0ea1f2f`, none of which exist on `main`:
   from PATH, `node_modules/.bin`, yarn, then `npx --no-install`, and **exits 0
   when it finds none**, so the gate is advisory rather than enforcing on a
   checkout whose `node_modules` is stale.
+- `.claude/skills/fallow/`: the agent skill written by `fallow agent install`.
+  `SKILL.md` is a 35-line pointer that tells an agent to read the full skill
+  from the installed package and to resolve flags from `fallow --help` rather
+  than from memory; `agents/openai.yaml` carries the display name and default
+  prompt for tools that read that format. Both are instructions for agents, not
+  code the site runs.
 - `.github/workflows/fallow.yml`: runs `fallow audit` on pull requests and
   pushes to `main`, with `continue-on-error: true` and `fail-on-issues: false`,
   so it comments on the PR and never blocks a merge.
@@ -90,6 +96,43 @@ hook never blocks a legitimate commit.
 Pin the third-party action to a commit and correct one inaccurate config
 comment, both raised by the independent review.
 
+### Security fix (Step 6)
+
+The second independent review found that `GET /api/comments` answered with
+`db.select()` and no column list, so every response carried the `Comment`
+table's `notNull` `email` column (F-19, P1). The route is unauthenticated,
+`prerender = false`, and post slugs are public through the sitemap and RSS, so
+any commenter's address could be read by requesting a slug. The same review
+found that comment text reached `innerHTML` unescaped in the client refresh
+path, defended only by a single-pass tag strip that an unterminated tag such as
+`<img src=x onerror=...` slips through (F-20, P1).
+
+Both are inherited, not introduced by this branch, and both live in the code
+this branch touched.
+
+The fix removes the routes rather than narrowing them. Neither endpoint is
+needed: `Comments.astro` renders `CommentsList` and `ReactionsButton` with
+`server:defer`, so both islands are rendered per request in the Worker and
+already show current data on every page view. The two public GET routes existed
+only to redraw after a submission, and the actions can return what the browser
+needs.
+
+- Delete `src/pages/api/comments.ts` and `src/pages/api/reactions.ts` with their
+  tests. No route, no response, nothing to harvest.
+- `addCommentHandler` projects its `returning()` to id, postSlug, name, message
+  and createdAt, so the action never hands an email to a browser either.
+  `addLoveHandler` returns the new `loves` count instead of `{ success: true }`.
+- `CommentsForm.astro` passes the returned row on the `commentAdded` event;
+  `CommentsList.astro` builds the new comment with `createElement` and
+  `textContent` and prepends it. That removes the `innerHTML` sink rather than
+  escaping around it.
+- Every remaining read of `Comment` and `Reaction` names its columns, so adding
+  a column can never silently widen a response again.
+- `requirePostSlug` in `src/lib/http.ts` loses both consumers with the routes and
+  goes with them. `json()` stays for `notify.ts`. Step 2's deduplication of
+  those two routes is therefore partly dissolved by Step 6: the duplicated code
+  is gone rather than shared.
+
 Must not break: every API response body, status code, and header; the notify
 send semantics, including recording `PostNotification` regardless of partial
 send failure so a rerun never double-sends; the rendered appearance of
@@ -103,10 +146,10 @@ and any change to the unit-size threshold for Astro templates.
 
 - [x] **Step 0 - Adopt fallow** *(`16cecbe`, `7222115`, `ac8e713`, `0ec884a`,
   `0ea1f2f`; built in an earlier session, specced retroactively)* - devDependency,
-  `npm run analyze`, `.fallowrc.json`, MCP registration, `PreToolUse` commit
-  gate, non-blocking GitHub workflow, AGENTS.md task map. *Done when:*
-  `npx fallow` runs and honors the config, and the workflow reports on the PR
-  without failing it.
+  `npm run analyze`, `.fallowrc.json`, MCP registration, the `.claude/skills/fallow/`
+  agent skill, `PreToolUse` commit gate, non-blocking GitHub workflow, AGENTS.md
+  task map. *Done when:* `npx fallow` runs and honors the config, and the
+  workflow reports on the PR without failing it.
 - [x] **Step 1 - Dead code** *(`dc107f7`; build and 74 tests pass)* - delete
   `PhotoGallery.astro`, drop `react-image-gallery` and `prop-types`, remove
   `SITE_LOGO` and the `desc` re-export, refresh the lockfile. *Done when:*
@@ -130,12 +173,27 @@ and any change to the unit-size threshold for Astro templates.
   `@astrojs/rss` from production code; extend this spec to cover Step 0.
   *Done when:* the workflow references a 40-character SHA, the comment names the
   five config-only packages, and `npx fallow` still exits 0.
+- [x] **Step 6 - Close the comment PII leak and the innerHTML sink** *(F-19,
+  F-20)* - delete both public GET routes and their tests, project the actions'
+  return values and every remaining `Comment`/`Reaction` read, render the new
+  comment through `textContent`, drop the now-unused `requirePostSlug`.
+  *Done when:* no route under `src/pages/api/` reads the `Comment` or `Reaction`
+  tables, `grep -rn "innerHTML" src/components/CommentsList.astro` returns
+  nothing, `addCommentHandler`'s result has no `email` property while the stored
+  row still does, and build and tests pass.
+- [x] **Step 7 - Second-review cleanups** *(F-21, F-22)* - cover
+  `.claude/skills/fallow/` in Step 0, correct the AGENTS.md gate instruction to
+  name `.fallowrc.json` instead of `fallow.toml`, and delete
+  `src/test/helpers.ts`, which only built the request context for the two route
+  tests removed in Step 6. *Done when:* `npx fallow` reports no unused files and
+  AGENTS.md no longer mentions `fallow.toml`.
 
 ## Verify
 
 1. `npm run build` passes.
-2. `npm run test` passes: 10 files, 80 tests (74 before this work, 6 added in
-   step 3).
+2. `npm run test` passes: 8 files, 74 tests. The count moved twice: step 3 added
+   6, and step 6 removed the two route test files (12 tests) along with the
+   routes they covered.
 3. `npx fallow` exits 0: dead code 0, duplication 0, complexity 0 above
    threshold, maintainability 94.3.
 4. `npx fallow audit --format json --quiet --explain --gate-marker agent`
@@ -144,6 +202,12 @@ and any change to the unit-size threshold for Astro templates.
    section of `/`), served from `global.css` instead of the page's scoped style.
 6. `grep -n "fallow-rs/fallow@" .github/workflows/fallow.yml` shows a 40-character
    commit SHA with the version in a trailing comment.
+7. `curl -s "$SITE/api/comments?postSlug=<any-published-slug>"` returns 404 on
+   the deployed site, and no response anywhere contains a commenter email. Post
+   a comment on a published post: it appears in the list immediately, and a
+   reload shows it served by the island.
+8. Click the heart on a published post: the count increments with no request to
+   `/api/reactions`, and a reload shows the new count.
 
 ## Known deviations
 
