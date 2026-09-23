@@ -17,7 +17,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: fallow-rs/fallow@v3
+      # Pinned to a commit, not the mutable v3 tag: this job holds
+      # pull-requests: write, so whoever controls the tag would control the
+      # token. Bump deliberately alongside the fallow devDependency.
+      - uses: fallow-rs/fallow@bd8fca5af5df4ccfd94c7a835d17bd93c31a7cef # v3.28.0
         continue-on-error: true
         with:
           command: audit

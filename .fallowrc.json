@@ -30,9 +30,11 @@
     ]
   },
   "rules": {
-    // The only importer of @astrojs/* and @tailwindcss/vite is astro.config.mjs,
-    // which fallow does not count as production code, so every build-time
-    // integration reads as test-only. They are needed for `npm run build`.
+    // @astrojs/cloudflare, mdx, react, sitemap and @tailwindcss/vite are
+    // imported only by astro.config.mjs, which fallow does not count as
+    // production code, so they read as test-only. They are needed for
+    // `npm run build`. (@astrojs/rss is different: src/pages/rss.xml.js
+    // imports it from production code, so it was never flagged.)
     "test-only-dependencies": "off"
   },
   "overrides": [

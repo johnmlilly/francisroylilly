@@ -1,22 +1,31 @@
-# Fix: Fallow code quality cleanup
+# Fix: Adopt fallow and clear its findings
 
 **Type:** Fix
 **Status:** verified
 **Branch:** `claude/fallow-code-quality-9g5b6e`
 
 > Retroactive spec, written 2026-09-23 after the work was already built and
-> committed in the same session. The build steps below record what landed, not
-> what was planned. The branch predates this spec and therefore does not use the
-> configured `fix/` prefix; it was left alone because PR #31 already tracks it.
+> committed. The build steps record what landed, not what was planned. The
+> branch predates this spec and therefore does not use the configured `fix/`
+> prefix; it was left alone because PR #31 already tracks it.
+>
+> Revised 2026-09-23 after an independent review found the first draft covered
+> only the last four of the branch's nine commits (F-16). The tooling adoption
+> in Step 0 is now specced, because it merges to `main` with this PR.
 
 ## The problem
 
-`npx fallow` reported 14 dead-code issues, 4 clone groups, and 1 complexity
-finding against the branch that introduced fallow itself (PR #31, whose body
-says the findings were surfaced but not fixed). None of it blocked a commit,
-because the audit gate runs `gate=new-only` and every finding was inherited,
-but a permanently red baseline means a genuinely new finding is indistinguishable
-from the existing noise.
+Two problems, one branch.
+
+First, the branch had no static analysis. Dead files, unused exports and
+dependencies, duplicated blocks, and complexity drift were invisible unless
+someone noticed them by hand.
+
+Second, once fallow was installed it reported 14 dead-code issues, 4 clone
+groups, and 1 complexity finding, and none of it was fixed. PR #31's body says
+so explicitly. None of it blocked a commit, because the audit gate runs
+`gate=new-only` and every finding was inherited, but a permanently red baseline
+means a genuinely new finding is indistinguishable from the existing noise.
 
 Reviewed against the code, the report split three ways: real defects, false
 positives from detectors that do not follow Astro templates or build config, and
@@ -24,7 +33,32 @@ findings whose fix would cost more than the duplication it removed.
 
 ## The fix
 
-Four parts, in the order they were applied.
+### Tooling (Step 0, built before this spec existed)
+
+Five commits, `16cecbe` through `0ea1f2f`, none of which exist on `main`:
+
+- `fallow` as a devDependency (pinned in `package-lock.json` at 3.27.0 with its
+  `fallow`, `fallow-lsp` and `fallow-mcp` bins) plus an `npm run analyze` script.
+- `.fallowrc.json`, initially only to exclude the wrangler-generated
+  `worker-configuration.d.ts` from duplicate detection.
+- `.mcp.json`: registers `fallow-mcp` over stdio so an agent session can query
+  fallow directly instead of shelling out.
+- `.claude/settings.json` plus `.claude/hooks/fallow-gate.sh` (171 lines): a
+  `PreToolUse` hook on `Bash` that intercepts agent-run `git commit` and
+  `git push` and runs `fallow audit` against the changeset. It resolves fallow
+  from PATH, `node_modules/.bin`, yarn, then `npx --no-install`, and **exits 0
+  when it finds none**, so the gate is advisory rather than enforcing on a
+  checkout whose `node_modules` is stale.
+- `.github/workflows/fallow.yml`: runs `fallow audit` on pull requests and
+  pushes to `main`, with `continue-on-error: true` and `fail-on-issues: false`,
+  so it comments on the PR and never blocks a merge.
+- `AGENTS.md`: the fallow task map and the local commit-gate instruction.
+
+Acceptance for that work: `npx fallow` runs against this project and its
+`.fallowrc.json` is honored; the workflow runs on the PR without failing it; the
+hook never blocks a legitimate commit.
+
+### Cleanup (Steps 1-4)
 
 1. **Dead code.** Delete `src/components/PhotoGallery.astro` (411 lines, no
    importer, orphaned when the carousel was swapped for the lightbox in
@@ -45,11 +79,16 @@ Four parts, in the order they were applied.
    the route its D1 reads and writes. Both are now covered directly.
 4. **Config.** Record the reviewed exceptions in `.fallowrc.json`, each with its
    reason: `sharp` is needed by `imageService: 'compile'` at build time;
-   `test-only-dependencies` is off because `astro.config.mjs` is the only
-   importer of the build integrations; `unused-component-props` is off for
+   `test-only-dependencies` is off because the five build integrations are
+   imported only by `astro.config.mjs`; `unused-component-props` is off for
    `HeroFlip.astro` because `alt` is used at line 53 in a template expression the
    React detector does not follow; the `eq` re-export pair and the
    confirm/unsubscribe token blocks were reviewed and deliberately kept.
+
+### Review repairs (Step 5)
+
+Pin the third-party action to a commit and correct one inaccurate config
+comment, both raised by the independent review.
 
 Must not break: every API response body, status code, and header; the notify
 send semantics, including recording `PostNotification` regardless of partial
@@ -62,6 +101,12 @@ and any change to the unit-size threshold for Astro templates.
 
 ## Build steps
 
+- [x] **Step 0 - Adopt fallow** *(`16cecbe`, `7222115`, `ac8e713`, `0ec884a`,
+  `0ea1f2f`; built in an earlier session, specced retroactively)* - devDependency,
+  `npm run analyze`, `.fallowrc.json`, MCP registration, `PreToolUse` commit
+  gate, non-blocking GitHub workflow, AGENTS.md task map. *Done when:*
+  `npx fallow` runs and honors the config, and the workflow reports on the PR
+  without failing it.
 - [x] **Step 1 - Dead code** *(`dc107f7`; build and 74 tests pass)* - delete
   `PhotoGallery.astro`, drop `react-image-gallery` and `prop-types`, remove
   `SITE_LOGO` and the `desc` re-export, refresh the lockfile. *Done when:*
@@ -77,6 +122,14 @@ and any change to the unit-size threshold for Astro templates.
 - [x] **Step 4 - Config** *(`f559e34`; build and 80 tests pass)* - record the
   five reviewed exceptions in `.fallowrc.json` with inline reasons. *Done when:*
   `npx fallow` exits 0 with no findings in any section.
+- [x] **Step 5 - Review repairs** *(F-16, F-17, F-18)* - pin
+  `fallow-rs/fallow` to `bd8fca5af5df4ccfd94c7a835d17bd93c31a7cef` (v3.28.0)
+  instead of the mutable `v3` tag, since that job holds `pull-requests: write`;
+  correct the `test-only-dependencies` comment, which claimed `astro.config.mjs`
+  was the only importer of `@astrojs/*` while `src/pages/rss.xml.js:2` imports
+  `@astrojs/rss` from production code; extend this spec to cover Step 0.
+  *Done when:* the workflow references a 40-character SHA, the comment names the
+  five config-only packages, and `npx fallow` still exits 0.
 
 ## Verify
 
@@ -89,14 +142,16 @@ and any change to the unit-size threshold for Astro templates.
    returns verdict `pass` with 0 introduced findings.
 5. Home page renders `.pull-quote` unchanged (two blockquotes in the about
    section of `/`), served from `global.css` instead of the page's scoped style.
+6. `grep -n "fallow-rs/fallow@" .github/workflows/fallow.yml` shows a 40-character
+   commit SHA with the version in a trailing comment.
 
 ## Known deviations
 
 - The branch name predates this spec and does not use the configured `fix/`
   prefix. PR #31 already tracks `claude/fallow-code-quality-9g5b6e`, so renaming
   it would orphan the pull request.
-- The work landed as four commits instead of one, because it was built before it
-  was specced.
+- The work landed as several commits instead of one, because it was built before
+  it was specced.
 - Commit `dc107f7`'s message body contains an em dash, which
   `blueprint/context/coding-standards.md:187` forbids in generated content. The
   code delta itself is clean. User decision (2026-09-23): leave the history
@@ -104,8 +159,10 @@ and any change to the unit-size threshold for Astro templates.
 
 ## Known issue, not fixed here
 
-`npm run analyze` fails with `sh: fallow: command not found`. `fallow` is in
-`devDependencies` but is not installed under `node_modules`, and a stray
-`node_modules 2` directory sits beside it. Every fallow command in this work ran
-through `npx fallow` (3.28.0). Fixing it means `npm install`, which rewrites the
-lockfile, so it was left for a separate change.
+`npm run analyze` fails on this machine with `sh: fallow: command not found`.
+The repository is correct: `package-lock.json` pins `fallow@3.27.0` with its
+bins, so `npm ci` installs it. Only the local `node_modules` is stale (a stray
+`node_modules 2` directory sits beside it). Until that is resolved locally,
+`.claude/hooks/fallow-gate.sh` finds no fallow and exits 0, so the AGENTS.md
+commit gate is advisory in this checkout, and every fallow signal recorded here
+came from `npx fallow` 3.28.0 instead.
