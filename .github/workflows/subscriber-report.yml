@@ -1,0 +1,35 @@
+name: Weekly subscriber report
+
+# Emails REPORT_EMAIL a summary of subscribers from the last 7 days. Runs
+# straight against the live Worker (no content deploy to wait on, unlike
+# notify-subscribers.yml). Re-run via workflow_dispatch to resend a report.
+on:
+  schedule:
+    - cron: '0 13 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger /api/subscriber-report
+        run: |
+          # `Content-Type: application/json` avoids Astro's `security.checkOrigin`
+          # rejecting the request as a cross-site form submission.
+          if response=$(curl -sS --max-time 60 -w '\n%{http_code}' -X POST \
+            "https://francisroylilly.com/api/subscriber-report" \
+            -H "Content-Type: application/json" \
+            -H "x-report-secret: ${{ secrets.REPORT_SECRET }}"); then
+            code=${response##*$'\n'}
+            body=${response%$'\n'*}
+          else
+            code=000
+            body=
+          fi
+
+          printf 'HTTP %s\n' "$code"
+          printf 'Response body (first 2000 bytes): %.2000s\n' "$body"
+          [ "$code" = "200" ]
