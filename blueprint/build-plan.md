@@ -26,6 +26,7 @@ Shipped (adopted from an existing codebase):
 Roadmap:
 
 - [ ] 15. **Migrate Turso to Cloudflare D1** - `drizzle-orm/d1` binding, keep libsql `:memory:` for Vitest, `db/migrate.ts`/`db/seed.ts` become `wrangler d1` commands
+- [ ] 21. **Prayer map on `/prayers`** - Leaflet client-only island with Carto light raster tiles (attribution shown). Form: name, optional message (max 140 chars), city via Photon autocomplete, optional email that offers subscribing. Coordinates rounded to city level (~1km). Pins post immediately via an Astro Action reusing the comment spam guards; no user delete or edit, admin removes rows directly in D1. New `PrayerPin` table in D1. `leaflet.markercluster` clusters plus an "X people praying from Y countries" counter; `leaflet-gesture-handling` for two-finger pan on mobile. Launches empty.
 - [ ] 16. **Playwright E2E smoke tests** - comment submission, love button, `/blog` listing (use `/tests browser`)
 - [ ] 17. **Replace Lucide icons with astro-icon** - `src/components/Cards.astro`
 - [ ] 18. **Streamline SEO with astro-seo** - per-page title/description/OG props instead of duplicated meta tags
