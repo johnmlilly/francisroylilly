@@ -1,7 +1,7 @@
 # Fix: CI setup
 
 **Type:** Fix
-**Status:** not started
+**Status:** implemented, awaiting review
 **Branch:** fix/ci-setup
 
 Takes priority over the build plan (prayer map waits until this merges).

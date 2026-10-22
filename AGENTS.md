@@ -296,6 +296,9 @@ checks do not make the Blueprint unusable.
 - Build: `npm run build`
 - Preview: `npm run preview` (serves the built worker locally through workerd)
 - Test: `npm run test` (Vitest; `npm run test:watch` to watch)
+- Verify: `npm run verify` (`astro check`, Vitest, then `astro build`; CI runs
+  this on every PR and push to `main`)
+- Audit: `npm run audit` (production dependencies, fails on high or critical)
 - DB: `npm run db:migrate` (apply Drizzle migrations), `npm run db:seed`
 - Deploy: `npm run deploy` is a manual escape hatch only. Normal deploys run
   automatically via Cloudflare Workers Builds on push to `main`.
