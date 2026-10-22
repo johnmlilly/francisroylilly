@@ -50,6 +50,7 @@ const subscriber = (n: number) => ({
 });
 
 type SentEmail = { to: string; subject: string; html: string };
+type NotifyBody = { skipped?: boolean; notified: { slug: string; sent: number; failed: number }[] };
 
 describe('POST /api/notify', () => {
   beforeEach(() => {
@@ -105,7 +106,7 @@ describe('POST /api/notify', () => {
     const many = Array.from({ length: 150 }, (_, i) => subscriber(i + 1));
     resetD1([], [[], many]);
 
-    const body = await (await call({ 'x-notify-secret': SECRET })).json();
+    const body = (await (await call({ 'x-notify-secret': SECRET })).json()) as NotifyBody;
 
     expect(batchSendMock).toHaveBeenCalledTimes(2);
     expect((batchSendMock.mock.calls[0][0] as unknown[]).length).toBe(100);
@@ -117,7 +118,7 @@ describe('POST /api/notify', () => {
     getCollectionMock.mockResolvedValue([entry('a', '2026-01-01'), entry('b', '2026-02-01')]);
     resetD1([], [[]]);
 
-    const body = await (await call({ 'x-notify-secret': SECRET }, '?skipSend=true')).json();
+    const body = (await (await call({ 'x-notify-secret': SECRET }, '?skipSend=true')).json()) as NotifyBody;
 
     expect(body.skipped).toBe(true);
     expect(body.notified.map((n: { slug: string }) => n.slug)).toEqual(['a', 'b']);
@@ -130,7 +131,7 @@ describe('POST /api/notify', () => {
     resetD1([], [[], [subscriber(1), subscriber(2)]]);
     batchSendMock.mockResolvedValueOnce({ data: null, error: { message: 'boom' } } as never);
 
-    const body = await (await call({ 'x-notify-secret': SECRET })).json();
+    const body = (await (await call({ 'x-notify-secret': SECRET })).json()) as NotifyBody;
     expect(body.notified).toEqual([{ slug: 'p', sent: 0, failed: 2 }]);
     expect(d1State.inserted).toHaveLength(1);
   });

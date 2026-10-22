@@ -4,8 +4,6 @@
   "exclude": ["dist"],
   "compilerOptions": {
     "target": "esnext",
-    "moduleResolution": "node16", // Updated module resolution
-    "module": "Node16",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

@@ -1,6 +1,6 @@
 // src/actions/index.ts
 import { defineAction } from 'astro:actions';
-import { z } from 'astro:schema';
+import { z } from 'astro/zod';
 import { Resend } from 'resend';
 import { db, Comment, Reaction, eq, desc } from '../../db/client.js';
 import { d1, Subscriber } from '../../db/d1-client.js';

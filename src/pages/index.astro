@@ -47,8 +47,8 @@ const posts = await Promise.all(
         ...post.data,
         heroImage: {
           src: optimized.src,
-          width: optimized.width,
-          height: optimized.height,
+          width: optimized.attributes.width,
+          height: optimized.attributes.height,
         },
       },
     };

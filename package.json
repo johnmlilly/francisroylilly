@@ -12,6 +12,7 @@
     "cf-typegen": "wrangler types",
     "test": "vitest run",
     "test:watch": "vitest",
+    "verify": "astro check && vitest run && astro build",
     "analyze": "fallow",
     "deploy": "astro build && wrangler deploy --config dist/server/wrangler.json"
   },
@@ -34,9 +35,11 @@
     "tailwindcss": "^4.1.17"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.12",
     "drizzle-kit": "^0.31.10",
     "fallow": "^3.27.0",
     "tsx": "^4.23.1",
+    "typescript": "^6.0.3",
     "vitest": "^4.1.10",
     "wrangler": "^4.127.0"
   }
