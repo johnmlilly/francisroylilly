@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { d1State, resetD1 } from '../test/fake-d1.js';
 import type { SubscriberRow } from '../lib/subscribeDecision.js';
 
-const { sendMock } = vi.hoisted(() => ({ sendMock: vi.fn(async () => ({ data: { id: 'msg' }, error: null })) }));
+const { sendMock } = vi.hoisted(() => ({ sendMock: vi.fn(async (_email: unknown) => ({ data: { id: 'msg' }, error: null })) }));
 
 vi.mock('../../db/d1-client.js', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../db/d1-client.js')>();

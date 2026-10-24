@@ -58,13 +58,17 @@ const comments = await db
     const date = document.createElement("span");
     date.textContent = ` • ${new Date(comment.createdAt).toLocaleDateString()}`;
 
-    meta.append(name, date);
+    // appendChild/insertBefore, not append/prepend: the Workers Element type in
+    // worker-configuration.d.ts overrides the DOM signatures for those two.
+    meta.appendChild(name);
+    meta.appendChild(date);
 
     const body = document.createElement("div");
     body.className = "mt-2 text-base text-gray-800";
     body.textContent = comment.message;
 
-    wrapper.append(meta, body);
+    wrapper.appendChild(meta);
+    wrapper.appendChild(body);
     return wrapper;
   }
 
@@ -76,7 +80,7 @@ const comments = await db
     const comment = (event as CustomEvent<AddedComment | undefined>).detail;
     if (!commentsList || !comment) return;
 
-    commentsList.prepend(buildComment(comment));
+    commentsList.insertBefore(buildComment(comment), commentsList.firstChild);
   });
 
   // Localize comment dates

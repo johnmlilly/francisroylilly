@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { resetD1 } from '../../test/fake-d1.js';
 
 const { sendMock } = vi.hoisted(() => ({
-  sendMock: vi.fn(async () => ({ data: { id: 'msg-1' }, error: null })),
+  sendMock: vi.fn(async (_email: unknown) => ({ data: { id: 'msg-1' }, error: null })),
 }));
 
 vi.mock('../../../db/d1-client.js', async (importOriginal) => {

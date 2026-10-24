@@ -81,7 +81,7 @@ describe('sendInBatches', () => {
   const sender = (send: BatchSender['batch']['send']): BatchSender => ({ batch: { send } });
 
   it('sends every batch and counts them as sent', async () => {
-    const send = vi.fn(async () => ({ error: null }));
+    const send = vi.fn(async (_batch: NotificationEmail[]) => ({ error: null }));
     const result = await sendInBatches(sender(send), emails(5), 2);
 
     expect(send).toHaveBeenCalledTimes(3);

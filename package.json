@@ -12,11 +12,13 @@
     "cf-typegen": "wrangler types",
     "test": "vitest run",
     "test:watch": "vitest",
+    "verify": "astro check && vitest run && astro build",
+    "audit": "npm audit --omit=dev --audit-level=high",
     "analyze": "fallow",
     "deploy": "astro build && wrangler deploy --config dist/server/wrangler.json"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^14.2.5",
+    "@astrojs/cloudflare": "^14.4.2",
     "@astrojs/mdx": "^7.0.3",
     "@astrojs/react": "^6.0.1",
     "@astrojs/rss": "^4.0.18",
@@ -30,13 +32,15 @@
     "react-dom": "^19.2.0",
     "react-vertical-timeline-component": "^3.5.3",
     "resend": "^6.28.1",
-    "sharp": "^0.34.3",
+    "sharp": "^0.35.5",
     "tailwindcss": "^4.1.17"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.12",
     "drizzle-kit": "^0.31.10",
     "fallow": "^3.27.0",
     "tsx": "^4.23.1",
+    "typescript": "^6.0.3",
     "vitest": "^4.1.10",
     "wrangler": "^4.127.0"
   }
