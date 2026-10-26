@@ -43,5 +43,10 @@
     "typescript": "^6.0.3",
     "vitest": "^4.1.10",
     "wrangler": "^4.127.0"
+  },
+  "overrides": {
+    "miniflare": {
+      "undici": "^7.30.1"
+    }
   }
 }
