@@ -23,7 +23,7 @@
     "@astrojs/react": "^7.1.2",
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.4",
-    "@libsql/client": "^0.17.4",
+    "@libsql/client": "^0.18.0",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.4.4",
     "drizzle-orm": "^0.45.2",
