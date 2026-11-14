@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 import { Resend } from 'resend';
-import { d1, PostNotification, Subscriber, and, isNotNull, isNull } from '../../../db/d1-client.js';
+import { db, PostNotification, Subscriber, and, isNotNull, isNull } from '../../../db/client.js';
 import { json } from '../../lib/http.js';
 import {
   buildNotificationEmails,
@@ -31,7 +31,7 @@ export const POST: APIRoute = async ({ request, url }) => {
   const skipSend = url.searchParams.get('skipSend') === 'true';
 
   const published = await getCollection('blog', ({ data }) => data.isPublished);
-  const notifiedRows = await d1.select({ postSlug: PostNotification.postSlug }).from(PostNotification);
+  const notifiedRows = await db.select({ postSlug: PostNotification.postSlug }).from(PostNotification);
 
   const newPosts = selectNewPosts(
     published.map((post) => ({
@@ -50,7 +50,7 @@ export const POST: APIRoute = async ({ request, url }) => {
   if (newPosts.length > 0) {
     const subscribers = skipSend
       ? []
-      : await d1
+      : await db
           .select()
           .from(Subscriber)
           .where(and(isNotNull(Subscriber.confirmedAt), isNull(Subscriber.unsubscribedAt)));
@@ -65,7 +65,7 @@ export const POST: APIRoute = async ({ request, url }) => {
       // Record regardless of partial failures so a rerun never double-sends;
       // failures are visible in the response and the Actions log. Ignore a
       // conflict in case two runs overlap despite the workflow concurrency group.
-      await d1
+      await db
         .insert(PostNotification)
         .values({ postSlug: post.id, notifiedAt: new Date() })
         .onConflictDoNothing();

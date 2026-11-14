@@ -1,50 +1,22 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "96ffd771-43da-48d3-8e56-2bb1637009f7",
+  "id": "2202a734-bfe7-4126-86b2-0c26d4c18ae1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "Comment": {
-      "name": "Comment",
+    "PostNotification": {
+      "name": "PostNotification",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
         "postSlug": {
           "name": "postSlug",
           "type": "text",
-          "primaryKey": false,
+          "primaryKey": true,
           "notNull": true,
           "autoincrement": false
         },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "message": {
-          "name": "message",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "createdAt": {
-          "name": "createdAt",
-          "type": "text",
+        "notifiedAt": {
+          "name": "notifiedAt",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -56,8 +28,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "Reaction": {
-      "name": "Reaction",
+    "Subscriber": {
+      "name": "Subscriber",
       "columns": {
         "id": {
           "name": "id",
@@ -66,23 +38,72 @@
           "notNull": true,
           "autoincrement": true
         },
-        "postSlug": {
-          "name": "postSlug",
+        "email": {
+          "name": "email",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "loves": {
-          "name": "loves",
+        "firstName": {
+          "name": "firstName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "lastName": {
+          "name": "lastName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "token": {
+          "name": "token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "name": "createdAt",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": 0
+          "autoincrement": false
+        },
+        "confirmedAt": {
+          "name": "confirmedAt",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "unsubscribedAt": {
+          "name": "unsubscribedAt",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "Subscriber_email_unique": {
+          "name": "Subscriber_email_unique",
+          "columns": [
+            "email"
+          ],
+          "isUnique": true
+        },
+        "Subscriber_token_unique": {
+          "name": "Subscriber_token_unique",
+          "columns": [
+            "token"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},

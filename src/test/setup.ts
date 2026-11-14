@@ -1,4 +1,3 @@
-import { migrate } from 'drizzle-orm/libsql/migrator';
-import { db } from '../../db/client.js';
-
-await migrate(db, { migrationsFolder: './drizzle' });
+// Load the aliased test DB (src/test/db-client.ts) up front so its migrations
+// finish before any test runs.
+import '../../db/client.js';

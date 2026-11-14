@@ -299,13 +299,16 @@ checks do not make the Blueprint unusable.
 - Verify: `npm run verify` (`astro check`, Vitest, then `astro build`; CI runs
   this on every PR and push to `main`)
 - Audit: `npm run audit` (production dependencies, fails on high or critical)
-- DB: `npm run db:migrate` (apply Drizzle migrations), `npm run db:seed`
+- DB: `npm run db:generate` (new migration in `drizzle/` from `db/schema.ts`),
+  then `wrangler d1 execute francisroylilly --local|--remote --file=drizzle/<file>.sql`
+  to apply it; `npm run db:seed` loads `db/seed.sql` into local D1
 - Deploy: `npm run deploy` is a manual escape hatch only. Normal deploys run
   automatically via Cloudflare Workers Builds on push to `main`.
 
-Data access is Drizzle ORM + `@libsql/client` against Turso (`db/client.ts`);
-`TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` are Worker secrets. Under Vitest,
-`db/client.ts` uses an in-memory SQLite DB.
+Data access is Drizzle ORM against Cloudflare D1 via the `SUBSCRIBERS_DB`
+binding (`db/client.ts`, schema `db/schema.ts`). Under Vitest, `vitest.config.ts`
+aliases `db/client.js` to `src/test/db-client.ts`, an in-memory libSQL DB
+migrated from `drizzle/`.
 
 The user handles all commits and merges. Do not commit or merge without
 permission, and never until `npm run build` and `npm run test` pass. Never

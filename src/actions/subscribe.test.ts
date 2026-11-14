@@ -4,10 +4,10 @@ import type { SubscriberRow } from '../lib/subscribeDecision.js';
 
 const { sendMock } = vi.hoisted(() => ({ sendMock: vi.fn(async (_email: unknown) => ({ data: { id: 'msg' }, error: null })) }));
 
-vi.mock('../../db/d1-client.js', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('../../db/d1-client.js')>();
+vi.mock('../../db/client.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../db/client.js')>();
   const { fakeD1 } = await import('../test/fake-d1.js');
-  return { ...actual, d1: fakeD1 };
+  return { ...actual, db: fakeD1 };
 });
 
 vi.mock('resend', () => ({

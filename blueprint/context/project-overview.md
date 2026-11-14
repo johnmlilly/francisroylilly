@@ -1,6 +1,6 @@
 # Francis Roy Lilly - Project Overview
 
-<!-- blueprint:source-hash 9ab13aab74bff66a9ba32c3113adf8f93262bdf2c9ba0abf14c5f9a8216dbd32 -->
+<!-- blueprint:source-hash 336f84d0496aa76bb44efcde4495a161e907c82ac2c1ae396b5f4216066c8e32 -->
 
 > Personal site documenting Francis Roy Lilly's journey after a severe brain
 > injury (HIE) at birth. Permanent, ad-free replacement for CaringBridge.
@@ -70,20 +70,19 @@ is built second.
 
 ## Data model
 
-Two databases until feature 15 merges them.
+One database: **Cloudflare D1** (`francisroylilly`, binding `SUBSCRIBERS_DB`)
+via `drizzle-orm/d1`. Schema `db/schema.ts`, client `db/client.ts` reading
+`env.SUBSCRIBERS_DB` from `cloudflare:workers`. Migrations generated with
+`npm run db:generate` under `./drizzle`, applied manually with
+`wrangler d1 execute --remote --file=`. `Comment`/`Reaction` moved here from
+Turso in feature 15.
 
-**Turso (libSQL)** via Drizzle. Schema `db/schema.ts`, client `db/client.ts`.
-Under Vitest the client uses in-memory SQLite. Migrations under `./drizzle`,
-applied with `npm run db:migrate`.
+Under Vitest `db/client.js` is aliased to `src/test/db-client.ts`, an in-memory
+libSQL DB migrated from `./drizzle` (real SQL for comment/reaction tests). `cloudflare:workers` is aliased to
+`src/test/cloudflare-workers-stub.ts`; subscriber tests `vi.mock` the client's
+`db` export with `src/test/fake-d1.ts` to assert on writes.
 
-**Cloudflare D1** (feature 14) via `drizzle-orm/d1`. Schema
-`db/d1-schema.ts`, client `db/d1-client.ts` reading `env.SUBSCRIBERS_DB` from
-`cloudflare:workers`. Migrations generated with `npm run db:d1:generate` under
-`./drizzle/d1`, applied manually with `wrangler d1 execute --remote --file=`.
-Vitest aliases `cloudflare:workers` to `src/test/cloudflare-workers-stub.ts`;
-tests that reach D1 must `vi.mock` the client.
-
-### Comment (Turso)
+### Comment
 
 - `id` (integer, PK, autoincrement)
 - `postSlug` (text, not null) - joins to a blog post by slug; no FK, posts are files
@@ -92,13 +91,13 @@ tests that reach D1 must `vi.mock` the client.
 - `message` (text, not null)
 - `createdAt` (text, not null) - ISO timestamp
 
-### Reaction (Turso)
+### Reaction
 
 - `id` (integer, PK, autoincrement)
 - `postSlug` (text, not null) - one row per post
 - `loves` (integer, not null, default 0) - running count
 
-### Subscriber (D1)
+### Subscriber
 
 - `id` (integer, PK, autoincrement)
 - `email` (text, not null, unique) - normalized lowercase/trimmed
@@ -111,7 +110,7 @@ tests that reach D1 must `vi.mock` the client.
 Active subscriber = `confirmedAt IS NOT NULL AND unsubscribedAt IS NULL`.
 Re-subscribing after unsubscribe issues a new token and repeats double opt-in.
 
-### PostNotification (D1)
+### PostNotification
 
 - `postSlug` (text, PK) - matches the post id used by `rss.xml.js` and `/blog`
 - `notifiedAt` (integer timestamp, not null)
@@ -154,7 +153,7 @@ Frontmatter schema (`src/content.config.ts`, mirrored in `.pages.yml`):
 - **TypeScript (strict)** - app code; `Timeline.jsx` is the untyped legacy exception
 - **Tailwind CSS v4** - CSS-first config via `@tailwindcss/vite`; utilities `.pull-quote`, `.hero-quote` in `src/styles/global.css`
 - **React 19** - islands only (timeline via `react-vertical-timeline-component`)
-- **Drizzle ORM** - `@libsql/client` against Turso; `drizzle-orm/d1` against D1
+- **Drizzle ORM** - `drizzle-orm/d1` against D1; `@libsql/client` `:memory:` under Vitest
 - **Astro Actions** - form handling (`addComment`, `addLove`, `subscribeToUpdates`) in `src/actions/index.ts`
 - **Resend** - transactional email; plain inline-styled HTML templates in `emails/` with `escapeHtml`
 - **lucide-react** - icons (planned swap to astro-icon, feature 17)
@@ -199,9 +198,9 @@ Site-wide subscribe modal opens ~5s after load, dismissal persisted in
 - **Domain:** francisroylilly.com as Worker custom domain; DNS on Cloudflare
 - **Deploys:** automatic via Cloudflare Workers Builds on push to `main`. `npm run deploy` is a manual escape hatch only.
 - **Build:** `npm run build`. Dev server `npm run dev` on http://localhost:4321 (workerd via Cloudflare Vite plugin). `npm run preview` serves the built worker.
-- **Secrets (Worker):** `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`; `RESEND_API_KEY`, `NOTIFY_SECRET`. Locally via `.dev.vars` (gitignored) or `process.env`, Turso falling back to `file:.data/local.db`.
+- **Secrets (Worker):** `RESEND_API_KEY`, `NOTIFY_SECRET`, `REPORT_SECRET`, `REPORT_EMAIL`. Locally via `.dev.vars` (gitignored).
 - **Bindings:** `d1_databases` entry `SUBSCRIBERS_DB` in `wrangler.jsonc`; `npm run cf-typegen` generates `worker-configuration.d.ts`.
-- **DB ops:** `npm run db:migrate`, `npm run db:seed` (Turso, `tsx`). `npm run db:d1:generate` then `wrangler d1 execute francisroylilly --remote --file=` (D1).
+- **DB ops:** `npm run db:generate`, then `wrangler d1 execute francisroylilly --local|--remote --file=drizzle/<file>.sql`. `npm run db:seed` loads `db/seed.sql` into local D1.
 - **CI:** `.github/workflows/test.yml` runs tests and build on PRs. `notify-subscribers.yml`: on push to `main` touching `src/content/blog/**`, one `curl` POST to `/api/notify` with `NOTIFY_SECRET` (also a GitHub repo secret). Merge it last, after backfill.
 - **Resend:** sending domain `updates@mail.francisroylilly.com` must be verified (SPF/DKIM TXT records on Cloudflare DNS).
 

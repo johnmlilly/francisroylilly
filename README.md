@@ -22,19 +22,19 @@ Live at [francisroylilly.com](https://francisroylilly.com).
 | Framework | [Astro 7](https://astro.build) - `output: 'static'` with on-demand API routes |
 | Language | TypeScript (strict) |
 | UI | Tailwind CSS v4 (CSS-first config) + React 19 islands |
-| Database | Drizzle ORM against Turso (libSQL) and Cloudflare D1 |
+| Database | Drizzle ORM against Cloudflare D1 |
 | Email | [Resend](https://resend.com) |
 | Testing | Vitest; GitHub Actions runs tests + build on PRs |
 | Hosting | Cloudflare Workers (`@astrojs/cloudflare`); DNS on Cloudflare |
 
-Two databases today: Turso holds `Comment`/`Reaction`, and a Cloudflare D1
-database holds `Subscriber`/`PostNotification`. Migrating everything onto D1
-is a planned follow-up.
+One Cloudflare D1 database (binding `SUBSCRIBERS_DB`) holds `Comment`,
+`Reaction`, `Subscriber`, and `PostNotification`. Vitest swaps in an in-memory
+libSQL database with the same schema.
 
 ## Project structure
 
 ```text
-├── db/                  # Drizzle schemas and clients (Turso + D1)
+├── db/                  # Drizzle schema and D1 client
 ├── drizzle/              # generated SQL migrations
 ├── emails/                # Resend email templates
 ├── src/
@@ -58,8 +58,8 @@ is a planned follow-up.
 | `npm run build` | Production build |
 | `npm run preview` | Preview the built worker locally |
 | `npm run test` | Run the Vitest suite |
-| `npm run db:migrate` / `npm run db:seed` | Turso migrations and seed data |
-| `npm run db:d1:generate` | Generate a D1 migration from `db/d1-schema.ts` |
+| `npm run db:generate` | Generate a SQL migration in `drizzle/` from `db/schema.ts` |
+| `npm run db:seed` | Load `db/seed.sql` into the local D1 database |
 | `npm run deploy` | Manual deploy escape hatch |
 
 Normal deploys run automatically via Cloudflare Workers Builds on push to

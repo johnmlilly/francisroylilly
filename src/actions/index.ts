@@ -2,8 +2,7 @@
 import { defineAction } from 'astro:actions';
 import { z } from 'astro/zod';
 import { Resend } from 'resend';
-import { db, Comment, Reaction, eq, desc } from '../../db/client.js';
-import { d1, Subscriber } from '../../db/d1-client.js';
+import { db, Comment, Reaction, Subscriber, eq, desc } from '../../db/client.js';
 import { confirmSubscriptionEmail } from '../../emails/confirmSubscription.js';
 import { EMAIL_FROM, SITE_URL } from '../consts.js';
 import { decideSubscribe } from '../lib/subscribeDecision.js';
@@ -195,7 +194,7 @@ export async function subscribeToUpdatesHandler({
   const sanitizedLastName = lastName.replace(/<[^>]*>/g, '');
   const normalizedEmail = email.trim().toLowerCase();
 
-  const existing = await d1
+  const existing = await db
     .select()
     .from(Subscriber)
     .where(eq(Subscriber.email, normalizedEmail))
@@ -211,10 +210,10 @@ export async function subscribeToUpdatesHandler({
 
   switch (decision.kind) {
     case 'insert':
-      await d1.insert(Subscriber).values(decision.values);
+      await db.insert(Subscriber).values(decision.values);
       break;
     case 'reactivate':
-      await d1.update(Subscriber).set(decision.set).where(eq(Subscriber.email, normalizedEmail));
+      await db.update(Subscriber).set(decision.set).where(eq(Subscriber.email, normalizedEmail));
       break;
     case 'resend':
     case 'noop':
@@ -227,7 +226,7 @@ export async function subscribeToUpdatesHandler({
     await sendConfirmationEmail(firstName, to, token);
     // Stamp only after a successful send so a Resend failure (already surfaced
     // to the reader as an error) never locks them out for the window.
-    await d1.update(Subscriber).set({ lastEmailedAt: now }).where(eq(Subscriber.email, normalizedEmail));
+    await db.update(Subscriber).set({ lastEmailedAt: now }).where(eq(Subscriber.email, normalizedEmail));
   }
 
   // The response is the same in every branch - it never reveals whether
