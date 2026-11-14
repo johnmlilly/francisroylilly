@@ -29,7 +29,7 @@ flowchart TB
     end
 
     subgraph Storage["Storage"]
-        D1["d1-client.ts"]
+        D1["db/client.ts (D1)"]
         SubscriberT["Subscriber table"]
         PostNotifT["PostNotification table"]
     end

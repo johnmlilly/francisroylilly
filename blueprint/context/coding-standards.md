@@ -1,7 +1,7 @@
 # Coding Standards
 
 Conventions for this project as the code actually practices them (Astro 7,
-TypeScript, Tailwind v4, React islands, Drizzle on Turso, Cloudflare Workers).
+TypeScript, Tailwind v4, React islands, Drizzle on Cloudflare D1, Cloudflare Workers).
 
 ## TypeScript
 
@@ -71,11 +71,11 @@ TypeScript, Tailwind v4, React islands, Drizzle on Turso, Cloudflare Workers).
 ## Database
 
 - Drizzle ORM for all DB access; schema `db/schema.ts`, client `db/client.ts`
-- Client is built lazily (Workers only populate `process.env` per request);
-  uses Turso when `TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` are set, a local
-  SQLite file otherwise, in-memory under Vitest
-- Schema changes: edit `db/schema.ts`, run `npm run db:migrate`
-- Seed data in `db/seed.ts`
+- Client is built lazily (Workers only populate bindings per request); uses
+  the `SUBSCRIBERS_DB` D1 binding, in-memory libSQL under Vitest
+- Schema changes: edit `db/schema.ts`, run `npm run db:generate`, apply the new
+  `drizzle/*.sql` with `wrangler d1 execute francisroylilly --local|--remote --file=`
+- Seed data in `db/seed.sql` (`npm run db:seed`, local D1)
 
 ## Data Fetching
 
@@ -133,7 +133,7 @@ of the switch; the skills and `ai-interaction.md` only point back here.
 
 Stack binding (this project): Vitest is configured (`npm run test`), so the
 gate is on. `vitest.config.ts` uses Astro's `getViteConfig()`; `db/client.ts`
-switches to an in-memory SQLite DB under `VITEST`, so tests never touch Turso.
+switches to an in-memory SQLite DB under `VITEST`, so tests never touch D1.
 API-route tests are named `_name.test.ts` (underscore prefix keeps Astro from
 treating them as routes under `output: 'static'`). Helpers in `src/test/`.
 

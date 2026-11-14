@@ -9,10 +9,9 @@
   ],
   "ignoreExports": [
     {
-      // Both clients re-export drizzle's `eq` for their own callers. The
-      // Turso client (db/client.ts) and the D1 client are never imported
-      // together, so the shared name cannot resolve ambiguously here.
-      "file": "db/*client.ts",
+      // db/client.ts re-exports drizzle's `eq` so callers import it alongside
+      // the tables from one place.
+      "file": "db/client.ts",
       "exports": ["eq"]
     }
   ],

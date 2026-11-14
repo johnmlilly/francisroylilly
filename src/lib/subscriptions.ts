@@ -1,4 +1,4 @@
-import { d1, Subscriber, eq } from '../../db/d1-client.js';
+import { db, Subscriber, eq } from '../../db/client.js';
 
 export type ConfirmLookup =
   | { status: 'not-found' }
@@ -14,7 +14,7 @@ export type UnsubscribeLookup =
 export type UnsubscribeResult = 'unsubscribed' | 'not-found';
 
 async function findByToken(token: string) {
-  return d1.select().from(Subscriber).where(eq(Subscriber.token, token)).get();
+  return db.select().from(Subscriber).where(eq(Subscriber.token, token)).get();
 }
 
 // GET /api/confirm: read-only. Email scanners prefetch links, so nothing
@@ -32,7 +32,7 @@ export async function confirmSubscription(token: string, now: Date): Promise<Con
   if (!row) return 'not-found';
   if (row.confirmedAt) return 'already-confirmed';
 
-  await d1.update(Subscriber).set({ confirmedAt: now }).where(eq(Subscriber.token, token));
+  await db.update(Subscriber).set({ confirmedAt: now }).where(eq(Subscriber.token, token));
   return 'confirmed';
 }
 
@@ -49,6 +49,6 @@ export async function unsubscribe(token: string, now: Date): Promise<Unsubscribe
   if (!row) return 'not-found';
   if (row.unsubscribedAt) return 'unsubscribed';
 
-  await d1.update(Subscriber).set({ unsubscribedAt: now }).where(eq(Subscriber.token, token));
+  await db.update(Subscriber).set({ unsubscribedAt: now }).where(eq(Subscriber.token, token));
   return 'unsubscribed';
 }

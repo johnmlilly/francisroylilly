@@ -1,7 +1,6 @@
 /**
- * Minimal stand-in for the Drizzle D1 client used by subscriber code. There is
- * no in-memory D1 equivalent to Turso's `:memory:` trick, so tests swap the
- * `d1` export of `db/d1-client.js` for this object via `vi.mock` and assert on
+ * Minimal stand-in for the Drizzle D1 client used by subscriber code. Subscriber
+ * tests swap the `db` export of `db/client.js` for this object via `vi.mock` and assert on
  * `d1State`. Only the chains the app actually uses are implemented.
  */
 export const d1State = {

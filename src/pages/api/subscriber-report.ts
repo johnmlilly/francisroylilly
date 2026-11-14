@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
-import { d1, Subscriber } from '../../../db/d1-client.js';
+import { db, Subscriber } from '../../../db/client.js';
 import { subscriberReportEmail } from '../../../emails/subscriberReport.js';
 import { EMAIL_FROM } from '../../consts.js';
 import { secretsMatch } from '../../lib/notify.js';
@@ -33,7 +33,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   const now = new Date();
   const since = oneWeekBefore(now);
-  const subscribers = await d1.select().from(Subscriber);
+  const subscribers = await db.select().from(Subscriber);
   const rows = selectNewSubscribers(subscribers, since, now);
 
   const { subject, html } = subscriberReportEmail({ rows, periodStart: since, periodEnd: now });

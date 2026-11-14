@@ -41,14 +41,12 @@ Planned: see `blueprint/build-plan.md`.
 
 ## 4. Data - What are we storing?
 
-Turso (libSQL) via Drizzle, schema in `db/schema.ts`:
+One Cloudflare D1 database via Drizzle (binding `SUBSCRIBERS_DB`), schema in
+`db/schema.ts`, client `db/client.ts`. `Comment`/`Reaction` moved here from
+Turso (build plan feature 15):
 
 - `Comment` - id, postSlug, name, email, message, createdAt
 - `Reaction` - id, postSlug, loves (count)
-
-Cloudflare D1 (planned, `db/d1-schema.ts`, binding `SUBSCRIBERS_DB`), separate
-client `db/d1-client.ts`; `Comment`/`Reaction` fold into it later (build plan):
-
 - `Subscriber` - id, email (unique), firstName, lastName, token (unique),
   createdAt, confirmedAt (nullable), unsubscribedAt (nullable); all timestamps
   `integer({ mode: 'timestamp' })`
@@ -64,7 +62,7 @@ Blog posts are Markdown/MDX files in `src/content/blog/`, images in
 | Framework  | Astro 7, `output: 'static'` with on-demand routes via adapter |
 | Language   | TypeScript (strict)                                        |
 | UI         | Tailwind CSS v4 (CSS-first config) + React 19 islands      |
-| Database   | Drizzle ORM + `@libsql/client` against Turso; Cloudflare D1 via `drizzle-orm/d1` for subscribers (planned) |
+| Database   | Drizzle ORM against Cloudflare D1 via `drizzle-orm/d1`; in-memory libSQL under Vitest |
 | Email      | Resend (planned), plain inline-styled HTML templates in `emails/` |
 | Icons      | lucide-react (planned swap to astro-icon)                  |
 | Testing    | Vitest (unit); GitHub Actions runs test + build on PRs     |
@@ -93,14 +91,12 @@ first (most readers arrive from shared links). Existing utilities: `.pull-quote`
 - Deploys: automatic via Cloudflare Workers Builds on push to `main`;
   `npm run deploy` is the manual escape hatch
 - Build: `npm run build` (Astro, `imageService: 'compile'`, `session: false`)
-- Env / secrets: `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN` (Worker secrets);
-  planned `RESEND_API_KEY` and `NOTIFY_SECRET` (Worker secrets), D1 binding
-  `SUBSCRIBERS_DB` in `wrangler.jsonc`, `NOTIFY_SECRET` also as a GitHub
-  Actions repo secret
+- Env / secrets: `RESEND_API_KEY`, `NOTIFY_SECRET`, `REPORT_SECRET`,
+  `REPORT_EMAIL` (Worker secrets), D1 binding `SUBSCRIBERS_DB` in
+  `wrangler.jsonc`, `NOTIFY_SECRET` also as a GitHub Actions repo secret
 - Planned `.github/workflows/notify-subscribers.yml`: on push to `main`
   touching `src/content/blog/**`, POST `/api/notify` with the shared secret
 - Custom domain: francisroylilly.com (Worker custom domain)
-- Possible future: migrate Turso to Cloudflare D1 (build plan)
 
 ## 9. Usage model and constraints (optional)
 

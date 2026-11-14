@@ -1,4 +1,4 @@
-import type { Subscriber } from '../../db/d1-schema.js';
+import type { Subscriber } from '../../db/schema.js';
 
 export type SubscriberRow = typeof Subscriber.$inferSelect;
 
