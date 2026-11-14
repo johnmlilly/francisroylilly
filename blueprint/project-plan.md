@@ -37,7 +37,8 @@ Shipped:
 - Full CaringBridge content migration (37 posts, photos re-encoded to AVIF,
   historical comments/reactions imported into the DB)
 
-Planned: see `blueprint/build-plan.md`.
+Planned: see `blueprint/build-plan.md`. Notable: a prayer map on `/prayers`
+where readers add a city-level pin with their name and an optional short message.
 
 ## 4. Data - What are we storing?
 
@@ -53,6 +54,9 @@ client `db/d1-client.ts`; `Comment`/`Reaction` fold into it later (build plan):
   createdAt, confirmedAt (nullable), unsubscribedAt (nullable); all timestamps
   `integer({ mode: 'timestamp' })`
 - `PostNotification` - postSlug (PK), notifiedAt
+- `PrayerPin` (planned) - name, optional message (max 140), city label,
+  country, lat/lng rounded to city level, optional email, createdAt. Public
+  except email. No user edit or delete; admin removes rows directly.
 
 Blog posts are Markdown/MDX files in `src/content/blog/`, images in
 `src/assets/blog/`. No user accounts.
@@ -67,6 +71,7 @@ Blog posts are Markdown/MDX files in `src/content/blog/`, images in
 | Database   | Drizzle ORM + `@libsql/client` against Turso; Cloudflare D1 via `drizzle-orm/d1` for subscribers (planned) |
 | Email      | Resend (planned), plain inline-styled HTML templates in `emails/` |
 | Icons      | lucide-react (planned swap to astro-icon)                  |
+| Maps       | Leaflet + leaflet.markercluster + leaflet-gesture-handling (planned); Carto raster tiles; Photon geocoding autocomplete |
 | Testing    | Vitest (unit); GitHub Actions runs test + build on PRs     |
 | Hosting    | Cloudflare Workers via `@astrojs/cloudflare`; DNS on Cloudflare |
 
