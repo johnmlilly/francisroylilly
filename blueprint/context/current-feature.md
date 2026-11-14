@@ -3,6 +3,7 @@
 **From build-plan:** feature 15
 **Build attempt:** 1
 **Branch:** feature/turso-to-d1-migration
+**Status:** verified
 
 ## Goal
 
@@ -55,8 +56,19 @@ run without an explicit yes in chat for that command.
   `npm run build` still pass.
   **Production (ask first):** `wrangler d1 execute francisroylilly --remote
   --file=drizzle/d1/0002_<tag>.sql`. Additive; live code ignores these tables.
+  Result: applied as `drizzle/0002_plain_korg.sql` (2026-11-13, user-approved);
+  remote D1 lists `Comment` and `Reaction`.
 
-- [ ] **2. Backfill Turso rows into D1.**
+- [x] **2. Backfill Turso rows into D1.**
+  Result (2026-11-13): Turso credentials were gone, so the user exported the
+  database from the Turso dashboard that day. The export carried both tables in
+  the old Astro DB shape; only the current columns were copied (legacy
+  `likes`/`prayers`/`supports` dropped, unused by the app). Generated
+  `turso-backfill.sql` in the scratchpad with `sqlite3 quote()`, dry-ran it
+  against a fresh DB built from `0002`, then applied it (user-approved). Remote
+  D1: Comment 516 rows, max id 525; Reaction 37 rows, sum(loves) 805 - matches
+  the export. Export snapshot for the post-merge gap check: max(Comment.id) 525,
+  per-slug loves saved in the scratchpad.
   Throwaway script in the scratchpad (not the repo) using `@libsql/client` with
   the `.dev.vars` Turso credentials: select all `Comment` and `Reaction` rows,
   write `turso-backfill.sql` **in the scratchpad** (holds commenter emails;
@@ -142,15 +154,18 @@ run without an explicit yes in chat for that command.
   spec-required `VITEST` branch in `db/client.ts`). `astro check` not installed
   (`@astrojs/check` missing) - skipped, not run.
 
-- [ ] **9. Post-merge runbook (after Workers Builds deploys `main`; each command
-  asked first).**
-  - Query Turso for `Comment` rows with `id >` step-2 max; insert each into D1
-    **without** `id`. Compare `Reaction.loves` with step-2 values; add any
-    delta to the D1 row (`insert` if the slug is new).
-  - Live check: post a comment and a love; refresh; confirm both persist and
-    `select count(*) from Comment` on D1 grew.
-  - `wrangler secret delete TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`.
-  This step runs after `/complete`; the spec records it so it isn't lost.
+## Post-merge runbook
+
+Not a build step: it can only run after Workers Builds deploys `main`, so it
+follows `/complete`. Each production command is asked first.
+
+- Gap check: export Turso again from the dashboard; `Comment` rows with
+  `id > 525` go into D1 **without** `id`. Compare `Reaction.loves` with the
+  step-2 snapshot; add any delta to the D1 row (`insert` if the slug is new).
+- Live check: post a comment and a love; refresh; confirm both persist and
+  `select count(*) from Comment` on D1 grew.
+- `wrangler secret delete TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`.
+- Delete the scratchpad export and backfill files.
 
 ## Files / areas
 
