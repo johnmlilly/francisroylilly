@@ -72,7 +72,7 @@ TypeScript, Tailwind v4, React islands, Drizzle on Cloudflare D1, Cloudflare Wor
 
 - Drizzle ORM for all DB access; schema `db/schema.ts`, client `db/client.ts`
 - Client is built lazily (Workers only populate bindings per request); uses
-  the `SUBSCRIBERS_DB` D1 binding. Under Vitest an alias swaps it for
+  the `DB` D1 binding. Under Vitest an alias swaps it for
   `src/test/db-client.ts` (in-memory libSQL); keep that file's exports in sync
 - Schema changes: edit `db/schema.ts`, run `npm run db:generate`, apply the new
   `drizzle/*.sql` with `wrangler d1 execute francisroylilly --local|--remote --file=`

@@ -305,7 +305,7 @@ checks do not make the Blueprint unusable.
 - Deploy: `npm run deploy` is a manual escape hatch only. Normal deploys run
   automatically via Cloudflare Workers Builds on push to `main`.
 
-Data access is Drizzle ORM against Cloudflare D1 via the `SUBSCRIBERS_DB`
+Data access is Drizzle ORM against Cloudflare D1 via the `DB`
 binding (`db/client.ts`, schema `db/schema.ts`). Under Vitest, `vitest.config.ts`
 aliases `db/client.js` to `src/test/db-client.ts`, an in-memory libSQL DB
 migrated from `drizzle/`.

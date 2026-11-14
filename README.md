@@ -27,7 +27,7 @@ Live at [francisroylilly.com](https://francisroylilly.com).
 | Testing | Vitest; GitHub Actions runs tests + build on PRs |
 | Hosting | Cloudflare Workers (`@astrojs/cloudflare`); DNS on Cloudflare |
 
-One Cloudflare D1 database (binding `SUBSCRIBERS_DB`) holds `Comment`,
+One Cloudflare D1 database (binding `DB`) holds `Comment`,
 `Reaction`, `Subscriber`, and `PostNotification`. Vitest swaps in an in-memory
 libSQL database with the same schema.
 
