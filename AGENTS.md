@@ -303,8 +303,9 @@ checks do not make the Blueprint unusable.
   automatically via Cloudflare Workers Builds on push to `main`.
 
 Data access is Drizzle ORM against Cloudflare D1 via the `SUBSCRIBERS_DB`
-binding (`db/client.ts`, schema `db/schema.ts`). Under Vitest, `db/client.ts`
-uses an in-memory libSQL DB migrated from `drizzle/`.
+binding (`db/client.ts`, schema `db/schema.ts`). Under Vitest, `vitest.config.ts`
+aliases `db/client.js` to `src/test/db-client.ts`, an in-memory libSQL DB
+migrated from `drizzle/`.
 
 The user handles all commits and merges. Do not commit or merge without
 permission, and never until `npm run build` and `npm run test` pass. Never

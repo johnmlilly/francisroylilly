@@ -72,7 +72,8 @@ TypeScript, Tailwind v4, React islands, Drizzle on Cloudflare D1, Cloudflare Wor
 
 - Drizzle ORM for all DB access; schema `db/schema.ts`, client `db/client.ts`
 - Client is built lazily (Workers only populate bindings per request); uses
-  the `SUBSCRIBERS_DB` D1 binding, in-memory libSQL under Vitest
+  the `SUBSCRIBERS_DB` D1 binding. Under Vitest an alias swaps it for
+  `src/test/db-client.ts` (in-memory libSQL); keep that file's exports in sync
 - Schema changes: edit `db/schema.ts`, run `npm run db:generate`, apply the new
   `drizzle/*.sql` with `wrangler d1 execute francisroylilly --local|--remote --file=`
 - Seed data in `db/seed.sql` (`npm run db:seed`, local D1)
@@ -132,8 +133,9 @@ of the switch; the skills and `ai-interaction.md` only point back here.
   hardcoded tool name.
 
 Stack binding (this project): Vitest is configured (`npm run test`), so the
-gate is on. `vitest.config.ts` uses Astro's `getViteConfig()`; `db/client.ts`
-switches to an in-memory SQLite DB under `VITEST`, so tests never touch D1.
+gate is on. `vitest.config.ts` uses Astro's `getViteConfig()`; it aliases
+`db/client.js` to an in-memory libSQL DB (`src/test/db-client.ts`), so tests
+never touch D1.
 API-route tests are named `_name.test.ts` (underscore prefix keeps Astro from
 treating them as routes under `output: 'static'`). Helpers in `src/test/`.
 

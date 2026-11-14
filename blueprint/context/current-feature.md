@@ -154,6 +154,17 @@ run without an explicit yes in chat for that command.
   spec-required `VITEST` branch in `db/client.ts`). `astro check` not installed
   (`@astrojs/check` missing) - skipped, not run.
 
+- [x] **9. Repair F-27: keep libSQL out of the production Worker.** (User
+  decision 2026-11-14, revises step 3's client shape.) `db/client.ts` becomes
+  D1-only. New `src/test/db-client.ts` builds the libSQL `:memory:` drizzle DB,
+  migrates `./drizzle`, and re-exports the same names; `vitest.config.ts`
+  aliases any `db/client.js` import to it (alongside the existing
+  `cloudflare:workers` alias), so app code and `vi.mock` paths stay unchanged.
+  `src/test/setup.ts` no longer needs its own migrate. Move `@libsql/client` to
+  `devDependencies`. Done when: tests 87/87, build passes, the built
+  `dist/server` chunks contain no `@libsql/client` code, fallow has no
+  `test-only-branch` warning; F-27 marked `fixed`.
+
 ## Post-merge runbook
 
 Not a build step: it can only run after Workers Builds deploys `main`, so it

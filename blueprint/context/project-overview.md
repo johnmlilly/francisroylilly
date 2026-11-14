@@ -76,8 +76,8 @@ via `drizzle-orm/d1`. Schema `db/schema.ts`, client `db/client.ts` reading
 `wrangler d1 execute --remote --file=`. `Comment`/`Reaction` moved here from
 Turso in feature 15.
 
-Under Vitest the client is an in-memory libSQL DB migrated from `./drizzle`
-(real SQL for comment/reaction tests). `cloudflare:workers` is aliased to
+Under Vitest `db/client.js` is aliased to `src/test/db-client.ts`, an in-memory
+libSQL DB migrated from `./drizzle` (real SQL for comment/reaction tests). `cloudflare:workers` is aliased to
 `src/test/cloudflare-workers-stub.ts`; subscriber tests `vi.mock` the client's
 `db` export with `src/test/fake-d1.ts` to assert on writes.
 
