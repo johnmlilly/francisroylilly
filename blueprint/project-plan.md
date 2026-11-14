@@ -42,7 +42,7 @@ where readers add a city-level pin with their name and an optional short message
 
 ## 4. Data - What are we storing?
 
-One Cloudflare D1 database via Drizzle (binding `SUBSCRIBERS_DB`), schema in
+One Cloudflare D1 database via Drizzle (binding `DB`), schema in
 `db/schema.ts`, client `db/client.ts`. `Comment`/`Reaction` moved here from
 Turso (build plan feature 15):
 
@@ -97,7 +97,7 @@ first (most readers arrive from shared links). Existing utilities: `.pull-quote`
   `npm run deploy` is the manual escape hatch
 - Build: `npm run build` (Astro, `imageService: 'compile'`, `session: false`)
 - Env / secrets: `RESEND_API_KEY`, `NOTIFY_SECRET`, `REPORT_SECRET`,
-  `REPORT_EMAIL` (Worker secrets), D1 binding `SUBSCRIBERS_DB` in
+  `REPORT_EMAIL` (Worker secrets), D1 binding `DB` in
   `wrangler.jsonc`, `NOTIFY_SECRET` also as a GitHub Actions repo secret
 - Planned `.github/workflows/notify-subscribers.yml`: on push to `main`
   touching `src/content/blog/**`, POST `/api/notify` with the shared secret

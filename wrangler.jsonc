@@ -11,7 +11,7 @@
 	"vars": {},
 	"d1_databases": [
 		{
-			"binding": "SUBSCRIBERS_DB",
+			"binding": "DB",
 			"database_name": "francisroylilly",
 			"database_id": "651b67c6-8731-4b81-8650-92feb7dfc33c"
 		}

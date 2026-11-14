@@ -11,7 +11,7 @@ let instance: Db | undefined;
 // Under Vitest this module is aliased to src/test/db-client.ts (in-memory libSQL).
 function getDb(): Db {
   if (!instance) {
-    instance = drizzle(env.SUBSCRIBERS_DB, { schema });
+    instance = drizzle(env.DB, { schema });
   }
 
   return instance;

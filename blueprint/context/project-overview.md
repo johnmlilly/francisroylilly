@@ -1,6 +1,6 @@
 # Francis Roy Lilly - Project Overview
 
-<!-- blueprint:source-hash 336f84d0496aa76bb44efcde4495a161e907c82ac2c1ae396b5f4216066c8e32 -->
+<!-- blueprint:source-hash aeb92abf91be14d7e5b8602c5566a082f007cd6cba1c8693748f65ca07eef950 -->
 
 > Personal site documenting Francis Roy Lilly's journey after a severe brain
 > injury (HIE) at birth. Permanent, ad-free replacement for CaringBridge.
@@ -70,9 +70,9 @@ is built second.
 
 ## Data model
 
-One database: **Cloudflare D1** (`francisroylilly`, binding `SUBSCRIBERS_DB`)
+One database: **Cloudflare D1** (`francisroylilly`, binding `DB`)
 via `drizzle-orm/d1`. Schema `db/schema.ts`, client `db/client.ts` reading
-`env.SUBSCRIBERS_DB` from `cloudflare:workers`. Migrations generated with
+`env.DB` from `cloudflare:workers`. Migrations generated with
 `npm run db:generate` under `./drizzle`, applied manually with
 `wrangler d1 execute --remote --file=`. `Comment`/`Reaction` moved here from
 Turso in feature 15.
@@ -199,7 +199,7 @@ Site-wide subscribe modal opens ~5s after load, dismissal persisted in
 - **Deploys:** automatic via Cloudflare Workers Builds on push to `main`. `npm run deploy` is a manual escape hatch only.
 - **Build:** `npm run build`. Dev server `npm run dev` on http://localhost:4321 (workerd via Cloudflare Vite plugin). `npm run preview` serves the built worker.
 - **Secrets (Worker):** `RESEND_API_KEY`, `NOTIFY_SECRET`, `REPORT_SECRET`, `REPORT_EMAIL`. Locally via `.dev.vars` (gitignored).
-- **Bindings:** `d1_databases` entry `SUBSCRIBERS_DB` in `wrangler.jsonc`; `npm run cf-typegen` generates `worker-configuration.d.ts`.
+- **Bindings:** `d1_databases` entry `DB` in `wrangler.jsonc`; `npm run cf-typegen` generates `worker-configuration.d.ts`.
 - **DB ops:** `npm run db:generate`, then `wrangler d1 execute francisroylilly --local|--remote --file=drizzle/<file>.sql`. `npm run db:seed` loads `db/seed.sql` into local D1.
 - **CI:** `.github/workflows/test.yml` runs tests and build on PRs. `notify-subscribers.yml`: on push to `main` touching `src/content/blog/**`, one `curl` POST to `/api/notify` with `NOTIFY_SECRET` (also a GitHub repo secret). Merge it last, after backfill.
 - **Resend:** sending domain `updates@mail.francisroylilly.com` must be verified (SPF/DKIM TXT records on Cloudflare DNS).
