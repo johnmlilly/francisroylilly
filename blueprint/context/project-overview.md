@@ -1,6 +1,6 @@
 # Francis Roy Lilly - Project Overview
 
-<!-- blueprint:source-hash f9cc734d9df57cdd819561c83302749d5553b3b187d7c7b9090e261c97b7c9fe -->
+<!-- blueprint:source-hash 9ab13aab74bff66a9ba32c3113adf8f93262bdf2c9ba0abf14c5f9a8216dbd32 -->
 
 > Personal site documenting Francis Roy Lilly's journey after a severe brain
 > injury (HIE) at birth. Permanent, ad-free replacement for CaringBridge.
@@ -10,18 +10,18 @@
 
 Francis's family shared his story on CaringBridge but wanted a dedicated site
 they control: the full narrative on one page, every past update migrated with
-photos, and new updates posted the same way. The site is shipped and live. The
-one CaringBridge behavior still missing is emailing followers when a new update
-posts; that is the roadmap item in progress.
+photos, and new updates posted the same way. The site is shipped and live,
+including email notifications to subscribers when a new update posts.
 
 ## Users
 
 - **Readers** - family and friends following Francis's progress. Anonymous. They
-  read posts, leave comments, tap "love", share links, and (planned) subscribe
-  for email notifications with double opt-in.
+  read posts, leave comments, tap "love", share links, subscribe
+  for email notifications with double opt-in, and (planned) add a pin to the
+  prayer map.
 - **Site owners** - John and Kara Lilly. Author posts through a git-based CMS
   (Pages CMS), never through the app. Publishing a post triggers subscriber
-  notification automatically (planned).
+  notification automatically.
 
 Small, trusted audience. No accounts, no login, no admin UI.
 
@@ -29,17 +29,17 @@ Small, trusted audience. No accounts, no login, no admin UI.
 
 - **Scale:** tens to low hundreds of readers; spikes when a post is shared.
 - **Reachability:** internet-facing, unauthenticated. Untrusted input is the
-  comment form and the planned subscribe form; both carry honeypot + timing
-  checks. Planned `/api/notify` is protected by a shared secret header.
+  comment and subscribe forms and the planned prayer-map form; all carry
+  honeypot + timing checks. `/api/notify` is protected by a shared secret header.
 - **Tenancy:** single-tenant. No compliance requirements.
 - **Non-requirements:** accounts/auth, admin UI, external newsletter platform,
   queues, cron, retry infrastructure (failed sends rerun manually).
 
 ## Features
 
-Build-plan order. Items 1-13 are shipped (adopted from the existing codebase).
-Items 14-20 are the roadmap. Item 14 is in progress on
-`feature/notify-subscribers-resend-d1`.
+Build-plan order. Items 1-14 are shipped (1-13 adopted from the existing
+codebase). The roadmap is listed in priority order; IDs are stable, so item 21
+is built second.
 
 ### Shipped
 
@@ -61,6 +61,7 @@ Items 14-20 are the roadmap. Item 14 is in progress on
 ### Roadmap
 
 15. **Migrate Turso to Cloudflare D1** - `drizzle-orm/d1` binding; `Comment`/`Reaction` fold into the D1 database created by feature 14; keep libsql `:memory:` for Vitest; `db/migrate.ts`/`db/seed.ts` become `wrangler d1` commands.
+21. **Prayer map on `/prayers`** - readers add a city-level pin with name and optional message; Leaflet island, Photon autocomplete, clustered pins plus a "X people praying from Y countries" counter; stored in D1 `PrayerPin`. Depends on 15.
 16. **Playwright E2E smoke tests** - comment submission, love button, `/blog` listing. Set up via `/tests browser`.
 17. **Replace Lucide icons with astro-icon** - `src/components/Cards.astro`.
 18. **Streamline SEO with astro-seo** - per-page title/description/OG props instead of duplicated meta tags.
@@ -116,6 +117,19 @@ Re-subscribing after unsubscribe issues a new token and repeats double opt-in.
 
 Presence of a row means subscribers were notified (or backfilled via `skipSend`).
 
+### PrayerPin (D1, planned, feature 21)
+
+- `id` (integer, PK, autoincrement)
+- `name` (text, not null) - displayed; rendered as text, never HTML
+- `message` (text, nullable) - max 140 chars; displayed as text
+- `city` (text, not null) - label from the chosen autocomplete result
+- `country` (text, not null) - feeds the country counter
+- `lat`, `lng` (real, not null) - rounded to city level (~1km) before storing
+- `email` (text, nullable) - never displayed; optional subscribe offer
+- `createdAt` (integer timestamp, not null)
+
+No user edit or delete. Admin removes rows directly in D1.
+
 ### Blog post (content collection, not DB)
 
 Markdown/MDX files in `src/content/blog/`, images in `src/assets/blog/`.
@@ -131,7 +145,7 @@ Frontmatter schema (`src/content.config.ts`, mirrored in `.pages.yml`):
 
 > `postSlug` on `Comment`/`Reaction`/`PostNotification` is the file-derived
 > slug. Renaming a post file orphans its comments, loves, and notification
-> record. Later features (18, 19) depend on these shapes; treat them as locked.
+> record. Later features (15, 21) depend on these shapes; treat them as locked.
 
 ## Tech stack
 
@@ -141,8 +155,9 @@ Frontmatter schema (`src/content.config.ts`, mirrored in `.pages.yml`):
 - **React 19** - islands only (timeline via `react-vertical-timeline-component`)
 - **Drizzle ORM** - `drizzle-orm/d1` against D1; `@libsql/client` `:memory:` under Vitest
 - **Astro Actions** - form handling (`addComment`, `addLove`, `subscribeToUpdates`) in `src/actions/index.ts`
-- **Resend** (planned) - transactional email; plain inline-styled HTML templates in `emails/` with `escapeHtml`
+- **Resend** - transactional email; plain inline-styled HTML templates in `emails/` with `escapeHtml`
 - **lucide-react** - icons (planned swap to astro-icon, feature 17)
+- **Leaflet** (planned, feature 21) - client-only map island with `leaflet.markercluster` and `leaflet-gesture-handling`; Carto light raster tiles (attribution shown); Photon for city autocomplete
 - **Vitest** - unit tests; GitHub Actions runs test + build on PRs
 - **@astrojs/cloudflare** - Workers adapter; `imageService: 'compile'`, `session: false`
 - **Pages CMS** - git-based authoring via `.pages.yml`
@@ -164,16 +179,17 @@ Routes:
 - `/` - hero flip rotator, "Francis's Story", cards, React timeline of posts
 - `/blog` - updates listing with search and date-range filter; link banner to `/subscribe`
 - `/blog/[slug]` - post with hero, photo gallery, comments, love button, share button, per-post OG meta
-- `/prayers`, `/support` - static pages
+- `/prayers` - static page; planned prayer map section (feature 21)
+- `/support` - static page
 - `/subscribe` - subscribe form page, linked from footer nav
 - `/rss.xml`, `/sitemap-index.xml` - feed and sitemap
 - `/api/comments`, `/api/reactions` - GET, on-demand
-- `/api/confirm?token=` (planned) - GET renders confirm page; POST sets `confirmedAt`, redirects to `/subscribed`
-- `/api/unsubscribe?token=` (planned) - GET renders confirm page; POST sets `unsubscribedAt`, redirects to `/unsubscribed`
-- `/api/notify` (planned) - POST only, `x-notify-secret` header; `?skipSend=true` backfills
-- `/subscribed`, `/unsubscribed` (planned) - static confirmation pages
+- `/api/confirm?token=` - GET renders confirm page; POST sets `confirmedAt`, redirects to `/subscribed`
+- `/api/unsubscribe?token=` - GET renders confirm page; POST sets `unsubscribedAt`, redirects to `/unsubscribed`
+- `/api/notify` - POST only, `x-notify-secret` header; `?skipSend=true` backfills
+- `/subscribed`, `/unsubscribed` - static confirmation pages
 
-Planned site-wide subscribe modal opens ~5s after load, dismissal persisted in
+Site-wide subscribe modal opens ~5s after load, dismissal persisted in
 `localStorage` (`frl-subscribe-modal-dismissed`).
 
 ## Deployment
@@ -185,13 +201,13 @@ Planned site-wide subscribe modal opens ~5s after load, dismissal persisted in
 - **Secrets (Worker):** `RESEND_API_KEY`, `NOTIFY_SECRET`, `REPORT_SECRET`, `REPORT_EMAIL`. Locally via `.dev.vars` (gitignored).
 - **Bindings:** `d1_databases` entry `SUBSCRIBERS_DB` in `wrangler.jsonc`; `npm run cf-typegen` generates `worker-configuration.d.ts`.
 - **DB ops:** `npm run db:generate`, then `wrangler d1 execute francisroylilly --local|--remote --file=drizzle/<file>.sql`. `npm run db:seed` loads `db/seed.sql` into local D1.
-- **CI:** `.github/workflows/test.yml` runs tests and build on PRs. Planned `notify-subscribers.yml`: on push to `main` touching `src/content/blog/**`, one `curl` POST to `/api/notify` with `NOTIFY_SECRET` (also a GitHub repo secret). Merge it last, after backfill.
+- **CI:** `.github/workflows/test.yml` runs tests and build on PRs. `notify-subscribers.yml`: on push to `main` touching `src/content/blog/**`, one `curl` POST to `/api/notify` with `NOTIFY_SECRET` (also a GitHub repo secret). Merge it last, after backfill.
 - **Resend:** sending domain `updates@mail.francisroylilly.com` must be verified (SPF/DKIM TXT records on Cloudflare DNS).
 
 ## Open questions
 
-- **Feature 15 note references `/tests browser`:** that is a setup skill, not a
-  feature step. `/feature 15` should start by running `/tests browser` rather
+- **Feature 16 note references `/tests browser`:** that is a setup skill, not a
+  feature step. `/feature 16` should start by running `/tests browser` rather
   than implementing Playwright by hand.
-- **Feature 14 infra not yet provisioned:** Cloudflare account has no D1
-  database, `wrangler.jsonc` has no binding, secrets unset. First implement step.
+- **Feature 21 geocoding/tiles:** Photon and Carto are free public services
+  with usage policies; confirm acceptable at this traffic during `/feature 21`.

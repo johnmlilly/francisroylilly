@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { resetD1 } from '../../test/fake-d1.js';
 
 const { sendMock } = vi.hoisted(() => ({
-  sendMock: vi.fn(async () => ({ data: { id: 'msg-1' }, error: null })),
+  sendMock: vi.fn(async (_email: unknown) => ({ data: { id: 'msg-1' }, error: null })),
 }));
 
 vi.mock('../../../db/client.js', async (importOriginal) => {
@@ -52,7 +52,7 @@ describe('POST /api/subscriber-report', () => {
   });
 
   it('rejects when no secret is configured', async () => {
-    delete process.env.REPORT_SECRET;
+    Reflect.deleteProperty(process.env, 'REPORT_SECRET');
     expect((await call({ 'x-report-secret': '' })).status).toBe(401);
   });
 
@@ -62,7 +62,7 @@ describe('POST /api/subscriber-report', () => {
   });
 
   it('errors when REPORT_EMAIL is not configured', async () => {
-    delete process.env.REPORT_EMAIL;
+    Reflect.deleteProperty(process.env, 'REPORT_EMAIL');
     const response = await call({ 'x-report-secret': SECRET });
     expect(response.status).toBe(500);
     expect(sendMock).not.toHaveBeenCalled();

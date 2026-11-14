@@ -26,6 +26,7 @@ const row = (overrides: Partial<SubscriberRow> = {}): SubscriberRow => ({
   createdAt: new Date('2026-01-01T00:00:00Z'),
   confirmedAt: null,
   unsubscribedAt: null,
+  lastEmailedAt: null,
   ...overrides,
 });
 

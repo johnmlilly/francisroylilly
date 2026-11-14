@@ -8,6 +8,7 @@ const subscriber = (email: string, createdAt: string, confirmedAt: string | null
   email,
   createdAt: new Date(createdAt),
   confirmedAt: confirmedAt ? new Date(confirmedAt) : null,
+  unsubscribedAt: null,
 });
 
 describe('oneWeekBefore', () => {
