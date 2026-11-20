@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
-    "@libsql/client": "^0.17.4",
+    "@libsql/client": "^0.18.0",
     "drizzle-kit": "^0.31.10",
     "fallow": "^3.27.0",
     "typescript": "^6.0.3",
